@@ -2,16 +2,44 @@
 <html>
 <head>
     <title>Trust Game</title>
-    <style>
+   <style>
         #student{
             display: none;
-            
         }
-        #teacher{
+        #teacher,#student,#enterNickname,#yourRoomCode{
             display: none;
         }
         #enterNickname{
             display:none;
+        }
+        h1{
+            font-family: 'Poppins', sans-serif;
+        }
+        body{
+            text-align: center;
+        }
+        #menu input, button{
+          font-family: 'Poppins', sans-serif;
+          height:100px;
+          width: 350px;
+          background-color: #4CAF50; /* Green */
+          border: none;
+          color: white;
+          padding: 15px 32px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 26px;
+          margin: 4px 2px;
+          cursor: pointer;
+        }
+        #student input{
+            height:50px;
+            width:250px;
+            font-size: 20px;
+            margin: 100px;
+            font-family: 'Poppins', sans-serif;
+
         }
     
     </style>
@@ -21,7 +49,6 @@
             
             document.getElementById("student").style.display = 'block';
             document.getElementById("menu").style.display = 'none';
-
             
         }
         function teacher(){
@@ -34,6 +61,7 @@
         
         function gen(){
         //generate random number later
+          document.getElementById("yourRoomCode").style.display = 'block';
           document.getElementById("code").innerHTML = 100000;
         }
         
@@ -42,7 +70,6 @@
             if(set.has(val)){
                 document.getElementById("student").style.display = 'none';
                 document.getElementById("enterNickname").style.display = 'block';
-
             }else{
                 alert("Room Not Found! :(")
             }
@@ -90,7 +117,8 @@
     
     <div id="student">
         <input type= "text" id="studentRoomCode">
-        <input type="button" value="submit room code" onclick="checkRoomCodes()">
+        <br>
+        <button onclick="checkRoomCodes()">Submit Room Code</button>
     </div>
     
     
@@ -99,7 +127,8 @@
        <form id="theForm">
         <button onclick="gen()">Send</button>
        </form>
-        <p id="code"></p>	
+         <h1 id="yourRoomCode">Your Room Code</h1>
+        <h1 id="code"></h1>	
     </div>
         
         
