@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+    <title>Trust Game</title>
+    <style>
+        #student{
+            display: none;
+            
+        }
+        #teacher{
+            display: none;
+        }
+        #enterNickname{
+            display:none;
+        }
+    
+    </style>
+    <script>
+        var set = new Set();
+        function student(){
+            
+            document.getElementById("student").style.display = 'block';
+            document.getElementById("menu").style.display = 'none';
+
+            
+        }
+        function teacher(){
+            
+            document.getElementById("teacher").style.display = 'block';
+            document.getElementById("menu").style.display = 'none';
+            
+            
+        }
+        
+        function gen(){
+        //generate random number later
+          document.getElementById("code").innerHTML = 100000;
+        }
+        
+        function checkRoomCodes(){
+            var val = document.getElementById("studentRoomCode").value;
+            if(set.has(val)){
+                document.getElementById("student").style.display = 'none';
+                document.getElementById("enterNickname").style.display = 'block';
+
+            }else{
+                alert("Room Not Found! :(")
+            }
+            
+        }
+        
+        function submitNickname(){
+            alert("LIT");
+        }
+        
+        
+    </script>
+</head>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
+    <script>
+    $(function () {
+        var socket = io();
+        $("#theForm").submit(function(e){
+          e.preventDefault(); // prevents page reloading
+          socket.emit('message', $("#code").text());
+          return false;
+        });
+      
+        
+     socket.on('message', function(msg){
+         set.add(msg);
+         alert(msg);
+        });
+     });   
+        
+   
+    </script>
+    
+    
+    
+    <body>
+    <div id = "menu">
+    <h1>I am a...</h1>
+    <input type="button" id="studentbutton" value="Student" onclick = "student()">
+    <input type="button" id="teacherbutton" value="Teacher" onclick = "teacher()"> 
+    </div>
+    
+    <div id="student">
+        <input type= "text" id="studentRoomCode">
+        <input type="button" value="submit room code" onclick="checkRoomCodes()">
+    </div>
+    
+    
+    
+    <div id="teacher">
+       <form id="theForm">
+        <button onclick="gen()">Send</button>
+       </form>
+        <p id="code"></p>	
+    </div>
+        
+        
+    <div id="enterNickname">
+        <input type= "text" id="studentNick">
+        <input type="button" value="submit nickname" onclick="submitNickname()">
+    </div>
+</body>
+</html>
