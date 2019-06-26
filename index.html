@@ -4,145 +4,41 @@
    <title>Trust Game</title>
    <style>
         
-        #teacher,#student,#enterNickname,#yourRoomCode,#codeError{
-            display: none;
-        }
-        
         h1{
             font-family: 'Poppins', sans-serif;
         }
         body{
             text-align: center;
         }
-        #menu input, button{
+        #menu input, a{
           font-family: 'Poppins', sans-serif;
           height:100px;
-          width: 350px;
-          background-color: #4CAF50; /* Green */
+          width: 300px;
+          background-color: #4CAF50; 
           border: none;
           color: white;
           padding: 15px 32px;
           text-align: center;
+          line-height:100px;
           text-decoration: none;
           display: inline-block;
           font-size: 26px;
-          margin: 4px 2px;
+          margin: 4px 10px;
           cursor: pointer;
-        }
-        #student input{
-            height:50px;
-            width:250px;
-            font-size: 20px;
-            margin: 100px;
-            font-family: 'Poppins', sans-serif;
-
         }
     
     </style>
-    <script>
-        function student(){
-            
-            document.getElementById("student").style.display = 'block';
-            document.getElementById("menu").style.display = 'none';
-            
-        }
-        function teacher(){
-            
-            document.getElementById("teacher").style.display = 'block';
-            document.getElementById("menu").style.display = 'none';
-            
-            
-        }
-        
-        function gen(){
-           
-          document.getElementById("yourRoomCode").style.display = 'block';
-          document.getElementById("code").innerHTML = Math.random().toString(36).substr(2, 9);
-          document.getElementById("send").style.display = "none";
-
-        }
-    
-        function submitNickname(){
-          //todo
-        }
-        
-        
-    </script>
 </head>
     
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-
-    <script>
-    $(function () {
-        
-        //sends the code that the teacher generated to the server
-        var socket = io();
-        $("#send").click(function(e){
-          e.preventDefault(); // prevents page reloading
-          socket.emit('message', $("#code").text());
-          return false;
-        });
-  
-     });   
-        
-     $(function () {
-        var socket = io();
-        $("#submitRoomCode").click(function(e){
-          e.preventDefault(); // prevents page reloading
-        
-          //sends the code that player has put in to the server
-          socket.emit('code', $("#studentRoomCode").val());
-            
-            //gets a message back from the server whether or not the code was successful
-            socket.on('code',function(isCodeSuccessful){
-             
-               var e = document.getElementById("codeError");
-                
-               //if it is not valid, tell user    
-               if(isCodeSuccessful==="failure"){
-                    e.style.display = 'block';
-                    e.innerHTML = "Invalid Room Code";
-                }else{
-                    //allows user to enter nickname if it is successful
-                    document.getElementById("enterNickname").style.display = 'block';
-                    document.getElementById("student").style.display = 'none';
-                }
-                
-            }) 
-          return false;
-        }); 
-     });      
     
-        
-    </script>
     
     <body>
     <div id = "menu">
     <h1>I am a...</h1>
-    <input type="button" id="studentbutton" value="Student" onclick = "student()">
-    <input type="button" id="teacherbutton" value="Teacher" onclick = "teacher()"> 
+    <a href ="/teacher.html">Teacher</a>
+    <a href ="/student.html">Student</a>
     </div>
     
-    <div id="student">
-        <input type= "text" id="studentRoomCode">
-        <br>
-        <h1 id="codeError"></h1>
-        <button id="submitRoomCode">Submit Room Code</button>
-    </div>
-    
-    
-    
-    <div id="teacher">
-        <button id="send" onclick="gen()">Send</button>
-        <h1 id="yourRoomCode">Your Room Code</h1>
-        <h1 id="code"></h1>	
-    </div>
-        
-        
-    <div id="enterNickname">
-        <input type= "text" id="studentNick">
-        <input type="button" value="submit nickname" onclick="submitNickname()">
-    </div>
+ 
 </body>
 </html>
