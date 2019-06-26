@@ -1,0 +1,101 @@
+<html>
+<head>
+    <title>Trust Game</title>
+    <style>
+        #enterNickname{
+            display:none;
+        }
+        
+        h1{
+            font-family: 'Poppins', sans-serif;
+        }
+        body{
+            text-align: center;
+        }
+        #menu input, button, a{
+          font-family: 'Poppins', sans-serif;
+          height:100px;
+          width: 300px;
+          background-color: #4CAF50; 
+          border: none;
+          color: white;
+          padding: 15px 32px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 26px;
+          cursor: pointer;
+        }
+        #student input,#enterNickname input{
+            height:70px;
+            width:300px;
+            font-size: 26px;
+            margin: 100px;
+            font-family: 'Poppins', sans-serif;
+        }
+    
+    </style>
+</head>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
+    <script>
+    
+        
+     $(function () {
+        var socket = io();
+         
+        $("#submitRoomCode").click(function(e){
+          e.preventDefault(); // prevents page reloading
+        
+          //sends the code that player has put in to the server
+          socket.emit('code', $("#studentRoomCode").val());
+            
+            //gets a message back from the server whether or not the code was successful
+            socket.on('code',function(isCodeSuccessful){
+             
+               var e = document.getElementById("codeError");
+                
+               //if it is not valid, tell user    
+               if(isCodeSuccessful==="failure"){
+                    e.style.display = 'block';
+                    e.innerHTML = "Invalid Room Code";
+                }else{
+                    //allows user to enter nickname if it is successful
+                    document.getElementById("enterNickname").style.display = 'block';
+                    document.getElementById("student").style.display = 'none';
+                }
+                
+            }) 
+          return false;
+        });
+         
+        $("#nickname").click(function(e){
+          e.preventDefault(); // prevents page reloading
+          socket.emit('nickname', $("#studentNick").val());
+          return false;
+        }); 
+         
+         
+         
+     });      
+    
+        
+    </script>
+    
+    
+    <div id="student">
+        <input type= "text" id="studentRoomCode">
+        <br>
+        <h1 id="codeError"></h1>
+        <button id="submitRoomCode">Submit Room Code</button>
+    </div>
+
+    <div id="enterNickname">
+        <input type= "text" id="studentNick">
+        <br>
+        <button id="nickname" onclick="submitNickname()">Enter Nickname</button>
+    </div>
+
+</html>

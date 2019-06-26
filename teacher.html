@@ -1,0 +1,82 @@
+<html>
+<head>
+   <title>Trust Game</title>
+   <style>
+        
+        #yourRoomCode{
+           display:none;
+        }
+        h1{
+            font-family: 'Poppins', sans-serif;
+        }
+        body{
+            text-align: center;
+        }
+        #menu input, a,button{
+          font-family: 'Poppins', sans-serif;
+          height:100px;
+          width: 300px;
+          background-color: #4CAF50; 
+          border: none;
+          color: white;
+          padding: 15px 32px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 26px;
+        
+          margin: 4px 10px;
+          cursor: pointer;
+        }
+        #student input,#enterNickname input{
+            height:50px;
+            width:250px;
+            font-size: 20px;
+            margin: 100px;
+            font-family: 'Poppins', sans-serif;
+
+        }
+    
+    </style>
+    <script>
+
+        
+        function gen(){
+           
+          document.getElementById("yourRoomCode").style.display = 'block';
+          document.getElementById("code").innerHTML = Math.random().toString(36).substr(2, 9);
+          document.getElementById("send").style.display = "none";
+
+        }
+    
+        
+        
+    </script>
+</head>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+        
+     $(function () {
+        var socket = io();
+        
+        $("#send").click(function(e){
+          e.preventDefault(); // prevents page reloading
+          socket.emit('message', $("#code").text());
+          return false;
+        });
+       socket.on('nickname', function(nick){
+           alert(nick);
+       });
+         
+     });
+    
+    </script>
+      <div id="teacher">
+        <button id="send" onclick="gen()">Create Room Code</button>
+        <h1 id="yourRoomCode">Your Room Code</h1>
+        <h1 id="code"></h1>	
+    </div>
+        
+
+</html>
