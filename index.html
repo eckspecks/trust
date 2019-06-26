@@ -1,17 +1,13 @@
 <!doctype html>
 <html>
 <head>
-    <title>Trust Game</title>
+   <title>Trust Game</title>
    <style>
-        #student{
+        
+        #teacher,#student,#enterNickname,#yourRoomCode,#codeError{
             display: none;
         }
-        #teacher,#student,#enterNickname,#yourRoomCode{
-            display: none;
-        }
-        #enterNickname{
-            display:none;
-        }
+        
         h1{
             font-family: 'Poppins', sans-serif;
         }
@@ -44,7 +40,6 @@
     
     </style>
     <script>
-        var set = new Set();
         function student(){
             
             document.getElementById("student").style.display = 'block';
@@ -60,22 +55,13 @@
         }
         
         function gen(){
-        //generate random number later
+           
           document.getElementById("yourRoomCode").style.display = 'block';
-          document.getElementById("code").innerHTML = 100000;
+          document.getElementById("code").innerHTML = Math.random().toString(36).substr(2, 9);
+          document.getElementById("send").style.display = "none";
+
         }
-        
-        function checkRoomCodes(){
-            var val = document.getElementById("studentRoomCode").value;
-            if(set.has(val)){
-                document.getElementById("student").style.display = 'none';
-                document.getElementById("enterNickname").style.display = 'block';
-            }else{
-                alert("Room Not Found! :(")
-            }
-            
-        }
-        
+    
         function submitNickname(){
           //todo
         }
@@ -90,23 +76,37 @@
     <script>
     $(function () {
         var socket = io();
-        $("#theForm").submit(function(e){
+        $("#send").click(function(e){
           e.preventDefault(); // prevents page reloading
           socket.emit('message', $("#code").text());
           return false;
         });
-      
-        
-     socket.on('message', function(msg){
-         set.add(msg);
-         alert(msg);
-        });
+  
      });   
         
-   
+     $(function () {
+        var socket = io();
+        $("#submitRoomCode").click(function(e){
+          e.preventDefault(); // prevents page reloading
+          socket.emit('code', $("#studentRoomCode").val());
+            
+            socket.on('code',function(isCodeSuccessful){
+                var e = document.getElementById("codeError");
+               if(isCodeSuccessful==="failure"){
+                    e.style.display = 'block';
+                    e.innerHTML = "Invalid Room Code";
+                }else{
+                    document.getElementById("enterNickname").style.display = 'block';
+                    document.getElementById("student").style.display = 'none';
+                }
+                
+            }) 
+          return false;
+        }); 
+     });      
+    
+        
     </script>
-    
-    
     
     <body>
     <div id = "menu">
@@ -118,16 +118,15 @@
     <div id="student">
         <input type= "text" id="studentRoomCode">
         <br>
-        <button onclick="checkRoomCodes()">Submit Room Code</button>
+        <h1 id="codeError"></h1>
+        <button id="submitRoomCode">Submit Room Code</button>
     </div>
     
     
     
     <div id="teacher">
-       <form id="theForm">
-        <button onclick="gen()">Send</button>
-       </form>
-         <h1 id="yourRoomCode">Your Room Code</h1>
+        <button id="send" onclick="gen()">Send</button>
+        <h1 id="yourRoomCode">Your Room Code</h1>
         <h1 id="code"></h1>	
     </div>
         
