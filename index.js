@@ -1,7 +1,8 @@
 var app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
-
+var set = new Set();
+var codeSuccessful = "";
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
@@ -15,6 +16,22 @@ http.listen(3000, function(){
 io.on('connection', function(socket){
   socket.on('message', function(msg){
     console.log('message: ' + msg);
-    io.emit('message', msg);
+    set.add(msg);
+  });
+    
+    
+      
+});
+
+io.on('connection', function(socket){
+  socket.on('code', function(theCode){
+     console.log('TheCode' + theCode);
+    if(set.has(theCode)){
+        socket.emit('code',"success");
+        console.log("success");
+    }else{
+        socket.emit('code',"failure");
+        console.log("failure");
+    }
   });
 });
