@@ -75,6 +75,8 @@
 
     <script>
     $(function () {
+        
+        //sends the code that the teacher generated to the server
         var socket = io();
         $("#send").click(function(e){
           e.preventDefault(); // prevents page reloading
@@ -88,14 +90,21 @@
         var socket = io();
         $("#submitRoomCode").click(function(e){
           e.preventDefault(); // prevents page reloading
+        
+          //sends the code that player has put in to the server
           socket.emit('code', $("#studentRoomCode").val());
             
+            //gets a message back from the server whether or not the code was successful
             socket.on('code',function(isCodeSuccessful){
-                var e = document.getElementById("codeError");
+             
+               var e = document.getElementById("codeError");
+                
+               //if it is not valid, tell user    
                if(isCodeSuccessful==="failure"){
                     e.style.display = 'block';
                     e.innerHTML = "Invalid Room Code";
                 }else{
+                    //allows user to enter nickname if it is successful
                     document.getElementById("enterNickname").style.display = 'block';
                     document.getElementById("student").style.display = 'none';
                 }
