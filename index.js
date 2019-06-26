@@ -32,7 +32,7 @@ io.on('connection', function(socket){
   //gets code from the player, compares it with code from teacher    
   socket.on('code', function(theCode){
       
-     console.log('TheCode' + theCode);
+     console.log('Code: ' + theCode);
     if(set.has(theCode)){
         
         //if code from player is found in the set, return success
@@ -49,7 +49,7 @@ io.on('connection', function(socket){
   });
     
  socket.on('nickname',function(theNickname){
-     console.log('thenickname' + theNickname);
-     socket.emit('nickname',theNickname);
+     console.log('Nickname: ' + theNickname);
+     socket.broadcast.emit('nickname',theNickname);
 });
 });
