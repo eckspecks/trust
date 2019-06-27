@@ -1,7 +1,8 @@
 var app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
-var set = new Set();
+var array = [];
+var roomnum = 0;
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
@@ -23,21 +24,24 @@ io.on('connection', function(socket){
     console.log('a user connected');
     
     socket.on('message', function(msg){
-        
+        socket.join(roomnum);
+        console.log("success " + roomnum);
+
+        roomnum++;
         console.log('message: ' + msg);
-        set.add(msg);
+        array.push(msg);
 }); 
     
     
   //gets code from the player, compares it with code from teacher    
   socket.on('code', function(theCode){
       
-     console.log('Code: ' + theCode);
-    if(set.has(theCode)){
+    if(array.includes(theCode)){
         
+        socket.join(array.indexOf(theCode));
         //if code from player is found in the set, return success
-        socket.emit('code',"success");
-        console.log("success");
+        socket.emit('code',"success " + array.indexOf(theCode));
+        console.log("success! Room number:" + array.indexOf(theCode) + " " + theCode);
         
     }else{
         
@@ -50,6 +54,6 @@ io.on('connection', function(socket){
     
  socket.on('nickname',function(theNickname){
      console.log('Nickname: ' + theNickname);
-     socket.broadcast.emit('nickname',theNickname);
+     io.to(theNickname[theNickname.length -1]).emit('nickname',theNickname.slice(0,-2));
 });
 });
