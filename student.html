@@ -41,7 +41,7 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 
     <script>
-    
+    var roomNum = 0;
         
      $(function () {
         var socket = io();
@@ -63,6 +63,7 @@
                     e.innerHTML = "Invalid Room Code";
                 }else{
                     //allows user to enter nickname if it is successful
+                    roomNum = isCodeSuccessful.split(" ")[1];
                     document.getElementById("enterNickname").style.display = 'block';
                     document.getElementById("student").style.display = 'none';
                 }
@@ -71,8 +72,11 @@
         });
          
         $("#nickname").click(function(e){
+        
+              
           e.preventDefault(); // prevents page reloading
-          socket.emit('nickname', $("#studentNick").val());
+          socket.emit('nickname', $("#studentNick").val() + " " + roomNum);
+          document.getElementById("enterNickname").innerHTML = "";  
           return false;
         });
          
