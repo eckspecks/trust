@@ -3,7 +3,7 @@
    <title>Trust Game</title>
    <style>
         
-        #yourRoomCode,#names{
+        #yourRoomCode,#names,#playGame{
            display:none;
         }
         h1,li{
@@ -12,7 +12,7 @@
         body{
             text-align: center;
         }
-        #menu input, a,button{
+        button{
           font-family: 'Poppins', sans-serif;
           height:100px;
           width: 300px;
@@ -24,36 +24,35 @@
           text-decoration: none;
           display: inline-block;
           font-size: 26px;
-        
           margin: 4px 10px;
           cursor: pointer;
-        }
-        #student input,#enterNickname input{
-            height:50px;
-            width:250px;
-            font-size: 20px;
-            margin: 100px;
-            font-family: 'Poppins', sans-serif;
-
         }
        li{
            padding:0;
            list-style-type:none;
            font-size: 30px;
        }
+       #playGameButton{
+           width:300px;
+           margin:auto;
+           text-align:center;
+       }
     </style>
     <script>
 
         
         function gen(){
-        document.getElementById("names").style.display="block";
-
+          //hide and show new buttons
+          document.getElementById("names").style.display="block";
           document.getElementById("yourRoomCode").style.display = 'block';
-          document.getElementById("code").innerHTML = Math.random().toString(36).substr(2, 9);
+          document.getElementById("code").innerHTML = Math.random().toString(36).substr(2, 6);
           document.getElementById("send").style.display = "none";
-
+          document.getElementById("playGame").style.display="block";    
+     
         }
-    
+        function play(){
+            
+        }
         
         
     </script>
@@ -64,21 +63,34 @@
         
      $(function () {
         var socket = io();
-        
+        var teachersCode ="";
         $("#send").click(function(e){
+          //sends the generated code to server     
           e.preventDefault(); // prevents page reloading
-          socket.emit('message', $("#code").text());
+          teachersCode = $("#code").text();
+          socket.emit('message', teachersCode);
           return false;
         });
        socket.on('nickname', function(nick){
+           //adds the names that the server sends back to the list of connected players
            $('#names').append($('<h1>').text(nick));
        });
-         
+        $("#playGame").click(function(e){
+          //sends the generated code to server     
+          e.preventDefault(); // prevents page reloading
+          socket.emit('readyToPlay',"play " + teachersCode);
+          return false;
+        });  
      });
     
     </script>
         <button id="send" onclick="gen()">Create Room Code</button>
         <h1 id="yourRoomCode">Your Room Code</h1>
         <h1 id="code"></h1>
+
         <ul id="names"><h1>Players Connected:</h1></ul>
+        <br>
+        <div id="playGameButton"> 
+        <button id="playGame" onclick="play()">Play Game</button>
+        </div>
 </html>

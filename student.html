@@ -2,7 +2,7 @@
 <head>
     <title>Trust Game</title>
     <style>
-        #enterNickname{
+        #enterNickname,#ready{
             display:none;
         }
         
@@ -12,7 +12,7 @@
         body{
             text-align: center;
         }
-        #menu input, button, a{
+         button{
           font-family: 'Poppins', sans-serif;
           height:100px;
           width: 300px;
@@ -73,13 +73,18 @@
          
         $("#nickname").click(function(e){
         
-              
+          //sends the roomNum and nickname to the server   
           e.preventDefault(); // prevents page reloading
           socket.emit('nickname', $("#studentNick").val() + " " + roomNum);
           document.getElementById("enterNickname").innerHTML = "";  
           return false;
         });
-         
+        socket.on('readyToPlay',function(isCodeSuccessful){
+            document.getElementById("student").style.display = 'none';
+            document.getElementById("enterNickname").style.display = 'none';
+            document.getElementById("ready").style.display = 'block';
+
+        });;
      });      
     
         
@@ -98,5 +103,5 @@
         <br>
         <button id="nickname" onclick="submitNickname()">Enter Nickname</button>
     </div>
-
+        <h1 id="ready">READY TO PLAY!</h1>
 </html>
