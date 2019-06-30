@@ -1,8 +1,14 @@
-var app = require('express')();
+const express = require('express');
+const app = express();
+app.use(express.static('images'));
+
+const port = 3000;
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 var array = [];
 var roomnum = 0;
+var players = [];
+var moves = [];
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
@@ -12,6 +18,9 @@ app.get('/teacher.html', function(req, res){
 });
 app.get('/student.html', function(req, res){
   res.sendFile(__dirname + '/student.html');
+});
+app.get('/game.html', function(req, res){
+  res.sendFile(__dirname + '/game.html');
 });
 
 http.listen(3000, function(){
@@ -26,10 +35,9 @@ io.on('connection', function(socket){
     socket.on('message', function(msg){
         //teacher creates a new roomNumber
         socket.join(roomnum);
-        console.log("success " + roomnum);
-        
+        players.push(new Array(0));
+        moves.push(new Array(0));
         roomnum++;
-        console.log('message: ' + msg);
         
         //adds the room code to array
         array.push(msg);
@@ -52,26 +60,61 @@ io.on('connection', function(socket){
         
         //if not, return failure
         socket.emit('code',"failure");
-        console.log("failure");
         
     }
   });
     
  socket.on('nickname',function(theNickname){
      
-     console.log('Nickname: ' + theNickname);
      
      //sends the nickname of each player in the teacher's room to the teacher
-     io.to(theNickname[theNickname.length -1]).emit('nickname',theNickname.slice(0,-2));
+     var nick = theNickname.slice(0,-2);
+     players[theNickname[theNickname.length-1]].push(nick);
+     io.to(theNickname[theNickname.length -1]).emit('nickname',nick);
 });
     
     
  socket.on('readyToPlay',function(gameCode){
      
+     
+     
+     var nick = gameCode.split(" ")[2];
      var roomNumber = array.indexOf(gameCode.split(" ")[1]);
 
-     //sends the nickname of each player in the teacher's room to the teacher
-     io.to(roomNumber).emit('readyToPlay',"play");
+     if(gameCode.split(" ")[0]==="restart"){
+        roomNumber = gameCode.split(" ")[1];
+        io.to(roomNumber).emit('readyToPlay',"restart " + nick);
+ 
+     }else{
+        //sends the nickname of each player in the teacher's room to the teacher
+        io.to(roomNumber).emit('readyToPlay',"ready");
+     }     
+
+ 
 });    
+          
+socket.on('move',function(theMove){
+    var roomNum = theMove.split(" ")[1];
+    moves[roomNum].push(theMove);
+}); 
     
+    
+socket.on('updateBoard',function(update){
+    
+    var roomNum = update.split(" ")[1];
+    
+    if(update.split(" ")[0]==="reset"){
+        //resets the moves array
+        moves[roomNum] = new Array(0);    
+    }else{
+        
+    for(var i =0;i<moves[roomNum].length;i++){
+        io.to(roomNum).emit('updateBoard',moves[roomNum][i]);
+    }
+        
+    }
+})
+    
+    
+
 });
