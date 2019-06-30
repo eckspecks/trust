@@ -12,7 +12,10 @@
         body{
             text-align: center;
         }
-         button{
+        button:disabled,button[disabled]{
+            background-color:gray;
+        }
+        #student button,#enterNickname button{
           font-family: 'Poppins', sans-serif;
           height:100px;
           width: 300px;
@@ -26,6 +29,10 @@
           font-size: 26px;
           cursor: pointer;
         }
+        #online h1{
+            display:inline-block;
+            font-family: 'Catamaran',sans-serif;
+        }
         #student input,#enterNickname input{
             height:70px;
             width:300px;
@@ -33,16 +40,70 @@
             margin: 100px;
             font-family: 'Poppins', sans-serif;
         }
-    
+        h3{
+            padding-right:185px; 
+        }
+        #info{
+            padding-right:175px;
+            font-family: 'Catamaran',sans-serif;
+            font-weight: bold;
+            font-size:25px;
+        }
+        img{
+            vertical-align: top;
+            display:inline;
+        }
+        #oneline{
+            padding-left:180px;
+        }
+        html{
+            text-align: center;
+            
+        }
+        h1,h3{
+            display:inline-block;
+            font-family: 'Catamaran',sans-serif;
+        }
+        h3{
+            padding-right:185px; 
+        }
+        #info{
+            padding-right:175px;
+            font-family: 'Catamaran',sans-serif;
+            font-weight: bold;
+            font-size:25px;
+        }
+        #ready button{
+            width:142px;
+            height:56px;
+            font-family: 'Poppins', sans-serif;
+            background-color: #4CAF50; 
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 26px;
+            cursor: pointer;
+        }
     </style>
+    
+    
+    
+    
 </head>
     
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 
     <script>
-    var roomNum = 0;
-        
+        var play=0;
+        var oppScore= 0;
+        var nick = "";
+        var roomNum = 0;
+        var timeleft =0;
+        var cheatOpp = false;
+        var coopOpp = false;
      $(function () {
         var socket = io();
          
@@ -72,19 +133,123 @@
         });
          
         $("#nickname").click(function(e){
-        
+         nick =  $("#studentNick").val();
+            
+            if(nick.length==0){
+                var e = document.getElementById("nickError");
+                    e.style.display = 'block';
+                    e.innerHTML = "Must Enter Nickname";
+            }
+            
           //sends the roomNum and nickname to the server   
           e.preventDefault(); // prevents page reloading
           socket.emit('nickname', $("#studentNick").val() + " " + roomNum);
           document.getElementById("enterNickname").innerHTML = "";  
           return false;
         });
+         
         socket.on('readyToPlay',function(isCodeSuccessful){
+            
+            if(isCodeSuccessful.split(" ")[0]==="restart" && isCodeSuccessful.split(" ")[1]!== nick){
+                return false;
+            }
+            document.getElementById("cheat").style.display = "inline-block";
+            document.getElementById("coop").style.display = "inline-block";
+            
             document.getElementById("student").style.display = 'none';
             document.getElementById("enterNickname").style.display = 'none';
             document.getElementById("ready").style.display = 'block';
+            
+            //timer goes 30 seconds?
+            
+            timeleft = 5;
+            var downloadTimer = setInterval(function(){
+              document.getElementById("countdown").innerHTML = timeleft + " seconds remaining";
+              timeleft -= 1;
+              if(timeleft <= 0){
+                  
+                socket.emit('updateBoard',"play " + roomNum);
+                clearInterval(downloadTimer);
+                document.getElementById("countdown").innerHTML = "Round Done"
+                socket.emit('updateBoard',"reset " + roomNum);
+                socket.emit('readyToPlay',"restart " +roomNum + " " + nick);
+              }
+            }, 1000);
 
-        });;
+            
+        });
+         
+        $("#cheat").click(function(e){
+
+            socket.emit('move',0 + " " + roomNum + " " + nick);
+            document.getElementById("cheat").style.display = "none";
+            document.getElementById("coop").style.display = "none";
+            cheatOpp =true;
+          return false;
+        }); 
+        $("#coop").click(function(e){
+            socket.emit('move',1 + " " + roomNum + " " + nick);
+            document.getElementById("cheat").style.display = "none";
+            document.getElementById("coop").style.display = "none";
+            coopOpp = true;
+          return false;
+        }); 
+        socket.on('updateBoard',function(oppMove){
+            
+            //first is cheat/coop
+            //second is roomNum
+            //third is nick
+            
+            
+            
+            var cheatOrCoop = oppMove.split(" ")[0];
+            var nickName = oppMove.split(" ")[2];
+
+            if(nickName!==nick){
+            if(cheatOpp){
+
+                if(cheatOrCoop==1){
+                    //you cheated, opp cooperated
+                        play+=3;
+                        oppScore-=1;
+                        document.getElementById("photo").src="youcheat.png";
+
+                    
+                }else{
+                    //both cheat
+                        
+                        document.getElementById("photo").src="bothcheat.png";
+
+                }
+                
+            }
+            
+            if(coopOpp){
+
+                if(cheatOrCoop==1){
+                    //both cooperated
+                        play+=2;
+                        oppScore+=2;
+                        document.getElementById("photo").src="bothcoop.png";
+
+                }else{
+                    //you coop, opp cheated :(
+                        play-=1;
+                        oppScore+=3;
+                        document.getElementById("photo").src="theycheat.png";
+
+                }
+            }
+            cheatOpp=false;
+            coopOpp = false;
+            document.getElementById("yourScore").innerHTML="<p>"+play+"</p>";
+            document.getElementById("oppScore").innerHTML="<p>"+oppScore+"</p>";
+
+            }
+            
+            
+            
+        });
      });      
     
         
@@ -101,7 +266,40 @@
     <div id="enterNickname">
         <input type= "text" id="studentNick">
         <br>
+        <h1 id="nickError"></h1>
+
         <button id="nickname" onclick="submitNickname()">Enter Nickname</button>
     </div>
-        <h1 id="ready">READY TO PLAY!</h1>
+    
+    
+
+    <div id="ready">
+    
+    
+    
+    <div id="oneline">
+        
+        <div id ="info">
+        <img id ="logo" align="left" src="nobel.jpg"><br><br>
+        <p id="copyright" align="left" style="font-family:courier; font-size:50%;">&nbsp;&nbsp;&nbsp;&copy;2019 Nobel Coaching</p>
+        <h1 id = "countdown"></h1>
+
+    </div>
+    <h1>Your Score: <p id="yourScore">0</p></h1>
+    <img id ="photo" src="before.png"> 
+    
+    <h1>Your Opponent's Score: <p id="oppScore">0</p></h1>
+    </div>
+        <form id="cheatorcoop" style="display:inline">
+        <button id="cheat">Cheat</button>
+
+        <!-- gotta find a better way to do this -->
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+        <button id="coop">Cooperate</button>
+    
+    
+        </form>
+    
+    </div>    
 </html>
