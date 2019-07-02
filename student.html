@@ -2,7 +2,7 @@
 <head>
     <title>Trust Game</title>
     <style>
-        #enterNickname,#ready{
+        #enterNickname,#ready,#waiting{
             display:none;
         }
         
@@ -97,6 +97,7 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 
     <script>
+        var rounds =3;
         var play=0;
         var oppScore= 0;
         var nick = "";
@@ -145,6 +146,8 @@
           e.preventDefault(); // prevents page reloading
           socket.emit('nickname', $("#studentNick").val() + " " + roomNum);
           document.getElementById("enterNickname").innerHTML = "";  
+            document.getElementById("waiting").style.display = "block";  
+  
           return false;
         });
          
@@ -155,7 +158,7 @@
             }
             document.getElementById("cheat").style.display = "inline-block";
             document.getElementById("coop").style.display = "inline-block";
-            
+            document.getElementById("waiting").style.display = 'none';
             document.getElementById("student").style.display = 'none';
             document.getElementById("enterNickname").style.display = 'none';
             document.getElementById("ready").style.display = 'block';
@@ -170,8 +173,23 @@
                   
                 socket.emit('updateBoard',"play " + roomNum);
                 clearInterval(downloadTimer);
+                  
+                if(rounds==1){
+                    document.getElementById("roundsleft").innerHTML = rounds + " round Left"
+                }else{
+                document.getElementById("roundsleft").innerHTML = rounds + " rounds Left"
+                }
+                  
+                
                 document.getElementById("countdown").innerHTML = "Round Done"
+                  
                 socket.emit('updateBoard',"reset " + roomNum);
+                  
+                if(rounds==0){
+                    document.getElementById("countdown").innerHTML = "Game over!";
+                    return false;
+                }  
+                rounds--;  
                 socket.emit('readyToPlay',"restart " +roomNum + " " + nick);
               }
             }, 1000);
@@ -244,7 +262,7 @@
             coopOpp = false;
             document.getElementById("yourScore").innerHTML="<p>"+play+"</p>";
             document.getElementById("oppScore").innerHTML="<p>"+oppScore+"</p>";
-
+            socket.emit("score",nick+ " " + play + " "+roomNum);    
             }
             
             
@@ -270,7 +288,7 @@
 
         <button id="nickname" onclick="submitNickname()">Enter Nickname</button>
     </div>
-    
+    <div id="waiting"><h1>Waiting for teacher to start game</h1></div>
     
 
     <div id="ready">
@@ -283,7 +301,7 @@
         <img id ="logo" align="left" src="nobel.jpg"><br><br>
         <p id="copyright" align="left" style="font-family:courier; font-size:50%;">&nbsp;&nbsp;&nbsp;&copy;2019 Nobel Coaching</p>
         <h1 id = "countdown"></h1>
-
+        <h1 id = "roundsleft"></h1>    
     </div>
     <h1>Your Score: <p id="yourScore">0</p></h1>
     <img id ="photo" src="before.png"> 

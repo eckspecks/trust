@@ -13,6 +13,7 @@ var moves = [];
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
+
 app.get('/teacher.html', function(req, res){
   res.sendFile(__dirname + '/teacher.html');
 });
@@ -47,7 +48,7 @@ io.on('connection', function(socket){
   //gets code from the player, compares it with code from teacher    
   socket.on('code', function(playersCode){
       
-    if(array.includes(playersCode)){
+    if(array.includes(playersCode) && playersCode!==""){
         
         //gets the room number the player is in based on index of the code player inputted
         var roomNumber = array.indexOf(playersCode);
@@ -88,8 +89,13 @@ io.on('connection', function(socket){
      }else{
         //sends the nickname of each player in the teacher's room to the teacher
         io.to(roomNumber).emit('readyToPlay',"ready");
+        
+        for (var i=array.length-1; i>=0; i--) {
+            if (array[i] === gameCode.split(" ")[1]) {
+               array[1]= "";
+            }
+        }
      }     
-
  
 });    
           
@@ -108,13 +114,17 @@ socket.on('updateBoard',function(update){
         moves[roomNum] = new Array(0);    
     }else{
         
-    for(var i =0;i<moves[roomNum].length;i++){
-        io.to(roomNum).emit('updateBoard',moves[roomNum][i]);
-    }
+        for(var i =0;i<moves[roomNum].length;i++){
+            io.to(roomNum).emit('updateBoard',moves[roomNum][i]);
+        }
         
     }
 })
-    
+socket.on('score',function(score){  
+  console.log("Score: " + score);
+  var roomNum = score.split(" ")[2];
+  io.to(roomNum).emit('score',score.split(" ")[0]+ " " + score.split(" ")[1]);
+} );
     
 
 });
