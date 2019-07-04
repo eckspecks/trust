@@ -70,6 +70,7 @@
     <script>
         var scores=[];
         var users=0;
+        var players=[];
      $(function () {
          
         var socket = io();
@@ -88,6 +89,7 @@
            $('#names').append($('<h1>').text(nick));
            users++;
            scores.push(nick+" "+"'s Score: 0");
+           players.push(nick);
         });
          
         $("#playGame").click(function(e){
@@ -98,13 +100,14 @@
             return false;
           }
              
-            
           e.preventDefault(); // prevents page reloading
           socket.emit('readyToPlay',"play " + teachersCode);
+          socket.emit('numberOfUsers',players +" " +teachersCode);
           play();
           updateScores();
           return false;
         }); 
+         
         socket.on('score',function(score){   
             //nickname then score
             var nick = score.split(" ")[0];

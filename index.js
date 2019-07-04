@@ -100,6 +100,7 @@ io.on('connection', function(socket){
 });    
           
 socket.on('move',function(theMove){
+    console.log("move: " +theMove);
     var roomNum = theMove.split(" ")[1];
     moves[roomNum].push(theMove);
 }); 
@@ -119,12 +120,18 @@ socket.on('updateBoard',function(update){
         }
         
     }
-})
+});
+socket.on('numberOfUsers',function(users){
+  var roomNumber = array.indexOf(users.split(" ")[1]);
+  io.to(roomNumber).emit('numberOfUsers',users.split(" ")[0]);
+ console.log(users);
+});
+ 
 socket.on('score',function(score){  
   console.log("Score: " + score);
   var roomNum = score.split(" ")[2];
   io.to(roomNum).emit('score',score.split(" ")[0]+ " " + score.split(" ")[1]);
-} );
+});
     
 
 });
