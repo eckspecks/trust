@@ -92,7 +92,7 @@ io.on('connection', function(socket){
         
         for (var i=array.length-1; i>=0; i--) {
             if (array[i] === gameCode.split(" ")[1]) {
-               array[1]= "";
+               array[i]= "";
             }
         }
      }     
@@ -124,14 +124,20 @@ socket.on('updateBoard',function(update){
 socket.on('numberOfUsers',function(users){
   var roomNumber = array.indexOf(users.split(" ")[1]);
   io.to(roomNumber).emit('numberOfUsers',users.split(" ")[0]);
- console.log(users);
+  console.log("Users: " + users);
 });
  
 socket.on('score',function(score){  
   console.log("Score: " + score);
   var roomNum = score.split(" ")[2];
-  io.to(roomNum).emit('score',score.split(" ")[0]+ " " + score.split(" ")[1]);
+  io.to(roomNum).emit('score',score.split(" ")[0]+ " " + score.split(" ")[1] + " " + score.split(" ")[3]);
 });
+  socket.on('chat message', function(msg){
+    var roomNum = msg[msg.length - 1];
+    msg = msg.substring(0, msg.length - 1);
+
+    io.to(roomNum).emit('chat message', msg);
+  });  
     
 
 });

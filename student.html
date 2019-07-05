@@ -3,8 +3,9 @@
     <title>Trust Game</title>
     <style>
         #enterNickname,#ready0,#waiting,#ready1,#ready2,#ready3,#ready4,#ready5,#ready6,#ready7,#ready8,#ready9{
-            display:none;
+            display:none;            
         }
+        
         
         h1{
             font-family: 'Poppins', sans-serif;
@@ -27,10 +28,7 @@
           font-size: 26px;
           cursor: pointer;
         }
-        #online h1{
-            display:inline-block;
-            font-family: 'Catamaran',sans-serif;
-        }
+       
         #student input,#enterNickname input{
             height:70px;
             width:300px;
@@ -56,15 +54,14 @@
         }
         html{
             text-align: center;
-            
+           
         }
-        h1,h3{
+        h1{
             display:inline-block;
             font-family: 'Catamaran',sans-serif;
+            font-size:30px;
         }
-        h3{
-            padding-right:185px; 
-        }
+       
         #info{
             padding-right:175px;
             font-family: 'Catamaran',sans-serif;
@@ -72,6 +69,7 @@
             font-size:25px;
         }
         #ready0 button,#ready1 button,#ready2 button,#ready3 button,#ready4 button,#ready5 button,#ready6 button,#ready7 button,#ready8 button,#ready9 button{
+            
             width:142px;
             height:56px;
             font-family: 'Poppins', sans-serif;
@@ -84,6 +82,15 @@
             font-size: 26px;
             cursor: pointer;
         }
+        form { padding: 1px; position: fixed; bottom: 15%; width: 30%;}
+        form input { background: #d3d3d3; border: 0; padding: 10px; width: 60%; margin-right: .5%; }
+        form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+        #messages { list-style-type: none; margin: 4.71%; padding: 0; position: fixed; bottom: 17%; width: 20.79%; text-align:left}
+        #messages li { padding: 5px 10px; }
+        #messages li:nth-child(odd) { background: #eee; }
+        #messages { margin-bottom: 40px }
+       
+       
     </style>
 
     
@@ -149,7 +156,7 @@
           e.preventDefault(); // prevents page reloading
           socket.emit('nickname', $("#studentNick").val() + " " + roomNum);
           document.getElementById("enterNickname").innerHTML = "";  
-            document.getElementById("waiting").style.display = "block";  
+          document.getElementById("waiting").style.display = "block";  
   
           return false;
         });
@@ -159,20 +166,23 @@
             if(isCodeSuccessful.split(" ")[0]==="restart" && isCodeSuccessful.split(" ")[1]!== nick){
                 return false;
             }
+            
             for(var i =0;i<opponents.length;i++){
                 document.getElementById("cheat"+i).style.display = "inline-block";
                 document.getElementById("coop"+i).style.display = "inline-block";
                 document.getElementById("ready"+i).style.display = 'block';
+                document.getElementById("chatbox"+i).style.display = 'block';
+
             }
-           
             document.getElementById("waiting").style.display = 'none';
             document.getElementById("student").style.display = 'none';
             document.getElementById("enterNickname").style.display = 'none';
-            
+            document.getElementById("roundsleft0").innerHTML = rounds + " rounds Left"
+
             
             //timer goes 30 seconds?
             
-            timeleft = 10;
+            timeleft = 15;
             var downloadTimer = setInterval(function(){
               document.getElementById("countdown0").innerHTML = timeleft + " seconds remaining";
               timeleft -= 1;
@@ -281,7 +291,7 @@
             coopOpp[oppNum] = false; 
             document.getElementById("yourScore"+oppNum).innerHTML="<p>"+play[oppNum]+"</p>";
             document.getElementById("oppScore"+oppNum).innerHTML="<p>"+oppScore[oppNum]+"</p>";
-            socket.emit("score",nick+ " " + play[oppNum] + " "+roomNum);    
+            socket.emit("score",nick+ " " + play[oppNum] + " "+roomNum + " " +opponents[oppNum]);    
             }
         });
          
@@ -309,10 +319,16 @@
                 document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
             }
             
-            
-            
-            
         }); 
+          $("#sendmsg").click(function(e){
+          socket.emit('chat message', nick + ": " + $('#m').val() + roomNum);
+          $('#m').val('');
+          return false;
+        });
+        socket.on('chat message', function(msg){
+          $('#messages').append($('<li>').text(msg));
+          window.scrollTo(0, document.body.scrollHeight);
+        });
       
      });      
     
@@ -346,17 +362,19 @@
         <div id ="info">
         <img id ="logo" align="left" src="nobel.jpg"><br><br>
         <p id="copyright" align="left" style="font-family:courier; font-size:50%;">&nbsp;&nbsp;&nbsp;&copy;2019 Nobel Coaching</p>
-        <h1 id = "countdown0"></h1>
-        <h1 id = "roundsleft0"></h1>    
+        <h1 id = "countdown0"></h1><br>
+        <h1 id = "roundsleft0"></h1><br>
+        <h1 id="opp0"></h1>
+    
     </div>
     <h1>Your Score: <p id="yourScore0">0</p></h1>
     <img id ="photo0" src="before.png"> 
     
     <h1>Your Opponent's Score: <p id="oppScore0">0</p></h1>
-    <h1 id="opp0"></h1>
 
     </div>
-        <form id="cheatorcoop0" style="display:inline">
+        <br>
+        <form id="cheatorcoop0" style="display:inline-block">
         <button id="cheat0" class="cheatButton">Cheat</button>
 
         <!-- gotta find a better way to do this -->
@@ -365,7 +383,21 @@
         <button id="coop0" class="coopButton">Cooperate</button>
     
         </form>
+        <br>
+        <div id="chatbox0" style="display:inline-block">
+        <body>
+            <ul id="messages"></ul>
+            <form action="">
+            <input id="m" autocomplete="off"/><button id="sendmsg">Send</button>
+            </form>
+        </body>
+    </div>
     </div>  
+    
+    
+    
+    
+    
     <div id="ready1" class="theGame">
     <div id="oneline1">
     <h1>Your Score: <p id="yourScore1">0</p></h1>
@@ -426,7 +458,7 @@
         </form>
     </div>  
      
-    
+     
     
     
     

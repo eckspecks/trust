@@ -56,9 +56,8 @@
             
             var line = "";
             for(var i =0;i<scores.length;i++){
-                line+=scores[i]+" ";
+                line+=scores[i]+" <br>";
             }
-            
             document.getElementById("scores").innerHTML = line;
         }
         
@@ -88,12 +87,24 @@
            //adds the names that the server sends back to the list of connected players
            $('#names').append($('<h1>').text(nick));
            users++;
-           scores.push(nick+" "+"'s Score: 0");
+           
            players.push(nick);
+           
+            
         });
          
         $("#playGame").click(function(e){
           //sends the generated code to server
+            
+            
+          for(var i =0;i<players.length;i++){
+              for(var j = 0; j<players.length;j++){
+                  if(players[i]!==players[j]){
+                      scores.push(players[i] +" score against "+ players[j] + " : 0");
+                  }
+              }
+          }    
+            
           if(users<2){
             document.getElementById("error").style.display="block";   
             document.getElementById("error").innerHTML="Must have more than 1 player";
@@ -101,22 +112,25 @@
           }
              
           e.preventDefault(); // prevents page reloading
-          socket.emit('readyToPlay',"play " + teachersCode);
           socket.emit('numberOfUsers',players +" " +teachersCode);
+          socket.emit('readyToPlay',"play " + teachersCode);
           play();
           updateScores();
           return false;
         }); 
          
-        socket.on('score',function(score){   
-            //nickname then score
-            var nick = score.split(" ")[0];
-            var score = score.split(" ")[1];
+        socket.on('score',function(oppScore){   
+            
+            //nickname then score then opponent
+            var nick = oppScore.split(" ")[0];
+            var score = oppScore.split(" ")[1];
+            var opponent = oppScore.split(" ")[2];
             //var line = "";
+         
             for(var i =0;i<scores.length;i++){
-
-                if(scores[i].substring(" ")[0]===nick){
-                    scores[i]=nick+"'s score: "+ score;
+        
+                if(scores[i].split(" ")[0]===nick && scores[i].split(" ")[3]===opponent){
+                    scores[i]=nick+" score against "+ opponent + " : " + score;
                     updateScores();
                 }
             }
