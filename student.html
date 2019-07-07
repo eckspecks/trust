@@ -2,19 +2,13 @@
 <head>
     <title>Trust Game</title>
     <style>
-        #enterNickname,#ready0,#waiting,#ready1,#ready2,#ready3,#ready4,#ready5,#ready6,#ready7,#ready8,#ready9{
+         #enterNickname,#ready0,#waiting,#ready1,#ready2,#ready3,#ready4,#ready5,#ready6,#ready7,#ready8,#ready9{
             display:none;            
-        }
-        
-        
-        h1{
+         }
+         h1{
             font-family: 'Poppins', sans-serif;
-        }
-        body{
-            text-align: center;
-        }
-       
-        #student button,#enterNickname button{
+         }
+         button{
           font-family: 'Poppins', sans-serif;
           height:100px;
           width: 300px;
@@ -28,22 +22,15 @@
           font-size: 26px;
           cursor: pointer;
         }
-       
+        .game{
+            padding-left:169px;
+        }
         #student input,#enterNickname input{
             height:70px;
             width:300px;
             font-size: 26px;
             margin: 100px;
             font-family: 'Poppins', sans-serif;
-        }
-        h3{
-            padding-right:185px; 
-        }
-        #info{
-            padding-right:175px;
-            font-family: 'Catamaran',sans-serif;
-            font-weight: bold;
-            font-size:25px;
         }
         img{
             vertical-align: top;
@@ -68,28 +55,8 @@
             font-weight: bold;
             font-size:25px;
         }
-        #ready0 button,#ready1 button,#ready2 button,#ready3 button,#ready4 button,#ready5 button,#ready6 button,#ready7 button,#ready8 button,#ready9 button{
-            
-            width:142px;
-            height:56px;
-            font-family: 'Poppins', sans-serif;
-            background-color: #4CAF50; 
-            border: none;
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 26px;
-            cursor: pointer;
-        }
-        form { padding: 1px; position: fixed; bottom: 15%; width: 30%;}
-        form input { background: #d3d3d3; border: 0; padding: 10px; width: 60%; margin-right: .5%; }
-        form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-        #messages { list-style-type: none; margin: 4.71%; padding: 0; position: fixed; bottom: 17%; width: 20.79%; text-align:left}
-        #messages li { padding: 5px 10px; }
-        #messages li:nth-child(odd) { background: #eee; }
-        #messages { margin-bottom: 40px }
-       
+        
+      
        
     </style>
 
@@ -153,16 +120,27 @@
             }
             
           //sends the roomNum and nickname to the server   
-          e.preventDefault(); // prevents page reloading
-          socket.emit('nickname', $("#studentNick").val() + " " + roomNum);
-          document.getElementById("enterNickname").innerHTML = "";  
-          document.getElementById("waiting").style.display = "block";  
+           e.preventDefault(); // prevents page reloading
+           socket.emit('nickname', $("#studentNick").val() + " " + roomNum);
   
           return false;
         });
          
-        socket.on('readyToPlay',function(isCodeSuccessful){
+        socket.on('nicknameError',function(error){
             
+            if(error==="success"){
+              document.getElementById("enterNickname").innerHTML = "";  
+              document.getElementById("waiting").style.display = "block";  
+              return false;
+            }
+            
+           var e = document.getElementById("nickError");
+           e.style.display = 'block';
+           e.innerHTML = "Nickname has already been chosen.";       
+        });
+         
+        socket.on('readyToPlay',function(isCodeSuccessful){
+
             if(isCodeSuccessful.split(" ")[0]==="restart" && isCodeSuccessful.split(" ")[1]!== nick){
                 return false;
             }
@@ -170,15 +148,13 @@
             for(var i =0;i<opponents.length;i++){
                 document.getElementById("cheat"+i).style.display = "inline-block";
                 document.getElementById("coop"+i).style.display = "inline-block";
-                document.getElementById("ready"+i).style.display = 'block';
-                document.getElementById("chatbox"+i).style.display = 'block';
-
             }
+           
             document.getElementById("waiting").style.display = 'none';
             document.getElementById("student").style.display = 'none';
             document.getElementById("enterNickname").style.display = 'none';
-            document.getElementById("roundsleft0").innerHTML = rounds + " rounds Left"
-
+            document.getElementById("roundsleft0").innerHTML = rounds + " rounds left";
+            document.getElementById("chatbox").style.display = 'block';
             
             //timer goes 30 seconds?
             
@@ -243,10 +219,7 @@
             //second is roomNum
             //third is nick
             //fourth is opponent
-            
-//            alert(opponents);
-//            alert(oppNum);
-            
+
             var cheatOrCoop = oppMove.split(" ")[0];
             var nickName = oppMove.split(" ")[2];
             
@@ -254,7 +227,6 @@
             if(nickName !== nick && oppMove.split(" ")[3] !== nick){
                 return 0;
             }
-            
             
             
             if(nickName!==nick){
@@ -335,38 +307,38 @@
         
     </script>
     
-    
+    <img id ="logo" align="left" src="nobel.jpg"><br><br>
+        <p id="copyright" align="left" style="font-family:courier; font-size:50%;">&nbsp;&nbsp;&nbsp;&copy;2019 Nobel Coaching</p>
     <div id="student">
-        <input type= "text" id="studentRoomCode">
+        <input type= "text" id="studentRoomCode" style="margin-left: -90">
         <br>
         <h1 id="codeError"></h1>
         <button id="submitRoomCode">Submit Room Code</button>
     </div>
 
     <div id="enterNickname">
-        <input type= "text" id="studentNick">
+        <input type= "text" id="studentNick" style="margin-left: -90">
         <br>
         <h1 id="nickError"></h1>
 
         <button id="nickname" onclick="submitNickname()">Enter Nickname</button>
     </div>
     <div id="waiting"><h1>Waiting for teacher to start game</h1></div>
+      <div id ="info">
+        
+        <h1 id = "countdown0"></h1><br>
+        <h1 id = "roundsleft0" style="padding-left:175px"></h1><br>
     
+    </div>
+    <h1 id="opp0"></h1>
 
     <div id="ready0" class="theGame">
     
     
     
-    <div id="oneline0">
+    <div id="oneline0" style="padding-left: 160px;">
         
-        <div id ="info">
-        <img id ="logo" align="left" src="nobel.jpg"><br><br>
-        <p id="copyright" align="left" style="font-family:courier; font-size:50%;">&nbsp;&nbsp;&nbsp;&copy;2019 Nobel Coaching</p>
-        <h1 id = "countdown0"></h1><br>
-        <h1 id = "roundsleft0"></h1><br>
-        <h1 id="opp0"></h1>
-    
-    </div>
+        
     <h1>Your Score: <p id="yourScore0">0</p></h1>
     <img id ="photo0" src="before.png"> 
     
@@ -374,7 +346,7 @@
 
     </div>
         <br>
-        <form id="cheatorcoop0" style="display:inline-block">
+        <form id="cheatorcoop0" style="display:block">
         <button id="cheat0" class="cheatButton">Cheat</button>
 
         <!-- gotta find a better way to do this -->
@@ -384,7 +356,10 @@
     
         </form>
         <br>
-        <div id="chatbox0" style="display:inline-block">
+    
+    </div>  
+    
+    <div id="chatbox" style="display:none">
         <body>
             <ul id="messages"></ul>
             <form action="">
@@ -392,32 +367,31 @@
             </form>
         </body>
     </div>
-    </div>  
     
     
-    
-    
-    
-    <div id="ready1" class="theGame">
-    <div id="oneline1">
+    <h1 id="opp1"></h1>
+    <div id="ready1" >
+    <div id="oneline1" class="game">
+
     <h1>Your Score: <p id="yourScore1">0</p></h1>
     <img id ="photo1" src="before.png"> 
     <h1>Your Opponent's Score: <p id="oppScore1">0</p></h1>
-    <h1 id="opp1"></h1>
+   
     </div>
-        <form id="cheatorcoop1" style="display:inline">
+        <form id="cheatorcoop1" style="display:block">
         <button id="cheat1" class="cheatButton">Cheat</button>
         <!-- gotta find a better way to do this -->
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <button id="coop1" class="coopButton">Cooperate</button>
         </form>
     </div>
-    <div id="ready2" class="theGame">
-    <div id="oneline2">
+    <h1 id="opp2"></h1>
+
+    <div id="ready2" >
+    <div id="oneline2" class="game">
     <h1>Your Score: <p id="yourScore2">0</p></h1>
     <img id ="photo2" src="before.png"> 
     <h1>Your Opponent's Score: <p id="oppScore2">0</p></h1>
-    <h1 id="opp2"></h1>
     
     </div>
         <form id="cheatorcoop2" style="display:inline">
@@ -427,12 +401,13 @@
         <button id="coop2" class="coopButton">Cooperate</button>
         </form>
     </div>
-    <div id="ready3" class="theGame">
-    <div id="oneline3">
+    <h1 id="opp3"></h1>
+
+    <div id="ready3" >
+    <div id="oneline3" class="game">
     <h1>Your Score: <p id="yourScore3">0</p></h1>
     <img id ="photo3" src="before.png"> 
     <h1>Your Opponent's Score: <p id="oppScore3">0</p></h1>
-    <h1 id="opp3"></h1>
     
     </div>
         <form id="cheatorcoop3" style="display:inline">
@@ -442,12 +417,13 @@
         <button id="coop3" class="coopButton">Cooperate</button>
         </form>
     </div>  
-     <div id="ready4" class="theGame">
-    <div id="oneline4">
+    <h1 id="opp4"></h1>
+
+     <div id="ready4">
+    <div id="oneline4" class="game">
     <h1>Your Score: <p id="yourScore4">0</p></h1>
     <img id ="photo4" src="before.png"> 
     <h1>Your Opponent's Score: <p id="oppScore4">0</p></h1>
-    <h1 id="opp4"></h1>
     
     </div>
         <form id="cheatorcoop4" style="display:inline">
@@ -456,15 +432,5 @@
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <button id="coop4" class="coopButton">Cooperate</button>
         </form>
-    </div>  
-     
-     
-    
-    
-    
-    
-    
-    
-    
-    
+    </div> 
 </html>

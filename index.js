@@ -55,23 +55,31 @@ io.on('connection', function(socket){
         socket.join(roomNumber);
         //if code from player is found in the set, return success
         socket.emit('code',"success " + roomNumber);
-        console.log("success! Room number:" + roomNumber + " " + playersCode);
+        console.log("success! Room number:" + roomNumber + " Players Code:" + playersCode);
         
-    }else{
-        
+    }else{  
         //if not, return failure
         socket.emit('code',"failure");
-        
     }
+      
   });
     
  socket.on('nickname',function(theNickname){
      
-     
      //sends the nickname of each player in the teacher's room to the teacher
      var nick = theNickname.slice(0,-2);
+     
+     if(players[theNickname[theNickname.length-1]].includes(nick)){
+        console.log("Error Nickname " + nick + " is already registered");
+        io.to(theNickname[theNickname.length-1]).emit('nicknameError',"error");
+        return false;
+     }
+     
+     console.log("Success! " + nick +" is now registered in room" + theNickname[theNickname.length -1]);
      players[theNickname[theNickname.length-1]].push(nick);
      io.to(theNickname[theNickname.length -1]).emit('nickname',nick);
+     io.to(theNickname[theNickname.length -1]).emit('nicknameError',"success");
+
 });
     
     
@@ -85,10 +93,10 @@ io.on('connection', function(socket){
      if(gameCode.split(" ")[0]==="restart"){
         roomNumber = gameCode.split(" ")[1];
         io.to(roomNumber).emit('readyToPlay',"restart " + nick);
- 
+        
      }else{
         //sends the nickname of each player in the teacher's room to the teacher
-        io.to(roomNumber).emit('readyToPlay',"ready");
+        io.to(roomNumber).emit('readyToPlay',"ready a");
         
         for (var i=array.length-1; i>=0; i--) {
             if (array[i] === gameCode.split(" ")[1]) {
@@ -103,6 +111,7 @@ socket.on('move',function(theMove){
     console.log("move: " +theMove);
     var roomNum = theMove.split(" ")[1];
     moves[roomNum].push(theMove);
+
 }); 
     
     
