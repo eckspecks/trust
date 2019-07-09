@@ -3,7 +3,7 @@
    <title>Trust Game</title>
    <style>
         
-        #yourRoomCode,#names,#playGame{
+        #yourRoomCode,#names,#playGame,#players{
            display:none;
         }
         h1,li{
@@ -27,6 +27,12 @@
           margin: 4px 10px;
           cursor: pointer;
         }
+       #names button{
+          height:50;
+          width:102px;
+          font-size:20px;
+          background-color: #800000;
+       }
        li{
            padding:0;
            list-style-type:none;
@@ -39,7 +45,7 @@
        }
     </style>
     <script>
-        
+       
         function gen(){
           //hide and show new buttons
           document.getElementById("names").style.display="block";
@@ -47,7 +53,8 @@
           document.getElementById("code").innerHTML = Math.random().toString(36).substr(2, 6);
           document.getElementById("send").style.display = "none";
           document.getElementById("playGame").style.display="block";    
-     
+          document.getElementById("players").style.display="block";    
+
         }
         function play(){
             document.getElementById("hideAfterPlayGame").style.display="none";
@@ -60,7 +67,7 @@
             }
             document.getElementById("scores").innerHTML = line;
         }
-        
+    
         
     </script>
 </head>
@@ -85,11 +92,37 @@
          
         socket.on('nickname', function(nick){
            //adds the names that the server sends back to the list of connected players
-           $('#names').append($('<h1>').text(nick));
+           var ul = document.getElementById("names");
+           var li = document.createElement("li");
+           li.appendChild(document.createTextNode(nick));
+           var button = document.createElement("button");
+           button.setAttribute('class',"kicked");
+           button.innerHTML = " Kick";
+           button.setAttribute("id",users);
+           li.appendChild(button);
+           li.setAttribute("id",users);
+           ul.appendChild(li);
            users++;
            
            players.push(nick);
         });
+        $(document).on('click', "button.kicked", function() {
+           var theId = $(this).attr('id');
+           var ulElem = document.getElementById("names");
+           var text =  ulElem.childNodes[theId].textContent; 
+           socket.emit('kicked',teachersCode + ","+text);
+    
+           var lastIndex = text.lastIndexOf(" ");
+           text = text.substr(0, lastIndex);
+            
+           var index = players.indexOf(players[theId]);
+           if(index>-1){
+             players.splice(index,1);
+           } 
+            
+           ulElem.removeChild(ulElem.childNodes[theId]);
+           users--;
+       });
          
         $("#playGame").click(function(e){
           //sends the generated code to server
@@ -98,7 +131,7 @@
           for(var i =0;i<players.length;i++){
               for(var j = 0; j<players.length;j++){
                   if(players[i]!==players[j]){
-                      scores.push(players[i] +" score against "+ players[j] + " : 0");
+                      scores.push(players[i] +" vs. "+ players[j] + ": 0");
                   }
               }
           }    
@@ -111,24 +144,22 @@
              
           e.preventDefault(); // prevents page reloading
           socket.emit('numberOfUsers',players +" " +teachersCode);
-          socket.emit('readyToPlay',"play " + teachersCode);
+          socket.emit('readyToPlay',"play," + teachersCode);
           play();
           updateScores();
           return false;
         }); 
          
         socket.on('score',function(oppScore){   
-            
             //nickname then score then opponent
-            var nick = oppScore.split(" ")[0];
-            var score = oppScore.split(" ")[1];
-            var opponent = oppScore.split(" ")[2];
+            var nick = oppScore.split(",")[0];
+            var score = oppScore.split(",")[1];
+            var opponent = oppScore.split(",")[2];
             //var line = "";
          
             for(var i =0;i<scores.length;i++){
-        
-                if(scores[i].split(" ")[0]===nick && scores[i].split(" ")[3]===opponent){
-                    scores[i]=nick+" score against "+ opponent + " : " + score;
+                if(scores[i].split(" vs. ")[0]===nick && scores[i].split(" vs. ")[1].split(":")[0]===opponent){
+                    scores[i]=nick+" vs. "+ opponent + ":" + score;
                     updateScores();
                 }
             }
@@ -143,7 +174,8 @@
         <h1 id="yourRoomCode">Your Room Code</h1>
         <h1 id="code"></h1>
         <h1 id="error"></h1>
-        <ul id="names"><h1>Players Connected:</h1></ul>
+        <h1 id="players">Players Connected:</h1>    
+        <ul id="names"></ul>
         <br>
     
         <div id="playGameButton"> 
