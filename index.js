@@ -10,6 +10,10 @@ var roomnum = 0;
 var players = [];
 var moves = [];
 
+app.get('/index.html', function(req, res){
+  res.sendFile(__dirname + '/index.html');
+});
+
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
@@ -167,5 +171,8 @@ socket.on('kicked',function(kick){
 
   io.to(roomNumber).emit('youGotKicked', kick.split(",")[1]);
 });
+socket.on('restart',function(e){
+    
+}
 
 });

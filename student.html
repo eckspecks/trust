@@ -8,7 +8,7 @@
          h1{
             font-family: 'Poppins', sans-serif;
          }
-         button{
+         button, #waiting a{
           font-family: 'Poppins', sans-serif;
           height:100px;
           width: 300px;
@@ -22,6 +22,11 @@
           font-size: 26px;
           cursor: pointer;
         }
+        #waiting a{
+            margin-top: 38px;
+            height:30px;
+            width:150px;
+        }
         .game{
             padding-left:169px;
         }
@@ -31,6 +36,9 @@
             font-size: 26px;
             margin: 100px;
             font-family: 'Poppins', sans-serif;
+        }
+        waiting{
+            margin-right:186px;
         }
         img{
             vertical-align: top;
@@ -81,7 +89,7 @@
 
     <script>
         var opponents =[];
-        var rounds =3;
+        var rounds =10;
         var play=[];
         var oppScore= [];
         var nick = "";
@@ -189,7 +197,7 @@
               timeleft -= 1;
                 
                 
-              if(timeleft <= 0){
+              if(timeleft <= -1){
                   
                 socket.emit('updateBoard',"play " + roomNum);
                 clearInterval(downloadTimer);
@@ -207,6 +215,7 @@
                   
                 if(rounds==0){
                     document.getElementById("countdown0").innerHTML = "Game over!";
+                    socket.emit('restart',roomNum);
                     return false;
                 }  
                 rounds--;  
@@ -334,7 +343,7 @@
         });
          socket.on('youGotKicked', function(msg){
             if(msg===nick){
-              document.getElementById("waiting").innerHTML= "<h1>You got kicked by the teacher! :(</h1>";
+              document.getElementById("waiting").innerHTML= "<h1>You got kicked by the teacher! :(</h1><br>    <a href ='/student.html'>Go Back</a>";
               kicked = true;
             }
         }); 
@@ -342,8 +351,8 @@
     
         
     </script>
-    
-    <img id ="logo" align="left" src="nobel.jpg"><br><br>
+    <a href="index.html">
+        <img id ="logo" align="left" src="nobel.jpg"></a><br><br>
         <p id="copyright" align="left" style="font-family:courier; font-size:50%;">&nbsp;&nbsp;&nbsp;&copy;2019 Nobel Coaching</p>
     <div id="student">
         <input type= "text" id="studentRoomCode" style="margin-left: -90">
