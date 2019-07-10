@@ -171,8 +171,9 @@ socket.on('kicked',function(kick){
 
   io.to(roomNumber).emit('youGotKicked', kick.split(",")[1]);
 });
-socket.on('restart',function(e){
-    
+socket.on('options',function(e){
+    var roomNum = array.indexOf(e.split(",")[2]);
+    io.to(roomNum).emit('opt',e.split(",")[0]+","+e.split(",")[1]);
 });
 
 });

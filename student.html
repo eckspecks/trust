@@ -98,7 +98,7 @@
         var cheatOpp = [];
         var coopOpp = [];
         var kicked=  false;
-        
+        var secs =0;
         
      $(function () {
          
@@ -191,7 +191,7 @@
             
             //timer goes 30 seconds?
             
-            timeleft = 15;
+            timeleft = secs;
             var downloadTimer = setInterval(function(){
               document.getElementById("countdown0").innerHTML = timeleft + " seconds remaining";
               timeleft -= 1;
@@ -347,6 +347,10 @@
               kicked = true;
             }
         }); 
+          socket.on('opt', function(msg){
+          rounds = msg.split(",")[0];
+          secs = msg.split(",")[1];
+        });
      });      
     
         
