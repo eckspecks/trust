@@ -12,19 +12,19 @@ var players = [];
 var moves = [];
 
 app.get('/index.ejs', function(req, res){
-  res.render(__dirname + '/index.ejs');
+  res.render(__dirname + 'index.ejs');
 });
 
 app.get('/', function(req, res){
-  res.render(__dirname + '/index.ejs');
+  res.render(__dirname + 'index.ejs');
 });
 
 app.get('/teacher.ejs', function(req, res){
-  res.render(__dirname + '/teacher.ejs');
+  res.render(__dirname + 'teacher.ejs');
 });
 
 app.get('/student.ejs', function(req, res){
-  res.render(__dirname + '/student.ejs');
+  res.render(__dirname + 'student.ejs');
 });
 
 
