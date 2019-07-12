@@ -1,0 +1,14 @@
+{
+  "builds": [
+    {
+      "src": "index.js",
+      "use": "@now/node",
+      "config": {
+        "includeFiles": [
+          "templates/**",
+          "views/**"
+        ]
+      }
+    }
+  ]
+}
