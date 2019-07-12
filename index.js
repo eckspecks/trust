@@ -3,7 +3,7 @@ const app = express();
 app.use(express.static('images'));
 app.set("view engine", "ejs");
 
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || 8000;
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 var array = [];
