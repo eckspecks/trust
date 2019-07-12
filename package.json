@@ -1,8 +1,12 @@
 {
-  "name": "socket-chat-example",
-  "version": "0.0.1",
-  "description": "my first socket.io app",
+  "name": "heroku-node",
+  "description": "Our sample Node to Heroku app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
+    "ejs": "^2.6.2",
     "express": "^4.15.2",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0"

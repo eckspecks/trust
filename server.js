@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 app.use(express.static('images'));
+app.set("view engine", "ejs");
 
 const port = 3000;
 var http = require('http').createServer(app);
@@ -10,23 +11,21 @@ var roomnum = 0;
 var players = [];
 var moves = [];
 
-app.get('/index.html', function(req, res){
-  res.sendFile(__dirname + '/index.html');
+app.get('/index.ejs', function(req, res){
+  res.render(__dirname + '/index.ejs');
 });
 
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
+  res.render(__dirname + '/index.ejs');
 });
 
-app.get('/teacher.html', function(req, res){
-  res.sendFile(__dirname + '/teacher.html');
+app.get('/teacher.ejs', function(req, res){
+  res.render(__dirname + '/teacher.ejs');
 });
-app.get('/student.html', function(req, res){
-  res.sendFile(__dirname + '/student.html');
+app.get('/student.ejs', function(req, res){
+  res.render(__dirname + '/student.ejs');
 });
-app.get('/game.html', function(req, res){
-  res.sendFile(__dirname + '/game.html');
-});
+
 
 http.listen(3000, function(){
   console.log('listening on *:3000');
@@ -104,8 +103,8 @@ io.on('connection', function(socket){
         
         for (var i=array.length-1; i>=0; i--) {
             if (array[i] === gameCode.split(",")[1]) {
-               array[i]= "";
-            }
+              array[i]+="~";
+           }
         }
      }     
  
@@ -175,5 +174,16 @@ socket.on('options',function(e){
     var roomNum = array.indexOf(e.split(",")[2]);
     io.to(roomNum).emit('opt',e.split(",")[0]+","+e.split(",")[1]);
 });
+socket.on('restart',function(e){
+    io.to(e).emit('gameDone',"gameDone");
+});
+socket.on('restartGame',function(e){
+    var roomNum = array.indexOf(e+"~");
+    moves[roomNum] = new Array(0);    
+    console.log("restartGame! " + e + " " + roomNum + " f " + array);
+    io.to(roomNum).emit('r',"reset");
+    io.to(roomNum).emit('readyToPlay',"ready a");
 
+});    
+    
 });
