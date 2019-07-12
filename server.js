@@ -3,7 +3,7 @@ const app = express();
 app.use(express.static('images'));
 app.set("view engine", "ejs");
 
-const port = process.env.PORT || 8080;
+var port = process.env.PORT || 8080;
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 var array = [];
@@ -22,12 +22,12 @@ app.get('/', function(req, res){
 app.get('/teacher.ejs', function(req, res){
   res.render(__dirname + '/teacher.ejs');
 });
+
 app.get('/student.ejs', function(req, res){
   res.render(__dirname + '/student.ejs');
 });
 
-
-http.listen(port, function(){
+app.listen(port, function(){
   console.log('listening on *:3000');
 });
 
