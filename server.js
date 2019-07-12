@@ -2,8 +2,9 @@ const express = require('express');
 const app = express();
 app.use(express.static('images'));
 app.set("view engine", "ejs");
+app.listen(process.env.PORT || 8080);
 
-const port = 3000;
+const port = process.env.PORT || 8080;
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 var array = [];
@@ -27,7 +28,7 @@ app.get('/student.ejs', function(req, res){
 });
 
 
-http.listen(3000, function(){
+http.listen(port, function(){
   console.log('listening on *:3000');
 });
 
