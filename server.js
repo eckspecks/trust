@@ -27,9 +27,6 @@ app.get('/student.ejs', function(req, res){
   res.render(__dirname + '/student.ejs');
 });
 
-app.listen(port, function(){
-  console.log('listening on *:3000');
-});
 
 
 io.on('connection', function(socket){
