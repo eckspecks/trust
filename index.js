@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 app.use(express.static('images'));
 app.set("view engine", "ejs");
+app.listen(process.env.PORT || 8080);
 
 const port = process.env.PORT || 8080;
 var http = require('http').createServer(app);
