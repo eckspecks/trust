@@ -3,7 +3,7 @@ const app = express();
 app.use(express.static('images'));
 app.set("view engine", "ejs");
 
-var port = process.env.PORT || 8000;
+const port = 3000;
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 var array = [];
@@ -12,21 +12,24 @@ var players = [];
 var moves = [];
 
 app.get('/index.ejs', function(req, res){
-  res.render(__dirname + 'index.ejs');
+  res.render(__dirname + '/index.ejs');
 });
 
 app.get('/', function(req, res){
-  res.render(__dirname + 'index.ejs');
+  res.render(__dirname + '/index.ejs');
 });
 
 app.get('/teacher.ejs', function(req, res){
-  res.render(__dirname + 'teacher.ejs');
+  res.render(__dirname + '/teacher.ejs');
 });
-
 app.get('/student.ejs', function(req, res){
-  res.render(__dirname + 'student.ejs');
+  res.render(__dirname + '/student.ejs');
 });
 
+
+http.listen(3000, function(){
+  console.log('listening on *:3000');
+});
 
 
 io.on('connection', function(socket){
