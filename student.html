@@ -1,5 +1,7 @@
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+
     <title>Trust Game</title>
     <style>
          #enterNickname,#ready0,#waiting,#ready1,#ready2,#ready3,#ready4,#ready5,#ready6,#ready7,#ready8,#ready9{
@@ -44,12 +46,29 @@
             vertical-align: top;
             display:inline;
         }
-        #oneline{
+        #oneline0{
             padding-left:180px;
         }
         html{
             text-align: center;
            
+        }
+        @media only screen and (max-width: 768px) {
+            
+            #roundsleft0,#roundsleft1,#roundsleft2,#roundsleft33,#roundsleft4,#roundsleft5,#roundsleft6,#roundsleft7
+            ,#roundsleft8,#roundsleft9{
+                padding-left:0px !important;
+            }
+            #oneline0,#oneline1,#oneline2,#oneline3,#oneline4,#oneline5,#oneline6,#oneline7,#oneline8,#oneline9{
+                padding-left:0px !important;
+            }
+            #info{
+                padding-right:0px !important;
+            }
+            #cheat0,#cheat1,#cheat2,#cheat3,#cheat4,#cheat5,#cheat6,#cheat7,#cheat8,#cheat9{
+                margin-bottom:20px;
+            }
+        
         }
         h1{
             display:inline-block;
@@ -264,7 +283,7 @@
             
         }); 
         socket.on('updateBoard',function(oppMove){
-            
+            //alert(oppMove);
             //first is cheat/coop
             //second is roomNum
             //third is nick
