@@ -85,7 +85,6 @@
         li{
             list-style-type:none;
             font-family: 'Catamaran',sans-serif;
-
         }
         #chatbox button{
             width:100px;
@@ -99,7 +98,49 @@
         }
     </style>
 
+    <script>
+    function swap(items, leftIndex, rightIndex){
+        var temp = items[leftIndex];
+        items[leftIndex] = items[rightIndex];
+        items[rightIndex] = temp;
+    }
+    function partition(items, left, right) {
+        var pivot   = items[Math.floor((right + left) / 2)].split(":")[1], //middle element
+            i       = left, //left pointer
+            j       = right; //right pointer
+        while (i <= j) {
+            while (items[i].split(":")[1] > pivot) {
+                i++;
+            }
+            while (items[j].split(":")[1] < pivot) {
+                j--;
+            }
+            if (i <= j) {
+                swap(items, i, j); //sawpping two elements
+                i++;
+                j--;
+            }
+        }
+        return i;
+    }
+
+    function quickSort(items, left, right) {
+        var index;
+        if (items.length > 1) {
+            index = partition(items, left, right); //index returned from partition
+            if (left < index - 1) { //more elements on the left side of the pivot
+                quickSort(items, left, index - 1);
+            }
+            if (index < right) { //more elements on the right side of the pivot
+                quickSort(items, index, right);
+            }
+        }
+        return items;
+    }
+    // first call to quick sort
     
+    
+    </script>
     
 </head>
     
@@ -120,6 +161,8 @@
         var secs =0;
         var permRounds = 10;
         var haveIPlayed = [];
+        var leadArray = [];
+        var totScore = 0;
      $(function () {
          
         var socket = io();
@@ -244,15 +287,25 @@
                 socket.emit('updateBoard',"reset " + roomNum);
                   
                 if(rounds==1){
-                    document.getElementById("countdown0").innerHTML = "Game over!";
+                     document.getElementById("countdown0").innerHTML = "Game over!";
                     socket.emit('restart',roomNum);
+                    
+
+                    for(var i =0; i<opponents.length;i++){
+                        document.getElementById("ready"+i).style.display = "none";
+                        document.getElementById("opp"+i).style.display = "none";
+
+                    }
+                    document.getElementById("roundsleft0").style.display = "none";
+                    document.getElementById("chatbox").style.display = "none";
+
+                    document.getElementById("leaderboard").style.display = "block";
                     return false;
                 }  
                 rounds--;  
                 socket.emit('readyToPlay',"restart," +roomNum + "," + nick);
               }
             }, 1000);
-
             
         });
          
@@ -278,7 +331,6 @@
             document.getElementById("coop"+id[id.length-1]).style.display = "none";
             coopOpp[opponents.indexOf(opp)] =true;
             haveIPlayed[opponents.indexOf(opp)] = true;
-
             return false;
             
         }); 
@@ -298,12 +350,11 @@
             
             if(nickName!==nick){
                 var oppNum = opponents.indexOf(nickName);
-
             if(cheatOpp[oppNum]){
-
                 if(cheatOrCoop==1){
                     //you cheated, opp cooperated
                         play[oppNum]+=3;
+                    totScore+=3;
                         oppScore[oppNum]-=1;
                         document.getElementById("photo"+oppNum).src="youcheat.png";
                 }else{
@@ -316,11 +367,13 @@
                 if(cheatOrCoop==1){
                     //both cooperated
                         play[oppNum]+=2;
+                    totScore+=2;
                         oppScore[oppNum]+=2;
                         document.getElementById("photo"+oppNum).src="bothcoop.png";
                 }else{
                     //you coop, opp cheated :(
                         play[oppNum]-=1;
+                    totScore-=1;
                         oppScore[oppNum]+=3;
                         document.getElementById("photo"+oppNum).src="theycheat.png";
                 }
@@ -330,7 +383,7 @@
             coopOpp[oppNum] = false; 
             document.getElementById("yourScore"+oppNum).innerHTML="<p>"+play[oppNum]+"</p>";
             document.getElementById("oppScore"+oppNum).innerHTML="<p>"+oppScore[oppNum]+"</p>";
-            socket.emit("score",nick+ "," + play[oppNum] + ","+roomNum + "," +opponents[oppNum]);    
+            socket.emit("score",nick+ "," + play[oppNum] + ","+roomNum + "," +opponents[oppNum] + "," +totScore);    
             }
         });
          
@@ -355,12 +408,13 @@
             cheatOpp = Array(opps).fill(false);
             coopOpp = Array(opps).fill(false);
             haveIPlayed = Array(opps).fill(false);
-
-            
+       
             for(var i =0; i<opponents.length;i++){
+               // alert(opponents[i]);
+                leadArray.push(opponents[i] + ":0");
                 document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
             }
-            
+            leadArray.push(nick + ":0");
         }); 
          
         $("#sendmsg").click(function(e){
@@ -398,6 +452,24 @@
         cheatOpp = Array(opps).fill(false);
         coopOpp = Array(opps).fill(false);
         rounds = permRounds;
+        });
+         socket.on('lead', function(e){
+           // alert(e);
+            var n = e.split(",")[0];
+            for(var i =0; i<=opponents.length;i++){
+                if(leadArray[i].split(":")[0]===n){
+                    leadArray[i]=n + ":" + e.split(",")[1];
+                }
+            }
+        
+            leadArray = quickSort(leadArray, 0, leadArray.length - 1);
+  
+            var scores = document.getElementById("leaderboard"); 
+            var line = "";
+            for(var i =0;i<leadArray.length;i++){
+                 line+=leadArray[i]+"<br>";
+            }
+            scores.innerHTML = line;
         });
      });      
     
@@ -610,4 +682,5 @@
         <button id="coop9" class="coopButton">Cooperate</button>
         </form>
     </div> 
+    <h1 id="leaderboard" style="display:none"></h1>
 </html>

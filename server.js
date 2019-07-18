@@ -32,7 +32,7 @@ var array = [];
 var roomnum = 0;
 var players = [];
 var moves = [];
-
+var scores = 0;
 io.on('connection', function(socket){
     
     console.log('a user connected');
@@ -146,8 +146,12 @@ socket.on('numberOfUsers',function(users){
 socket.on('score',function(score){  
   console.log("Score: " + score);
   var roomNum = score.split(",")[2];
-    
+  var totScore = score.split(",")[4];
   io.to(roomNum).emit('score',score.split(",")[0]+ "," + score.split(",")[1] + "," + score.split(",")[3]);
+    
+  console.log("totalscore : " + score.split(",")[0] + "  " +totScore);
+  io.to(roomNum).emit('lead',score.split(",")[0] + "," + totScore);  
+
 });
     
 socket.on('chat message', function(msg){
