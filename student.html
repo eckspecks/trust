@@ -55,10 +55,7 @@
         }
         @media only screen and (max-width: 768px) {
             
-            #roundsleft0,#roundsleft1,#roundsleft2,#roundsleft33,#roundsleft4,#roundsleft5,#roundsleft6,#roundsleft7
-            ,#roundsleft8,#roundsleft9{
-                padding-left:0px !important;
-            }
+   
             #oneline0,#oneline1,#oneline2,#oneline3,#oneline4,#oneline5,#oneline6,#oneline7,#oneline8,#oneline9{
                 padding-left:0px !important;
             }
@@ -163,6 +160,7 @@
         var haveIPlayed = [];
         var leadArray = [];
         var totScore = 0;
+        var anon = false;
      $(function () {
          
         var socket = io();
@@ -249,7 +247,6 @@
             document.getElementById("waiting").style.display = 'none';
             document.getElementById("student").style.display = 'none';
             document.getElementById("enterNickname").style.display = 'none';
-            document.getElementById("roundsleft0").innerHTML = rounds + " rounds left";
             document.getElementById("chatbox").style.display = 'block';
             
             //timer goes 30 seconds?
@@ -275,11 +272,7 @@
                 socket.emit('updateBoard',"play " + roomNum);
                 clearInterval(downloadTimer);
                   
-                if(rounds==1){
-                    document.getElementById("roundsleft0").innerHTML = rounds + " round Left"
-                }else{
-                document.getElementById("roundsleft0").innerHTML = rounds + " rounds Left"
-                }
+               
                   
                 
                 document.getElementById("countdown0").innerHTML = "Round Done"
@@ -296,7 +289,6 @@
                         document.getElementById("opp"+i).style.display = "none";
 
                     }
-                    document.getElementById("roundsleft0").style.display = "none";
                     document.getElementById("chatbox").style.display = "none";
 
                     document.getElementById("leaderboard").style.display = "block";
@@ -412,7 +404,9 @@
             for(var i =0; i<opponents.length;i++){
                // alert(opponents[i]);
                 leadArray.push(opponents[i] + ":0");
+                if(!anon){
                 document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
+                }
             }
             leadArray.push(nick + ":0");
         }); 
@@ -438,6 +432,10 @@
           permRounds = msg.split(",")[0];
           rounds = permRounds;
           secs = msg.split(",")[1];
+          if(msg.split(",")[2]==="true"){
+              anon = true;
+          }
+          
         });
         socket.on('r', function(msg){
             
@@ -496,7 +494,7 @@
       <div id ="info">
         
         <h1 id = "countdown0"></h1><br>
-        <h1 id = "roundsleft0" style="padding-left:175px"></h1><br>
+        <br>
     
     </div>
     <h1 id="opp0"></h1>
@@ -682,5 +680,6 @@
         <button id="coop9" class="coopButton">Cooperate</button>
         </form>
     </div> 
+    <h1 style="display:none">Leaderboard (total scores)</h1>
     <h1 id="leaderboard" style="display:none"></h1>
 </html>

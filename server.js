@@ -18,6 +18,10 @@ app.get("/index.html", function(req, res)
 {
     res.sendFile(__dirname + "/index.html");
 });
+app.get("/instructions.html", function(req, res)
+{
+    res.sendFile(__dirname + "/instructions.html");
+});
 app.get("/teacher.html", function(req, res)
 {
     res.sendFile(__dirname + "/teacher.html");
@@ -177,7 +181,8 @@ socket.on('kicked',function(kick){
 });
 socket.on('options',function(e){
     var roomNum = array.indexOf(e.split(",")[2]);
-    io.to(roomNum).emit('opt',e.split(",")[0]+","+e.split(",")[1]);
+    console.log(e.split(",")[0]+","+e.split(",")[1]+","+e.split(",")[3]);
+    io.to(roomNum).emit('opt',e.split(",")[0]+","+e.split(",")[1]+","+e.split(",")[3]);
 });
 socket.on('restart',function(e){
     io.to(e).emit('gameDone',"gameDone");

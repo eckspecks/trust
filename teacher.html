@@ -6,7 +6,7 @@
         #yourRoomCode,#names,#playGame,#players,#options,#restartGameButton{
            display:none;
         }
-        h1,li{
+        h1,li,label{
             font-family: 'Poppins', sans-serif;
         }
         body{
@@ -132,7 +132,7 @@
         $("#playGame").click(function(e){
           var r = document.getElementById("roundNum").value;
           var spr = document.getElementById("secsPerRound").value;
-        
+          var c = document.getElementById("anon").checked;
           if(r.length === 0 || spr.length === 0){
               document.getElementById("error").innerHTML = "Options must not be empty";
               return false;
@@ -145,7 +145,7 @@
               document.getElementById("error").innerHTML = "Options must not be negative or zero.";
               return false;
           }
-          socket.emit('options',r + "," + spr + "," + teachersCode); 
+          socket.emit('options',r + "," + spr + "," + teachersCode + "," + c); 
           //sends the generated code to server
             
             
@@ -223,6 +223,12 @@
         <div id="options">
         <h1>Rounds:</h1><input id="roundNum" type="text" value="5">
         <h1>Seconds Per Round:</h1><input id="secsPerRound" type="text" value="30">
+         <br>
+         <br>
+    
+          <input type="checkbox" id="anon" name="anonymous">
+          <label for="anon">Anonymous Opponents?</label>
+
         </div>
         <br>
         <div id="playGameButton"> 
