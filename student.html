@@ -134,7 +134,6 @@
         }
         return items;
     }
-    // first call to quick sort
     
     
     </script>
@@ -161,6 +160,7 @@
         var leadArray = [];
         var totScore = 0;
         var anon = false;
+        var rest = false;
      $(function () {
          
         var socket = io();
@@ -238,8 +238,9 @@
             if(isCodeSuccessful.split(",")[0]==="restart" && isCodeSuccessful.split(",")[1]!== nick){
                 return false;
             }
-            
             for(var i =0;i<opponents.length;i++){
+                document.getElementById("ready"+i).style.display = "block";
+
                 document.getElementById("cheat"+i).style.display = "inline-block";
                 document.getElementById("coop"+i).style.display = "inline-block";
             }
@@ -257,7 +258,9 @@
               timeleft -= 1;
                 
                 
-              if(timeleft <= -1){
+              if(timeleft <= -1 || rest){
+                rest = false;
+
                 for(var i =0;i<opponents.length;i++){
                     if(!haveIPlayed[i]){
                         var opp =opponents[i];
@@ -292,6 +295,8 @@
                     document.getElementById("chatbox").style.display = "none";
 
                     document.getElementById("leaderboard").style.display = "block";
+                    document.getElementById("totalScores").style.display = "block";
+
                     return false;
                 }  
                 rounds--;  
@@ -334,7 +339,7 @@
             //fourth is opponent
             var cheatOrCoop = oppMove.split(",")[0];
             var nickName = oppMove.split(",")[2];
-            
+             
             
             if(nickName !== nick && oppMove.split(",")[3] !== nick){
                 return 0;
@@ -439,20 +444,36 @@
         });
         socket.on('r', function(msg){
             
-        for(var i=0;i<opponents.length;i++){
+        totScore = 0;
+        document.getElementById("leaderboard").style.display = "none";
+        document.getElementById("totalScores").style.display = "none";
+        for(var i=0;i<=opponents.length;i++){
             document.getElementById("yourScore"+i).innerHTML="<p>"+0+"</p>";
             document.getElementById("oppScore"+i).innerHTML="<p>"+0+"</p>"; 
             document.getElementById("photo"+i).src= "before.png";
+
         }
         var opps = opponents.length;
+        leadArray = [];
+        for(var i =0; i<opponents.length;i++){
+               // alert(opponents[i]);
+                    leadArray.push(opponents[i] + ":0");
+                if(!anon){
+                    document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
+                }
+        }
+        leadArray.push(nick + ":0");    
+            
         play= Array(opps).fill(0);
         oppScore=Array(opps).fill(0);
+        haveIPlayed = Array(opps).fill(false);
         cheatOpp = Array(opps).fill(false);
         coopOpp = Array(opps).fill(false);
         rounds = permRounds;
+            
         });
+         
          socket.on('lead', function(e){
-           // alert(e);
             var n = e.split(",")[0];
             for(var i =0; i<=opponents.length;i++){
                 if(leadArray[i].split(":")[0]===n){
@@ -468,6 +489,11 @@
                  line+=leadArray[i]+"<br>";
             }
             scores.innerHTML = line;
+        });
+         
+        socket.on('everybody',function(e){
+            
+           rest = true;
         });
      });      
     
@@ -680,6 +706,6 @@
         <button id="coop9" class="coopButton">Cooperate</button>
         </form>
     </div> 
-    <h1 style="display:none">Leaderboard (total scores)</h1>
+    <h1 style="display:none" id="totalScores">Leaderboard (total scores)</h1>
     <h1 id="leaderboard" style="display:none"></h1>
 </html>
