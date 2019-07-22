@@ -119,7 +119,11 @@ socket.on('move',function(theMove){
     console.log("move: " +theMove);
     var roomNum = theMove.split(",")[1];
     moves[roomNum].push(theMove);
-
+    console.log(moves[roomNum] + " A");
+    console.log(players[roomNum] + " B");
+    if(moves[roomNum].length=== (players[roomNum].length * (players[roomNum].length-1)  )){
+        io.to(roomNum).emit('everybody',"everybody");
+    }
 }); 
     
     
