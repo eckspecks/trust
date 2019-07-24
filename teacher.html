@@ -1,58 +1,8 @@
 <html>
 <head>
    <title>Trust Game</title>
-   <style>
-        
-        #yourRoomCode,#names,#playGame,#players,#options,#restartGameButton{
-           display:none;
-        }
-        h1,li,label{
-            font-family: 'Poppins', sans-serif;
-        }
-        body{
-            text-align: center;
-        }
-        table {
-          border-collapse: collapse;
-        }
+       <link rel="stylesheet" href="styles.css">
 
-        td, th {
-          border: 1px solid #999;
-          padding: 0.5rem;
-          text-align: left;
-        }
-        button{
-          font-family: 'Poppins', sans-serif;
-          height:100px;
-          width: 300px;
-          background-color: #4CAF50; 
-          border: none;
-          color: white;
-          padding: 15px 32px;
-          text-align: center;
-          text-decoration: none;
-          display: inline-block;
-          font-size: 26px;
-          margin: 4px 10px;
-          cursor: pointer;
-        }
-       #names button{
-          height:50;
-          width:102px;
-          font-size:20px;
-          background-color: #800000;
-       }
-       li{
-           padding:0;
-           list-style-type:none;
-           font-size: 30px;
-       }
-       #playGameButton{
-           width:300px;
-           margin:auto;
-           text-align:center;
-       }
-    </style>
     <script>  
         var matrix = [];
         
@@ -132,6 +82,7 @@
         
     </script>
 </head>
+    
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
@@ -278,7 +229,7 @@
         <img id ="logo" align="left" src="nobel.jpg"></a><br><br>
         <p id="copyright" align="left" style="font-family:courier; font-size:50%;">&nbsp;&nbsp;&nbsp;&copy;2019 Nobel Coaching</p>
     <br>
-        <button id="send" onclick="gen()" style="margin-right:212px">Create Room Code</button>
+        <button id="send" onclick="gen()" >Create Room Code</button>
         <div id="hideAfterPlayGame">
         <h1 id="yourRoomCode">Your Room Code</h1>
         <h1 id="code"></h1>

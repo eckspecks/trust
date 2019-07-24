@@ -1,40 +1,40 @@
-h1{
+/*All*/
+h1, h2{
     font-family: 'Poppins', sans-serif;
+}
+
+h2{
     font-size: 40px;
     color:orange;
     font-weight: 900;
 }
-h2{
-    font-family: 'Poppins', sans-serif;
-    font-size: 30px;
-}
+
 body{
     text-align: center;
     background-color: #f5f3e2;
 }
-a:hover{
+
+/*Index.html*/
+
+#green a:hover, #about a:hover{
     opacity: .9;
-}
-#title {
-    
 }
 #green{
    margin-bottom:50px;
-}    
-#green a{
+}
+button, #green a{
   font-family: 'Poppins', sans-serif;
   height:100px;
   width: 300px;
   background-color: #4CAF50; 
   border: none;
   color: white;
-  padding: 15px 32px;
   text-align: center;
   line-height:100px;
   text-decoration: none;
   display: inline-block;
   font-size: 26px;
-  margin: 4px 10px;
+  margin: 5px 10px;
   cursor: pointer; 
   border-radius: 100px;
 }
@@ -50,14 +50,17 @@ a:hover{
     border-radius: 100px;
     text-decoration: none;
 }
+/* Delete?
 #instructions{
   height:33px !important;
   font-size:17px !important;
   width: 100px !important;
   line-height:32px !important;
 }
-.fa {
+*/
 
+/*Font Awesome*/
+.fa {
   padding: 20px;
   font-size: 30px;
   width: 18px;
@@ -86,3 +89,110 @@ a:hover{
   color: white;
 }
 
+/*student.html*/
+
+#enterNickname,#ready0,#waiting,#ready1,#ready2,#ready3,#ready4,#ready5,#ready6,#ready7,#ready8,#ready9{
+    display:none;            
+ }
+ 
+.game{
+    padding-left:169px;
+}
+#student input, #enterNickname input{
+    height:70px;
+    width:300px;
+    font-size: 26px;
+    margin: 100px;
+    font-family: 'Poppins', sans-serif;
+    align-self: center;
+}
+waiting{
+    margin-right:186px;
+}
+img{
+    vertical-align: top;
+    display:inline;
+}
+#oneline0{
+    padding-left:180px;
+}
+html{
+    text-align: center;
+}
+@media only screen and (max-width: 768px) {
+
+    #oneline0,#oneline1,#oneline2,#oneline3,#oneline4,#oneline5,#oneline6,#oneline7,#oneline8,#oneline9{
+        padding-left:0px !important;
+    }
+    #info{
+        padding-right:0px !important;
+    }
+    #cheat0,#cheat1,#cheat2,#cheat3,#cheat4,#cheat5,#cheat6,#cheat7,#cheat8,#cheat9{
+        margin-bottom:20px;
+    }
+
+}
+
+#info{
+    padding-right:175px;
+    font-family: 'Catamaran',sans-serif;
+    font-weight: bold;
+    font-size:25px;
+}
+li{
+    list-style-type:none;
+    font-family: 'Catamaran',sans-serif;
+}
+#chatbox button{
+    width:100px;
+    height:47px;
+    font-size:15;
+}
+#chatbox input{
+    height: 46px;
+    font-family: 'Catamaran',sans-serif;
+    font-size:20px;
+}
+
+/*teacher.html*/
+    
+#yourRoomCode,#names,#playGame,#players,#options,#restartGameButton{
+   display:none;
+}
+#code{
+    color: orange;
+    font-weight: 100;
+    
+}
+li, label{
+    font-family: 'Poppins', sans-serif;
+}
+body{
+    text-align: center;
+}
+table {
+    border-collapse: collapse;
+}
+
+td, th {
+    border: 1px solid #999;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+#names button{
+    height:50;
+    width:102px;
+    font-size:20px;
+    background-color: #800000;
+}
+li{
+    padding:0;
+    list-style-type:none;
+    font-size: 30px;
+}
+#playGameButton{
+    width:300px;
+    margin:auto;
+    text-align:center;
+}
