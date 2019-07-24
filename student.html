@@ -4,7 +4,8 @@
 
     <title>Trust Game</title>
     <style>
-         #enterNickname,#ready0,#waiting,#ready1,#ready2,#ready3,#ready4,#ready5,#ready6,#ready7,#ready8,#ready9{
+         
+        #enterNickname,#ready0,#waiting,#ready1,#ready2,#ready3,#ready4,#ready5,#ready6,#ready7,#ready8,#ready9{
             display:none;            
          }
          h1{
@@ -324,7 +325,7 @@
             var opp =opponents[id[id.length-1]];
             
             socket.emit('move',1 + "," + roomNum + "," + nick + "," + opp);
-             document.getElementById("cheat"+id[id.length-1]).style.display = "none";
+            document.getElementById("cheat"+id[id.length-1]).style.display = "none";
             document.getElementById("coop"+id[id.length-1]).style.display = "none";
             coopOpp[opponents.indexOf(opp)] =true;
             haveIPlayed[opponents.indexOf(opp)] = true;
@@ -370,7 +371,7 @@
                 }else{
                     //you coop, opp cheated :(
                         play[oppNum]-=1;
-                    totScore-=1;
+                        totScore-=1;
                         oppScore[oppNum]+=3;
                         document.getElementById("photo"+oppNum).src="theycheat.png";
                 }
@@ -380,7 +381,7 @@
             coopOpp[oppNum] = false; 
             document.getElementById("yourScore"+oppNum).innerHTML="<p>"+play[oppNum]+"</p>";
             document.getElementById("oppScore"+oppNum).innerHTML="<p>"+oppScore[oppNum]+"</p>";
-            socket.emit("score",nick+ "," + play[oppNum] + ","+roomNum + "," +opponents[oppNum] + "," +totScore);    
+            socket.emit('score',nick+ "," + play[oppNum] + ","+roomNum + "," +opponents[oppNum] + "," +totScore);    
             }
         });
          
@@ -451,7 +452,6 @@
             document.getElementById("yourScore"+i).innerHTML="<p>"+0+"</p>";
             document.getElementById("oppScore"+i).innerHTML="<p>"+0+"</p>"; 
             document.getElementById("photo"+i).src= "before.png";
-
         }
         var opps = opponents.length;
         leadArray = [];
@@ -482,7 +482,6 @@
             }
         
             leadArray = quickSort(leadArray, 0, leadArray.length - 1);
-  
             var scores = document.getElementById("leaderboard"); 
             var line = "";
             for(var i =0;i<leadArray.length;i++){
@@ -492,7 +491,6 @@
         });
          
         socket.on('everybody',function(e){
-            
            rest = true;
         });
      });      

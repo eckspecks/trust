@@ -18,9 +18,9 @@ app.get("/index.html", function(req, res)
 {
     res.sendFile(__dirname + "/index.html");
 });
-app.get("/instructions.html", function(req, res)
+app.get("/aboutus.html", function(req, res)
 {
-    res.sendFile(__dirname + "/instructions.html");
+    res.sendFile(__dirname + "/aboutus.html");
 });
 app.get("/teacher.html", function(req, res)
 {
@@ -37,6 +37,7 @@ var roomnum = 0;
 var players = [];
 var moves = [];
 var scores = 0;
+var currRound = 0;
 io.on('connection', function(socket){
     
     console.log('a user connected');
@@ -76,16 +77,16 @@ io.on('connection', function(socket){
      
      //sends the nickname of each player in the teacher's room to the teacher
      var nick = theNickname.split(",")[0];
+     var roomNum = theNickname.split(",")[1];
      
-     if(players[theNickname[theNickname.length-1]].includes(nick)){
+     if(players[roomNum].includes(nick)){
          
-        console.log("Error Nickname " + nick + " is already registered");
+        console.log("Error Nickname " + nick + " is already registered" + players + " " + theNickname[theNickname.length-1]);
         io.to(theNickname[theNickname.length-1]).emit('nicknameError',"error" + " " + nick);
         return false;
          
      }
      console.log(theNickname);
-     var roomNum = theNickname.split(",")[1];
      console.log("Success! " + nick +" is now registered in room" + roomNum);
      players[roomNum].push(nick);
      io.to(roomNum).emit('nickname',nick);
@@ -119,10 +120,10 @@ socket.on('move',function(theMove){
     console.log("move: " +theMove);
     var roomNum = theMove.split(",")[1];
     moves[roomNum].push(theMove);
-    console.log(moves[roomNum] + " A");
-    console.log(players[roomNum] + " B");
+    io.to(roomNum).emit('score',theMove);
     if(moves[roomNum].length=== (players[roomNum].length * (players[roomNum].length-1)  )){
         io.to(roomNum).emit('everybody',"everybody");
+        io.to(roomNum).emit('updateTable',"A");
     }
 }); 
     
@@ -155,7 +156,7 @@ socket.on('score',function(score){
   console.log("Score: " + score);
   var roomNum = score.split(",")[2];
   var totScore = score.split(",")[4];
-  io.to(roomNum).emit('score',score.split(",")[0]+ "," + score.split(",")[1] + "," + score.split(",")[3]);
+ // io.to(roomNum).emit('score',score.split(",")[0]+ "," + score.split(",")[1] + "," + score.split(",")[3]);
     
   console.log("totalscore : " + score.split(",")[0] + "  " +totScore);
   io.to(roomNum).emit('lead',score.split(",")[0] + "," + totScore);  
@@ -192,6 +193,7 @@ socket.on('restart',function(e){
     io.to(e).emit('gameDone',"gameDone");
 });
 socket.on('restartGame',function(e){
+    currRound=0;
     var roomNum = array.indexOf(e+"~");
     moves[roomNum] = new Array(0);    
     console.log("restartGame! " + e + " " + roomNum + " f " + array);
