@@ -7,6 +7,7 @@ const path = require('path');
 const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, 'index.html');
 const app = express();
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('images'));
 
 const server = http.createServer(app);
