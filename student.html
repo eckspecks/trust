@@ -11,6 +11,7 @@
          h1{
             font-family: 'Poppins', sans-serif;
          }
+      
          button, #waiting a{
           font-family: 'Poppins', sans-serif;
           height:100px;
@@ -25,6 +26,7 @@
           font-size: 26px;
           cursor: pointer;
         }
+        
         #waiting a{
             margin-top: 38px;
             height:30px;
@@ -224,7 +226,11 @@
               document.getElementById("waiting").style.display = "block";  
               return false;
             }
-            
+            if(error.split(" ")[0]==="limit"){
+                e.style.display = 'block';
+                e.innerHTML = "Too many people already in room."
+                return false;
+            }
            var e = document.getElementById("nickError");
            e.style.display = 'block';
            e.innerHTML = "Nickname has already been chosen.";       
@@ -505,7 +511,12 @@
         <br>
         <h1 id="codeError"></h1>
         <button id="submitRoomCode">Submit Room Code</button>
+        <br><br>
+        <div id="green">
+        <a href="/quickPlay.html">Quick Play</a>
+        </div>
     </div>
+    
 
     <div id="enterNickname">
         <input type= "text" id="studentNick" style="margin-left: -90">
@@ -519,7 +530,17 @@
         
         <h1 id = "countdown0"></h1><br>
         <br>
-    
+        
+    </div>
+    <div id="chatbox" style="display: none" >
+        <h1>Chat</h1>
+
+        <body>
+            <ul id="messages"></ul>
+            <form action="">
+            <input id="m" autocomplete="off"/><button id="sendmsg">Send</button>
+            </form>
+        </body>
     </div>
     <h1 id="opp0"></h1>
 
@@ -550,14 +571,7 @@
     
     </div>  
     
-    <div id="chatbox" style="display: none" >
-        <body>
-            <ul id="messages"></ul>
-            <form action="">
-            <input id="m" autocomplete="off"/><button id="sendmsg">Send</button>
-            </form>
-        </body>
-    </div>
+    
     
     
     <h1 id="opp1"></h1>

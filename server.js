@@ -18,6 +18,10 @@ app.get("/index.html", function(req, res)
 {
     res.sendFile(__dirname + "/index.html");
 });
+app.get("/quickplay.html", function(req, res)
+{
+    res.sendFile(__dirname + "/quickplay.html");
+});
 app.get("/aboutus.html", function(req, res)
 {
     res.sendFile(__dirname + "/aboutus.html");
@@ -82,9 +86,13 @@ io.on('connection', function(socket){
      if(players[roomNum].includes(nick)){
          
         console.log("Error Nickname " + nick + " is already registered" + players + " " + theNickname[theNickname.length-1]);
-        io.to(theNickname[theNickname.length-1]).emit('nicknameError',"error" + " " + nick);
+        io.to(roomNum).emit('nicknameError',"error" + " " + nick);
         return false;
          
+     }
+     if(players[roomNum].length==10){
+         io.to(roomNum).emit('nicknameError',"limit" + " " +nick)
+         return false;
      }
      console.log(theNickname);
      console.log("Success! " + nick +" is now registered in room" + roomNum);
@@ -201,5 +209,8 @@ socket.on('restartGame',function(e){
     io.to(roomNum).emit('readyToPlay',"ready a");
 
 });    
-    
+socket.on('test',function(e){
+  console.log('test');
+
+});  
 });
