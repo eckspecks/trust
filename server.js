@@ -15,6 +15,10 @@ app.get("/", function(req, res)
 {
     res.sendFile(__dirname + "/index.html");
 });
+app.get("/styles.css", function(req, res)
+{
+    res.sendFile(__dirname + "/styles.css");
+});
 app.get("/index.html", function(req, res)
 {
     res.sendFile(__dirname + "/index.html");
