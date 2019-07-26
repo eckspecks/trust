@@ -10,6 +10,7 @@ h2{
 body{
     text-align: center;
     background-color: #f5f3e2;
+    align-items: center;
 }
 
 /*Index.html*/
@@ -88,7 +89,9 @@ button, #green a{
 }
 
 /*student.html*/
-
+#top{
+    padding-bottom: 50px;
+}
 #enterNickname,#ready0,#waiting,#ready1,#ready2,#ready3,#ready4,#ready5,#ready6,#ready7,#ready8,#ready9{
     display:none;            
  }
@@ -98,14 +101,10 @@ button, #green a{
 #studentRoomCode{
     align-self: center;
 }
-#submitRoomCode{
-    align-self: center;
-}
 #student input, #enterNickname input{
     height:70px;
     width:300px;
     font-size: 26px;
-    margin: 100px;
     font-family: 'Poppins', sans-serif;
     align-self: center;
 }
