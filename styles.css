@@ -90,7 +90,7 @@ button, #green a{
 
 /*student.html*/
 #top{
-    padding-bottom: 50px;
+    margin-bottom: 150px;
 }
 #enterNickname,#ready0,#waiting,#ready1,#ready2,#ready3,#ready4,#ready5,#ready6,#ready7,#ready8,#ready9{
     display:none;            
