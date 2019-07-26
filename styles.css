@@ -1,13 +1,12 @@
+/*All*/
 h1, h2{
     font-family: 'Poppins', sans-serif;
 }
-
 h2{
     font-size: 40px;
     color:orange;
     font-weight: 900;
 }
-
 body{
     text-align: center;
     background-color: #f5f3e2;
@@ -93,9 +92,14 @@ button, #green a{
 #enterNickname,#ready0,#waiting,#ready1,#ready2,#ready3,#ready4,#ready5,#ready6,#ready7,#ready8,#ready9{
     display:none;            
  }
- 
 .game{
     padding-left:169px;
+}
+#studentRoomCode{
+    align-self: center;
+}
+#submitRoomCode{
+    align-self: center;
 }
 #student input, #enterNickname input{
     height:70px;
@@ -161,7 +165,6 @@ li{
 #code{
     color: orange;
     font-weight: 100;
-    
 }
 li, label{
     font-family: 'Poppins', sans-serif;
@@ -172,13 +175,11 @@ body{
 table {
     border-collapse: collapse;
 }
-
 td, th {
     border: 1px solid #999;
     padding: 0.5rem;
     text-align: left;
 }
-
 #names button{
     height:50;
     width:102px;
