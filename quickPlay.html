@@ -4,13 +4,16 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
         
-     $(function () {
+    $(function () {
         var socket = io();
-          socket.emit('lookingForGame', ":)");
-        
+          socket.emit('lookingForGame', "on");
+         socket.on('youLeft',function(e){
+         });
+          socket.on('startGame',function(e){
+             alert(e);
+         });
     });
     </script>
 </head>
-
 <h1>Connecting to other players...</h1>
 </html>

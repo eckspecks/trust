@@ -8,11 +8,16 @@ const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, 'index.html');
 const app = express();
 app.use(express.static('images'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 const server = http.createServer(app);
 app.get("/", function(req, res)
 {
     res.sendFile(__dirname + "/index.html");
+});
+app.get("/styles.css", function(req, res)
+{
+    res.sendFile(__dirname + "/styles.css");
 });
 app.get("/index.html", function(req, res)
 {
@@ -42,6 +47,8 @@ var players = [];
 var moves = [];
 var scores = 0;
 var currRound = 0;
+var lookingForGame = [];
+var gameCodeUsers = [];
 io.on('connection', function(socket){
     
     console.log('a user connected');
@@ -50,13 +57,36 @@ io.on('connection', function(socket){
         //teacher creates a new roomNumber
         socket.join(roomnum);
         players.push(new Array(0));
+        
         moves.push(new Array(0));
         roomnum++;
         
         //adds the room code to array
         array.push(msg);
 }); 
-    
+  
+    socket.on('disconnect', function() {
+        const _id = socket.id;
+
+        var index = lookingForGame.indexOf(_id);
+        if(index!=-1){
+            lookingForGame.splice(index,1);
+        }
+        
+        for(var i =0; i<gameCodeUsers.length;i++){
+            
+            var nick = gameCodeUsers[i].split("~")[0];
+            var id = gameCodeUsers[i].split("~")[1];
+            var roomNum = gameCodeUsers[i].split("~")[2];
+            
+            if(id===_id){
+                io.to(roomNum).emit('userDisconnected',nick);
+                gameCodeUsers.splice(i,1);
+            }
+        }
+        
+        console.log(_id + ' left the room');
+    });
     
   //gets code from the player, compares it with code from teacher    
   socket.on('code', function(playersCode){
@@ -82,6 +112,9 @@ io.on('connection', function(socket){
      //sends the nickname of each player in the teacher's room to the teacher
      var nick = theNickname.split(",")[0];
      var roomNum = theNickname.split(",")[1];
+     
+     gameCodeUsers.push(nick + "~" + socket.id + "~" + roomNum);
+     console.log(gameCodeUsers);
      
      if(players[roomNum].includes(nick)){
          
@@ -164,7 +197,6 @@ socket.on('score',function(score){
   console.log("Score: " + score);
   var roomNum = score.split(",")[2];
   var totScore = score.split(",")[4];
- // io.to(roomNum).emit('score',score.split(",")[0]+ "," + score.split(",")[1] + "," + score.split(",")[3]);
     
   console.log("totalscore : " + score.split(",")[0] + "  " +totScore);
   io.to(roomNum).emit('lead',score.split(",")[0] + "," + totScore);  
@@ -209,8 +241,14 @@ socket.on('restartGame',function(e){
     io.to(roomNum).emit('readyToPlay',"ready a");
 
 });    
-socket.on('test',function(e){
-  console.log('test');
-
+socket.on('lookingForGame',function(e){
+  lookingForGame.push(socket.id)
+  console.log(lookingForGame);
+  if(lookingForGame.length==2){
+      for(var i =0;i<2;i++){
+          io.to(lookingForGame[i]).emit('startGame',"a");
+      }
+  }
+    
 });  
 });
