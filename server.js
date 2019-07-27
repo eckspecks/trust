@@ -19,6 +19,18 @@ app.get("/styles.css", function(req, res)
 {
     res.sendFile(__dirname + "/styles.css");
 });
+app.get("/js/student.js", function(req, res)
+{
+    res.sendFile(__dirname + "/js/student.js");
+});
+app.get("/js/teacher.js", function(req, res)
+{
+    res.sendFile(__dirname + "/js/teacher.js");
+});
+app.get("/js/quickPlay.js", function(req, res)
+{
+    res.sendFile(__dirname + "/js/quickPlay.js");
+});
 app.get("/index.html", function(req, res)
 {
     res.sendFile(__dirname + "/index.html");
