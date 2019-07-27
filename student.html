@@ -4,9 +4,7 @@
     <link rel="stylesheet" href="styles.css">
 
     <title>Trust Game</title>
-    
 
-    
     
 </head>
     
@@ -14,53 +12,40 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 
     <script src="/js/student.js"></script>
-    <body>
+      
+<body>
+    
     <div id="top">
-    <a href="index.html">
+        <a href="index.html">
         <img id ="logo" align="left" src="nobel.jpg"></a>
         <p id="copyright" align="left" style="font-family:courier; font-size:50%;">&nbsp;&nbsp;&nbsp;&copy;2019 Nobel Coaching</p>
     </div>
+    
     <div id="student">
-        <input type= "text" id="studentRoomCode" >
+        <input type= "text" id="studentRoomCode">
         <h1 id="codeError"></h1>
         <button id="submitRoomCode">Submit Room Code</button>
-        <br><br>
-        <div id="green">
-       <!--FUTURE FEATURE :)-->
-       <!-- <a href="quickPlay.html">Quick Play</a> -->
-        </div>
     </div>
-    
 
     <div id="enterNickname">
-        <input type= "text" id="studentNick" >
+        <input type= "text" id="studentNick">
         <br>
         <h1 id="nickError"></h1>
-
         <button id="nickname">Enter Nickname</button>
     </div>
     <div id="waiting"><h1>Waiting for teacher to start game</h1></div>
       <div id ="info">
-        
         <h1 id = "countdown0"></h1><br>
         <br>
-        
-    </div>
-    <div id="chatbox" style="display: none" >
-        <h1>Chat</h1>
-
-        <body>
-            <ul id="messages"></ul>
-            <form action="">
-            <input id="m" autocomplete="off"/><button id="sendmsg">Send</button>
-            </form>
-        </body>
+    
     </div>
     <h1 id="opp0"></h1>
 
     <div id="ready0" class="theGame">
-    <div id="oneline0" style="padding-left: 160px;">
     
+    <div id="oneline0" style="padding-left: 160px;">
+        
+        
     <h1>Your Score: <p id="yourScore0">0</p></h1>
     <img id ="photo0" src="before.png"> 
     
@@ -81,7 +66,14 @@
     
     </div>  
     
-    
+    <div id="chatbox" style="display: none" >
+        <body>
+            <ul id="messages"></ul>
+            <form action="">
+            <input id="m" autocomplete="off"/><button id="sendmsg">Send</button>
+            </form>
+        </body>
+    </div>
     
     
     <h1 id="opp1"></h1>
@@ -100,7 +92,6 @@
         <button id="coop1" class="coopButton">Cooperate</button>
         </form>
     </div>
-        
     <h1 id="opp2"></h1>
 
     <div id="ready2" >
@@ -231,5 +222,5 @@
     </div> 
     <h1 style="display:none" id="totalScores">Leaderboard (total scores)</h1>
     <h1 id="leaderboard" style="display:none"></h1>
-    </body>
+</body>
 </html>
