@@ -35,9 +35,9 @@ app.get("/index.html", function(req, res)
 {
     res.sendFile(__dirname + "/index.html");
 });
-app.get("/quickplay.html", function(req, res)
+app.get("/quickPlay.html", function(req, res)
 {
-    res.sendFile(__dirname + "/quickplay.html");
+    res.sendFile(__dirname + "/quickPlay.html");
 });
 app.get("/aboutus.html", function(req, res)
 {
