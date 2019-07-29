@@ -255,12 +255,22 @@ socket.on('restartGame',function(e){
 });    
 socket.on('lookingForGame',function(e){
   lookingForGame.push(socket.id)
-  console.log(lookingForGame);
-  if(lookingForGame.length==2){
-      for(var i =0;i<2;i++){
-          io.to(lookingForGame[i]).emit('startGame',"a");
-      }
+  console.log( lookingForGame);
+  if(lookingForGame.length>=2){
+          io.to(lookingForGame[0]).emit('startGame',lookingForGame[0]+"~~~"+lookingForGame[1]);
+          io.to(lookingForGame[1]).emit('startGame',lookingForGame[1]+"~~~"+lookingForGame[0]);
+          lookingForGame.shift();
+          lookingForGame.shift();
+     
   }
-    
+     console.log( lookingForGame);
+ 
+}); 
+socket.on('quickMove',function(e){
+  var move = e.split(",")[0];
+  var nick = e.split(",")[1];
+  var opp = e.split(",")[2];
+    io.to(opp).emit('move',move);
+ 
 });  
 });
