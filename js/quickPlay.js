@@ -51,12 +51,12 @@ $(function () {
             playMove=num;
 
             if(oppMove==="null"){
-                document.getElementById("waiting").innerHTML = "Waiting for opponent to move...";
+                document.getElementById("wait").innerHTML = "Waiting for opponent to move...";
                 document.getElementById("cheat").style.display = "none";
                 document.getElementById("coop").style.display = "none";
 
             }else{
-                document.getElementById("waiting").innerHTML = "";
+                document.getElementById("wait").innerHTML = "";
                 updateScores();
               
             }
@@ -77,9 +77,9 @@ $(function () {
 
           oppMove=e;
           if(playMove==="null"){
-                document.getElementById("waiting").innerHTML = "Opponent has moved.";
+                document.getElementById("wait").innerHTML = "Opponent has moved.";
           }else{
-                document.getElementById("waiting").innerHTML = "";
+                document.getElementById("wait").innerHTML = "";
                 updateScores();
                 document.getElementById("cheat").style.display = "inline-block";
                 document.getElementById("coop").style.display = "inline-block";
