@@ -141,7 +141,6 @@
           document.getElementById("tableDiv").innerHTML = "";
 
         });
-          
      });
     
         function appendRow() {
@@ -201,15 +200,17 @@
         function resetMatrix(){
             matrix=[];
             for(var i =0;i<players.length;i++){
-              var a = [];
-                  for(var j =0;j<players.length;j++){
-                      a.push("-");
-                  }
+                
+                var a = [];
+                for(var j =0;j<players.length;j++){
+                    a.push("-");
+                }
+                
               matrix.push(a);
           }
-        x=0;
-        y=0;
-        j=0;
+             x=0;
+             y=0;
+             j=0;
         }
         
         function isNumeric(n) {

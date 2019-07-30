@@ -108,7 +108,8 @@
             document.getElementById("student").style.display = 'none';
             document.getElementById("enterNickname").style.display = 'none';
             document.getElementById("chatbox").style.display = 'block';
-            
+            document.getElementById("photo").style.display = 'inline-block';
+
             //timer goes 30 seconds?
             
             timeleft = secs;
@@ -139,9 +140,9 @@
                 socket.emit('updateBoard',"reset " + roomNum);
                   
                 if(rounds==1){
+                    
                     document.getElementById("countdown0").innerHTML = "Game over!";
                     socket.emit('restart',roomNum);
-                    
 
                     for(var i =0; i<opponents.length;i++){
                         document.getElementById("ready"+i).style.display = "none";
@@ -149,6 +150,7 @@
 
                     }
                     document.getElementById("chatbox").style.display = "none";
+                    document.getElementById("photo").style.display = "none";
 
                     document.getElementById("leaderboard").style.display = "block";
                     document.getElementById("totalScores").style.display = "block";
@@ -207,12 +209,12 @@
                 if(cheatOrCoop==1){
                     //you cheated, opp cooperated
                         play[oppNum]+=3;
-                    totScore+=3;
+                        totScore+=3;
                         oppScore[oppNum]-=1;
-                        document.getElementById("photo"+oppNum).src="youcheat.png";
+                        document.getElementById("result"+oppNum).innerHTML="Your opponent cooperated, but you cheated them!";
                 }else{
                     //both cheat
-                        document.getElementById("photo"+oppNum).src="bothcheat.png"
+                        document.getElementById("result"+oppNum).innerHTML= "Both you and your opponent cheated!";
                 }
             }
             
@@ -222,13 +224,13 @@
                         play[oppNum]+=2;
                     totScore+=2;
                         oppScore[oppNum]+=2;
-                        document.getElementById("photo"+oppNum).src="bothcoop.png";
+                        document.getElementById("result"+oppNum).innerHTML= "Both you and your opponent cooperated!";
                 }else{
                     //you coop, opp cheated :(
                         play[oppNum]-=1;
                         totScore-=1;
                         oppScore[oppNum]+=3;
-                        document.getElementById("photo"+oppNum).src="theycheat.png";
+                        document.getElementById("result"+oppNum).innerHTML="You cooperated, but your opponent cheated!";
                 }
             }
                 
@@ -305,7 +307,6 @@
         for(var i=0;i<=opponents.length;i++){
             document.getElementById("yourScore"+i).innerHTML="<p>"+0+"</p>";
             document.getElementById("oppScore"+i).innerHTML="<p>"+0+"</p>"; 
-            document.getElementById("photo"+i).src= "before.png";
         }
         var opps = opponents.length;
         leadArray = [];
