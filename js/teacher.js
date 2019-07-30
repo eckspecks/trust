@@ -15,11 +15,11 @@
           e.preventDefault(); // prevents page reloading
           teachersCode = $("#code").text();
           socket.emit('message', teachersCode);
+            socket.emit('teacherID',teachersCode);
           return false;
         });
          
         socket.on('nickname', function(nick){
-            
            //adds the names that the server sends back to the list of connected players
            var ul = document.getElementById("names");
            var li = document.createElement("li");
@@ -70,6 +70,10 @@
           if(r<1 || spr<1){
               document.getElementById("error").innerHTML = "Options must not be negative or zero.";
               return false;
+          }
+          if(spr<15){
+              document.getElementById("error").innerHTML = "Minimum time per round is 15 seconds";
+              return false;              
           }
           socket.emit('options',r + "," + spr + "," + teachersCode + "," + c); 
           //sends the generated code to server
@@ -137,6 +141,7 @@
           document.getElementById("tableDiv").innerHTML = "";
 
         });
+          
      });
     
         function appendRow() {

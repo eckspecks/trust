@@ -8,6 +8,8 @@ var rounds = 10;
 
 
 $(function () {
+  
+    
         function updateScores(){
             if(playMove==1){
                 if(oppMove==1){
@@ -71,6 +73,7 @@ $(function () {
               id = e.split("~~~")[0];
               document.getElementById("connecting").style.display = "none";
               document.getElementById("ready").style.display = "block";
+
 
           });
         socket.on('move',function(e){
