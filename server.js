@@ -15,6 +15,10 @@ app.get("/", function(req, res)
 {
     res.sendFile(__dirname + "/index.html");
 });
+app.get("/a.html", function(req, res)
+{
+    res.sendFile(__dirname + "/a.html");
+});
 app.get("/styles.css", function(req, res)
 {
     res.sendFile(__dirname + "/styles.css");
@@ -61,6 +65,15 @@ var scores = 0;
 var currRound = 0;
 var lookingForGame = [];
 var gameCodeUsers = [];
+var teacherIDs = [];
+
+function indexOfArray(array, item) {
+    for (var i = 0; i < array.length; i++) {
+        if (array[i].toString() === item.toString()) return i;
+    }
+    return -1;
+}
+
 io.on('connection', function(socket){
     
     console.log('a user connected');
@@ -79,12 +92,25 @@ io.on('connection', function(socket){
   
     socket.on('disconnect', function() {
         const _id = socket.id;
-
+        
         var index = lookingForGame.indexOf(_id);
         if(index!=-1){
             lookingForGame.splice(index,1);
         }
-        
+        console.log(array);
+        for(var i =0;i<teacherIDs.length;i++){
+            var id = teacherIDs[i].split("~~~")[0];
+            var code = teacherIDs[i].split("~~~")[1];
+            if(id===_id){
+                teacherIDs.splice(i,1);
+                index = indexOfArray(array,code);
+
+                array.splice(index,1);
+                
+                return false;
+                
+            }
+        }
         for(var i =0; i<gameCodeUsers.length;i++){
             
             var nick = gameCodeUsers[i].split("~")[0];
@@ -94,6 +120,9 @@ io.on('connection', function(socket){
             if(id===_id){
                 io.to(roomNum).emit('userDisconnected',nick);
                 gameCodeUsers.splice(i,1);
+                
+        
+                return false;
             }
         }
         
@@ -273,4 +302,7 @@ socket.on('quickMove',function(e){
     io.to(opp).emit('move',move);
  
 });  
+socket.on('teacherID',function(e){
+ teacherIDs.push(socket.id+"~~~"+e);
+}); 
 });

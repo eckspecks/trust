@@ -1,44 +1,42 @@
 <html>
 <head>
-   <title>Trust Game</title>
-       <link rel="stylesheet" href="styles.css">
+<title>Geo City Locator by geoip-db.com</title>
 </head>
-    
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-    <script src="/js/teacher.js"></script>
-      
-    
 <body>
-<div id="top">
-    <a href="index.html">
-    <img id ="logo" align="left" src="nobel.jpg"></a><br><br>
-    <p id="copyright" align="left" style="font-family:courier; font-size:50%;">&nbsp;&nbsp;&nbsp;&copy;2019 Nobel Coaching</p>
-</div>
-    <button id="send" onclick="gen()" >Create Room Code</button>
-<div id="hideAfterPlayGame">
-        <h1 id="yourRoomCode">Your Room Code</h1>
-        <h1 id="code"></h1>
-        <h1 id="error"></h1>
-        <h1 id="players">Players Connected:</h1>    
-        <ul id="names"></ul>
-    <div id="options">
-        <h1>Rounds:</h1><input id="roundNum" type="text" value="5">
-        <h1>Seconds Per Round:</h1><input id="secsPerRound" type="text" value="30">
-          <input type="checkbox" id="anon" name="anonymous">
-          <label for="anon">Anonymous Opponents?</label>
-
-        </div>
-        <br>
-        <div id="playGameButton"> 
-        <button id="playGame" >Play Game</button>
-        </div>
-        </div>
-        <br>
-        <div id="tableDiv">
-       
-    
-        </div>
-        <div id="restartGameButton"><button id="restartGame">Restart Game</button></div>
+    <div>Country: <span id="country"></span></div>
+    <div>State: <span id="state"></span></div>
+    <div>City: <span id="city"></span></div>
+    <div>Postal: <span id="postal"></span></div>
+    <div>Latitude: <span id="latitude"></span></div>
+    <div>Longitude: <span id="longitude"></span></div>
+    <div>IP address: <span id="ipv4"></span></div>                             
 </body>
+<script>
+
+    var country = document.getElementById('country');
+    var state = document.getElementById('state');
+    var city = document.getElementById('city');
+    var postal = document.getElementById('postal');
+    var latitude = document.getElementById('latitude');
+    var longitude = document.getElementById('longitude');
+    var ip = document.getElementById('ipv4');
+
+    function callback(data)
+    {
+        country.innerHTML = data.country_name;
+        state.innerHTML = data.state;
+        city.innerHTML = data.city;
+        postal.innerHTML = data.postal;
+        latitude.innerHTML = data.latitude;
+        longitude.innerHTML = data.longitude;
+        ip.innerHTML = data.IPv4;
+    }
+
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://geoip-db.com/json/geoip.php?jsonp=callback';
+    var h = document.getElementsByTagName('script')[0];
+    h.parentNode.insertBefore(script, h);
+
+</script> 
 </html>
