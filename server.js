@@ -58,7 +58,7 @@ app.get("/student.html", function(req, res)
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 const io = socketIO(server);
 var array = [];
-var roomnum = 0;
+var roomnum=0;
 var players = [];
 var moves = [];
 var scores = 0;
@@ -105,7 +105,7 @@ io.on('connection', function(socket){
                 teacherIDs.splice(i,1);
                 index = indexOfArray(array,code);
 
-                array.splice(index,1);
+                array[index] = "NULL";
                 
                 return false;
                 
@@ -155,7 +155,6 @@ io.on('connection', function(socket){
      var roomNum = theNickname.split(",")[1];
      
      gameCodeUsers.push(nick + "~" + socket.id + "~" + roomNum);
-     console.log(gameCodeUsers);
      
      if(players[roomNum].includes(nick)){
          
@@ -305,4 +304,6 @@ socket.on('quickMove',function(e){
 socket.on('teacherID',function(e){
  teacherIDs.push(socket.id+"~~~"+e);
 }); 
+
+    
 });
