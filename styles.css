@@ -12,30 +12,50 @@ body{
     background-color: #f5f3e2;
     align-items: center;
 }
+html{
+    max-height: 100vh;
+    
+}
+
+/*Logo & Copyright on multiple pages*/
+#bottom{
+    vertical-align: baseline;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    margin: auto;
+}
+#copyright{
+    font-family:courier; 
+    font-size:50%;
+}
 
 /*Index.html*/
 
+#title{
+    margin-top: 50px;
+}
 #green a:hover, #about a:hover{
     opacity: .9;
 }
 #green{
-   margin-bottom:50px;
+    margin-bottom:50px;
 }
 button, #green a{
-  font-family: 'Poppins', sans-serif;
-  height:100px;
-  width: 300px;
-  background-color: #4CAF50; 
-  border: none;
-  color: white;
-  text-align: center;
+    font-family: 'Poppins', sans-serif;
+    height:100px;
+    width: 300px;
+    background-color: #4CAF50; 
+    border: none;
+    color: white;
+    text-align: center;
     vertical-align: middle;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 26px;
-  margin: 5px 10px;
-  cursor: pointer; 
-  border-radius: 100px;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 26px;
+    margin: 5px 10px;
+    cursor: pointer; 
+    border-radius: 100px;
 }
 #green a{
     line-height: 100px;
@@ -55,14 +75,14 @@ button, #green a{
 
 /*Font Awesome*/
 .fa {
-  padding: 20px;
-  font-size: 30px;
-  width: 18px;
-  text-align: center;
-  text-decoration: none;
-  margin: 5px 2px;
-  height:18px;
-  border-radius: 50%;
+    padding: 20px;
+    font-size: 30px;
+    width: 18px;
+    text-align: center;
+    text-decoration: none;
+    margin: 5px 2px;
+    height:18px;
+    border-radius: 50%;
     z-index: 2;
 }
 .fa:hover {
@@ -70,17 +90,17 @@ button, #green a{
 }
 
 .fa-facebook {
-  background: #3B5998;
-  color: white;
+    background: #3B5998;
+    color: white;
 }
 
 .fa-twitter {
-  background: #55ACEE;
-  color: white;
+    background: #55ACEE;
+    color: white;
 }
 .fa-instagram {
-  background: #125688;
-  color: white;
+    background: #125688;
+    color: white;
 }
 
 /*student.html*/
@@ -149,6 +169,11 @@ li{
     height: 46px;
     font-family: 'Catamaran',sans-serif;
     font-size:20px;
+}
+
+/*quickplay.html*/
+#connecting{
+    margin-top: 45vh;
 }
 
 /*teacher.html*/
