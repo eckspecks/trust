@@ -28,8 +28,21 @@
         <br><br>   
           <input type="checkbox" id="anon" name="anonymous">
           <label for="anon">Anonymous Opponents?</label>
+        <h1>Gremlin Chance:</h1><input type="range" min="0" max="10" value="0" class="slider" id="slideNum">
+        <label for="slideNum" id="chanceVal">5%</label>
 
+          
         </div>
+        <script>
+        var slider = document.getElementById("slideNum");
+        var output = document.getElementById("chanceVal");
+        output.innerHTML = slider.value + "%";
+
+        slider.oninput = function() {
+            output.innerHTML = this.value + "%";
+        }
+        </script>
+
         <br>
         <div id="playGameButton"> 
         <button id="playGame" >Play Game</button>
