@@ -104,8 +104,15 @@ io.on('connection', function(socket){
             if(id===_id){
                 teacherIDs.splice(i,1);
                 index = indexOfArray(array,code);
-
+                io.to(index).emit('teacherDisconnected',":(");
+                
+                
                 array[index] = "NULL";
+                
+                
+                
+                
+                
                 
                 return false;
                 
@@ -255,7 +262,7 @@ socket.on('kicked',function(kick){
   kick = kick.substr(0, lastIndex);
         
   var roomNumber = array.indexOf(kick.split(",")[0]);   
-
+  console.log("is this running?");
   var index = players[roomNumber].indexOf(kick.split(",")[1]);
 
   if(index>-1){
