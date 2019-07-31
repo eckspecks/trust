@@ -14,7 +14,18 @@
         var leadArray = [];
         var totScore = 0;
         var anon = false;
-        var rest = false;
+        var rest = false
+        var city = "";
+        var country = "";
+        $.getJSON('http://ip-api.com/json?callback=?', function(data) {
+          var string = JSON.stringify(data, null, 2);
+
+             city = string.split("\"")[7];
+             country = string.split("\"")[11];    
+        });
+
+        
+        
      $(function () {
          
         var socket = io();
@@ -63,7 +74,7 @@
             
           //sends the roomNum and nickname to the server   
            e.preventDefault(); // prevents page reloading
-           socket.emit('nickname', $("#studentNick").val().trim() + "," + roomNum);
+           socket.emit('nickname', $("#studentNick").val().trim() + "," + roomNum+","+city+","+country);
         
           return false;
         });
@@ -190,7 +201,6 @@
             
         }); 
         socket.on('updateBoard',function(oppMove){
-            //alert(oppMove);
             //first is cheat/coop
             //second is roomNum
             //third is nick
@@ -265,7 +275,6 @@
             haveIPlayed = Array(opps).fill(false);
        
             for(var i =0; i<opponents.length;i++){
-               // alert(opponents[i]);
                 leadArray.push(opponents[i] + ":0");
                 if(!anon){
                 document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
@@ -311,7 +320,6 @@
         var opps = opponents.length;
         leadArray = [];
         for(var i =0; i<opponents.length;i++){
-               // alert(opponents[i]);
                     leadArray.push(opponents[i] + ":0");
                 if(!anon){
                     document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
@@ -348,6 +356,7 @@
         socket.on('everybody',function(e){
            rest = true;
         });
+        
      });      
     
         

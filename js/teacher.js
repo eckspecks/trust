@@ -23,7 +23,15 @@
            //adds the names that the server sends back to the list of connected players
            var ul = document.getElementById("names");
            var li = document.createElement("li");
-           li.appendChild(document.createTextNode(nick));
+           var n = nick.split(",")[0];        
+           var city = nick.split(",")[1];
+           var country = nick.split(",")[2];
+           if(city.length == 0 ||country.length == 0){
+                li.appendChild(document.createTextNode(n));
+           }else{
+                li.appendChild(document.createTextNode(n + "(" + city + " " + country + ")"));
+
+           }
            var button = document.createElement("button");
            button.setAttribute('class',"kicked");
            button.innerHTML = " Kick";
@@ -33,12 +41,12 @@
            ul.appendChild(li);
            users++;
            
-           players.push(nick);
+           players.push(n);
         });
         $(document).on('click', "button.kicked", function() {
            var theId = $(this).attr('id');
            var ulElem = document.getElementById("names");
-           var text =  ulElem.childNodes[theId].textContent; 
+           var text =  ulElem.childNodes[theId].textContent.split("(")[0]; 
            socket.emit('kicked',teachersCode + ","+text);
     
            var lastIndex = text.lastIndexOf(" ");
