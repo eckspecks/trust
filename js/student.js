@@ -97,6 +97,7 @@
             if(isCodeSuccessful.split(",")[0]==="restart" && isCodeSuccessful.split(",")[1]!== nick){
                 return false;
             }
+            
             for(var i =0;i<opponents.length;i++){
                 document.getElementById("ready"+i).style.display = "block";
 
@@ -122,15 +123,17 @@
                 rest = false;
 
                 for(var i =0;i<opponents.length;i++){
+                    console.log(haveIPlayed);
                     if(!haveIPlayed[i]){
+                        console.log("A");
                         var opp =opponents[i];
                         socket.emit('move',1 + "," + roomNum + "," + nick + "," + opp);
                         coopOpp[i] =true;
-                        haveIPlayed[i] = false;
-                        
                     }
                 }  
                   
+               // haveIPlayed.fill(false);
+                
                   
                 socket.emit('updateBoard',"play " + roomNum);
                 clearInterval(downloadTimer);
@@ -346,7 +349,12 @@
         });
          
         socket.on('everybody',function(e){
+           console.log("everybbody as gone");
            rest = true;
+        });
+             
+        socket.on('teacherDisconnected',function(e){
+            document.getElementById("waiting").innerHTML = "<h1>Teacher disconnected! :(</h1><br>    <a href ='/student.html'>Go Back</a>";
         });
      });      
     
