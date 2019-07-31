@@ -4,7 +4,7 @@ h1, h2{
 }
 h2{
     font-size: 40px;
-    color:orange;
+    color: orange;
     font-weight: 900;
 }
 body{
@@ -13,8 +13,7 @@ body{
     align-items: center;
 }
 html{
-    max-height: 100vh;
-    
+    max-height: 100%;
 }
 
 /*Logo & Copyright on multiple pages*/
@@ -24,6 +23,7 @@ html{
     bottom: 0;
     width: 100%;
     margin: auto;
+    padding-bottom: 10px;
 }
 #copyright{
     font-family:courier; 
