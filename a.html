@@ -7,12 +7,13 @@
     <script>
     var city = "";
     var country = "";
-$.getJSON('http://ip-api.com/json?callback=?', function(data) {
-  var string = JSON.stringify(data, null, 2);
+        var string = [];
+$.getJSON('http://ip-api.com/json/?fields=61439', function(data) {
+   string = JSON.stringify(data, null, 2).split(",");
     
-     city = string.split("\"")[7];
-     country = string.split("\"")[11];    
-    console.log(city + " " + country);
+    country = string[5].split(":")[1];  
+    city = string[2].split(":")[1];
+     console.log(city + " " + country);
 });
     
     

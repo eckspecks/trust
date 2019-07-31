@@ -104,9 +104,7 @@ io.on('connection', function(socket){
             if(id===_id){
                 teacherIDs.splice(i,1);
                 index = indexOfArray(array,code);
-                if(index == -1){
-                    index= indexOfArray(array,code+"~");
-                }
+
                 array[index] = "NULL";
                 
                 return false;
@@ -155,9 +153,7 @@ io.on('connection', function(socket){
      //sends the nickname of each player in the teacher's room to the teacher
      var nick = theNickname.split(",")[0];
      var roomNum = theNickname.split(",")[1];
-     var city = theNickname.split(",")[2];
-     var country = theNickname.split(",")[3];
-
+     
      gameCodeUsers.push(nick + "~" + socket.id + "~" + roomNum);
      
      if(players[roomNum].includes(nick)){
@@ -171,9 +167,10 @@ io.on('connection', function(socket){
          io.to(roomNum).emit('nicknameError',"limit" + " " +nick)
          return false;
      }
+     console.log(theNickname);
      console.log("Success! " + nick +" is now registered in room" + roomNum);
      players[roomNum].push(nick);
-     io.to(roomNum).emit('nickname',nick+","+city+","+country);
+     io.to(roomNum).emit('nickname',nick);
      io.to(roomNum).emit('nicknameError',"success" + " " +nick);
 });
     
@@ -253,21 +250,19 @@ socket.on('chat message', function(msg){
   io.to(roomNum).emit('chat message', msg);
 });  
 socket.on('kicked',function(kick){
-  console.log(kick);
-  var nickname = kick.split(",")[1];
+  
+  var lastIndex = kick.lastIndexOf(" ");
+  kick = kick.substr(0, lastIndex);
         
   var roomNumber = array.indexOf(kick.split(",")[0]);   
-  if(roomNumber == -1){
-      roomNumber = array.indexOf(kick.split(",")[0]+"~");
-  }
-  
-  var index = players[roomNumber].indexOf(nickname);
+
+  var index = players[roomNumber].indexOf(kick.split(",")[1]);
 
   if(index>-1){
     players[roomNumber].splice(index,1);
   }  
-  console.log("kicked " + nickname);
-  io.to(roomNumber).emit('youGotKicked', nickname);
+
+  io.to(roomNumber).emit('youGotKicked', kick.split(",")[1]);
 });
 socket.on('options',function(e){
     var roomNum = array.indexOf(e.split(",")[2]);
@@ -309,14 +304,6 @@ socket.on('quickMove',function(e){
 socket.on('teacherID',function(e){
  teacherIDs.push(socket.id+"~~~"+e);
 }); 
-socket.on('opponentLocation',function(e){
-    var arr = e.split(",");
-    console.log(e);
-    var country = arr[0];
-    var city = arr[1];
-    var id= arr[2];
-    var oppId = arr[3];
-    io.to(oppId).emit('oppLoc',city+","+country);
-}); 
+
     
 });
