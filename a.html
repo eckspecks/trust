@@ -1,0 +1,35 @@
+<html> <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    
+    
+    
+    
+    <script>
+    var city = "";
+    var country = "";
+$.getJSON('http://ip-api.com/json?callback=?', function(data) {
+  var string = JSON.stringify(data, null, 2);
+    
+     city = string.split("\"")[7];
+     country = string.split("\"")[11];    
+    console.log(city + " " + country);
+});
+    
+    
+    
+    
+    </script>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <h1>A</h1></html>
