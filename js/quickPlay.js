@@ -5,16 +5,7 @@ var playMove = "null";
 var oppS = 0;
 var playS = 0;
 var rounds = 10;
-var string = "";
-var city = "";
-var country = "";
-var oppCity = "";
-var oppCountry ="";
-$.getJSON('http://ip-api.com/json?callback=?', function(data) {
-        string = JSON.stringify(data, null, 2);
 
-       
-});
 
 $(function () {
   
@@ -82,20 +73,11 @@ $(function () {
               id = e.split("~~~")[0];
               document.getElementById("connecting").style.display = "none";
               document.getElementById("ready").style.display = "block";
-              
-                city = string.split("\"")[7];
-                country = string.split("\"")[11];
-              
-                socket.emit('opponentLocation',country + "," + city + "," +id+","+opp);
+
 
           });
-         socket.on('move',function(e){
-            
-         city = string.split("\"")[7];
-         country = string.split("\"")[11];     
-         socket.emit('opponentLocation',country + "," + city + "," +id+","+opp);
-            
-         document.getElementById("location").innerHTML = "Opponent is in " + oppCity + " " + oppCountry;
+        socket.on('move',function(e){
+
           oppMove=e;
           if(playMove==="null"){
                 document.getElementById("wait").innerHTML = "Opponent has moved.";
@@ -119,12 +101,5 @@ $(function () {
 
            doMove(0);
 
-        });
-    socket.on('oppLoc',function(e){
-       
-        oppCity = e.split(",")[0];
-        oppCountry= e.split(",")[1];
-        document.getElementById("location").innerHTML = "Opponent is in " + oppCity + " " + oppCountry;
-          
         });
     });
