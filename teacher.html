@@ -16,7 +16,11 @@
     <br>
     <p id="copyright" align="left" style="font-family:courier; font-size:50%;">&copy;2019 Nobel Coaching</p>
 </div>
+    
+<div>
     <button id="send" onclick="gen()" >Create Room Code</button>
+</div>
+    
 <div id="hideAfterPlayGame">
         <h1 id="yourRoomCode">Your Room Code</h1>
         <h1 id="code"></h1>
@@ -27,15 +31,19 @@
     <div id="options">
         <h1>Rounds:</h1><input id="roundNum" type="text" value="5">
         <h1>Seconds Per Round:</h1><input id="secsPerRound" type="text" value="30">
-        <br><br>   
-          <input type="checkbox" id="anon" name="anonymous">
-          <label for="anon">Anonymous Opponents?</label>
-        <h1>Gremlin Chance:</h1><input type="range" min="0" max="10" value="0" class="slider" id="slideNum">
-        <label for="slideNum" id="chanceVal">5%</label>
-
-          
+        <br>
+        <br>   
+        <input type="checkbox" id="anon" name="anonymous">
+        <label for="anon">Anonymous Opponents?</label>
+        
+        <div>
+            <h1>Gremlin Chance:</h1><input type="range" min="0" max="10" value="0" class="slider" id="slideNum">
+            <label for="slideNum" id="chanceVal">5%</label>
         </div>
-        <script>
+          
+    </div>
+    
+    <script>
         var slider = document.getElementById("slideNum");
         var output = document.getElementById("chanceVal");
         output.innerHTML = slider.value + "%";
@@ -43,9 +51,8 @@
         slider.oninput = function() {
             output.innerHTML = this.value + "%";
         }
-        </script>
+    </script>
 
-        <br>
         <div id="playGameButton"> 
         <button id="playGame" >Play Game</button>
         </div>
