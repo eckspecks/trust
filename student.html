@@ -10,7 +10,6 @@
     
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-
     <script src="/js/student.js"></script>
       
 <body>
@@ -18,24 +17,25 @@
     <div id="top">
         <a href="index.html">
         <img id ="logo" align="left" src="nobel.png"></a>
-        <p id="copyright" align="left" style="font-family:courier; font-size:50%;">&nbsp;&nbsp;&nbsp;&copy;2019 Nobel Coaching</p>
+        <br>
+        <p id="copyright" align="left" style="font-family:courier; font-size:50%;">&copy;2019 Nobel Coaching</p>
     </div>
     
     <div id="student">
-        <input type= "text" id="studentRoomCode">
+        <input type= "text" id="studentRoomCode" placeholder="Enter room code">
         <h1 id="codeError"></h1>
         <button id="submitRoomCode">Submit Room Code</button>
-        <br>
-        <div id="green">
-        <a href="quickPlay.html">Quick Play</a>
+        
+        <div>
+        <a class = "green-button" href="quickPlay.html">Quick Play</a>
         </div>
     </div>
 
     <div id="enterNickname">
-        <input type= "text" id="studentNick">
+        <input type= "text" id="studentNick" placeholder="Enter name">
         <br>
         <h1 id="nickError"></h1>
-        <button id="nickname">Enter Nickname</button>
+        <button class = "green-button" id="nickname">Enter Nickname</button>
     </div>
     <div id="waiting"><h1>Waiting for teacher to start game</h1></div>
     

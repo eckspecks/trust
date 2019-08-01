@@ -16,7 +16,7 @@ html{
     max-height: 100%;
 }
 
-/*Logo & Copyright on multiple pages*/
+/*Logo & Copyright*/
 #bottom{
     vertical-align: baseline;
     position: fixed;
@@ -41,13 +41,13 @@ html{
 #green{
     margin-bottom:50px;
 }
-button, #green a{
-    font-family: 'Poppins', sans-serif;
+button, .green-button{
     height:100px;
     width: 300px;
+    font-family: 'Poppins', sans-serif;
+    color: white;
     background-color: #4CAF50; 
     border: none;
-    color: white;
     text-align: center;
     vertical-align: middle;
     text-decoration: none;
@@ -56,12 +56,11 @@ button, #green a{
     margin: 5px 10px;
     cursor: pointer; 
     border-radius: 100px;
-}
-#green a{
     line-height: 100px;
 }
 #about{
     margin-bottom: 50px;
+    margin-top: 50px;
 }
 #about a{
     font-family: 'Poppins', sans-serif;
@@ -105,7 +104,7 @@ button, #green a{
 
 /*student.html*/
 #top{
-    margin-bottom: 150px;
+    margin-bottom: 75px;
 }
 #enterNickname,#ready0,#waiting,#ready1,#ready2,#ready3,#ready4,#ready5,#ready6,#ready7,#ready8,#ready9{
     display:none;            
@@ -188,9 +187,6 @@ li{
 li, label{
     font-family: 'Poppins', sans-serif;
 }
-body{
-    text-align: center;
-}
 table {
     border-collapse: collapse;
 }
@@ -231,11 +227,9 @@ li{
   -webkit-transition: .2s;
   transition: opacity .2s;
 }
-
 .slider:hover {
   opacity: 1;
 }
-
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -245,7 +239,6 @@ li{
   background: #4CAF50;
   cursor: pointer;
 }
-
 .slider::-moz-range-thumb {
   width: 25px;
   height: 25px;
