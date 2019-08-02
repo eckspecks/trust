@@ -1,10 +1,12 @@
         var matrix = [];
         var users=0;
         var players=[];
+        var ids = [];
         var x = 0;
         var y = 0;
         var j = 0;
         var currRound = 1;
+        var gamestarted = false;
      $(function () {
          
         var socket = io();
@@ -35,7 +37,15 @@
            
            players.push(nick);
         });
+        socket.on('playerIds',function(e){
+            ids.push(e);
+        });
         $(document).on('click', "button.kicked", function() {
+            
+           if(gamestarted){
+               return false;
+           }    
+            
            var theId = $(this).attr('id');
            var ulElem = document.getElementById("names");
            var text =  ulElem.childNodes[theId].textContent; 
@@ -47,6 +57,7 @@
            var index = players.indexOf(players[theId]);
            if(index>-1){
              players.splice(index,1);
+             ids.splice(index,1);
            } 
             
            ulElem.removeChild(ulElem.childNodes[theId]);
@@ -56,6 +67,7 @@
               document.getElementById(players.indexOf(restart)).click();
           });  
         $("#playGame").click(function(e){
+            
           var r = document.getElementById("roundNum").value;
           var spr = document.getElementById("secsPerRound").value;
           var c = document.getElementById("anon").checked;
@@ -86,9 +98,11 @@
           }
              
           e.preventDefault(); // prevents page reloading
-          socket.emit('numberOfUsers',players +" " +teachersCode);
+          socket.emit('numberOfUsers',players +"~"+ids+"~" +teachersCode);
+
           socket.emit('readyToPlay',"play," + teachersCode);
           play();
+          gamestarted = true;
           
           return false;
         }); 
@@ -133,8 +147,9 @@
         }); 
         
         $("#restartGame").click(function(e){
+             
           socket.emit('restartGame',teachersCode);
-          socket.emit('numberOfUsers',players +" " +teachersCode);
+          socket.emit('numberOfUsers',players +"~"+ids+"~" +teachersCode);
           socket.emit('readyToPlay',"play," + teachersCode);
           document.getElementById("restartGameButton").style.display = "none";              
           currRound =1;
