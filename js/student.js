@@ -17,6 +17,7 @@
         var oppMoves = [];
         var cheatOpp = [];
         var coopOpp = [];
+        var oppRep = [];
      $(function () {
          
         var socket = io();
@@ -155,7 +156,7 @@
               if(timeleft <= -1 || rest){
                 rest = false;
                 
-            
+                
                
                 clearInterval(downloadTimer);
                 document.getElementById("countdown0").innerHTML = "Round Done"
@@ -211,7 +212,8 @@
             var opps = opponents.length;
             play= Array(opps).fill(0);
             oppScore=Array(opps).fill(0);
-           
+            oppRep=Array(opps).fill(0);
+
             haveIPlayed = Array(opps).fill(false);
        
             for(var i =0; i<opponents.length;i++){
@@ -252,30 +254,32 @@
         });
         socket.on('r', function(msg){
             
-        totScore = 0;
-        document.getElementById("leaderboard").style.display = "none";
-        document.getElementById("totalScores").style.display = "none";
-        for(var i=0;i<=opponents.length;i++){
-            document.getElementById("yourScore"+i).innerHTML="<p>"+0+"</p>";
-            document.getElementById("oppScore"+i).innerHTML="<p>"+0+"</p>"; 
-        }
-        var opps = opponents.length;
-        leadArray = [];
-        for(var i =0; i<opponents.length;i++){
-               // alert(opponents[i]);
-                    leadArray.push(opponents[i] + ":0");
-                if(!anon){
-                    document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
-                }
-        }
-        leadArray.push(nick + ":0");    
-            
-        play= Array(opps).fill(0);
-        oppScore=Array(opps).fill(0);
-        oppMove=Array(opps).fill("null");
-        haveIPlayed = Array(opps).fill(false);
-        cheatOpp = Array(opps).fill(false);
-        rounds = permRounds;
+            totScore = 0;
+            document.getElementById("leaderboard").style.display = "none";
+            document.getElementById("totalScores").style.display = "none";
+            for(var i=0;i<=opponents.length;i++){
+                document.getElementById("yourScore"+i).innerHTML="<p>"+0+"</p>";
+                document.getElementById("oppScore"+i).innerHTML="<p>"+0+"</p>"; 
+                document.getElementById("oppRep"+i).innerHTML="<p>"+0+"</p>"; 
+            }
+            var opps = opponents.length;
+            leadArray = [];
+            for(var i =0; i<opponents.length;i++){
+                   // alert(opponents[i]);
+                        leadArray.push(opponents[i] + ":0");
+                    if(!anon){
+                        document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
+                    }
+            }
+            leadArray.push(nick + ":0");    
+
+            play= Array(opps).fill(0);
+            oppScore=Array(opps).fill(0);
+            oppRep = Array(opps).fill(0);
+            oppMove=Array(opps).fill("null");
+            haveIPlayed = Array(opps).fill(false);
+            cheatOpp = Array(opps).fill(false);
+            rounds = permRounds;
             
         });
          
@@ -304,6 +308,16 @@
         socket.on('teacherDisconnected',function(e){
             document.getElementById("waiting").innerHTML = "<h1>Teacher disconnected! :(</h1><br>    <a href ='/student.html'>Go Back</a>";
         });
+         socket.on('score',function(e){
+            var opponent = e.split(",")[2];
+            var move = e.split(",")[0];
+            var index = opponents.indexOf(opponent);
+            if(move==1){
+            oppRep[index]++;
+            }else{
+            oppRep[index]--;
+            }
+        });
          socket.on('oppMoveAgainstYou',function(e){
            var index = opponents.indexOf(e.split(",")[1]);
            oppMoves[index] = e;
@@ -331,7 +345,7 @@
          
          
          
-          function updateBoard(){
+        function updateBoard(){
               
                
         for(var i =0;i<opponents.length;i++){
@@ -383,6 +397,8 @@
              coopOpp[i] = false;
              document.getElementById("yourScore"+i).innerHTML="<p>"+play[i]+"</p>";
              document.getElementById("oppScore"+i).innerHTML="<p>"+oppScore[i]+"</p>";
+             document.getElementById("oppRep"+i).innerHTML="<p>"+oppRep[i]+"</p>";
+
             socket.emit('score',nick+ "," + play[i] + ","+roomNum + "," +opponents[i] + "," +totScore);   
 
         }
