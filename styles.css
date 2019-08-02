@@ -1,11 +1,14 @@
 /*All*/
-h1, h2{
+h1, h2, h3{
     font-family: 'Poppins', sans-serif;
 }
 h2{
     font-size: 40px;
     color: orange;
     font-weight: 900;
+}
+h3{
+    
 }
 body{
     text-align: center;
@@ -205,6 +208,9 @@ li{
     padding:0;
     list-style-type:none;
     font-size: 30px;
+}
+#roundNum{
+    margin-bottom: 15px;
 }
 #playGameButton{
     width:300px;
