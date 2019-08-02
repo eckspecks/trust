@@ -280,6 +280,7 @@ socket.on('restartGame',function(e){
     moves[roomNum] = new Array(0);    
     io.to(roomNum).emit('r',"reset");
     io.to(roomNum).emit('readyToPlay',"ready a");
+    io.to(roomNum).emit('round',"ready");
 
 });    
 socket.on('lookingForGame',function(e){
