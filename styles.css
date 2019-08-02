@@ -14,6 +14,7 @@ body{
     text-align: center;
     background-color: #f5f3e2;
     align-items: center;
+    margin: auto;
 }
 html{
     max-height: 100%;
@@ -45,8 +46,8 @@ html{
     margin-bottom:50px;
 }
 button, .green-button{
-    height:100px;
-    width: 300px;
+    height:80px;
+    width: 240px;
     font-family: 'Poppins', sans-serif;
     color: white;
     background-color: #4CAF50; 
@@ -59,31 +60,37 @@ button, .green-button{
     margin: 5px 10px;
     cursor: pointer; 
     border-radius: 100px;
-    line-height: 100px;
+    line-height: 80px;
 }
 #about{
-    margin-bottom: 50px;
+    margin-bottom: 40px;
     margin-top: 50px;
 }
 #about a{
     font-family: 'Poppins', sans-serif;
-    font-size: 20px;
+    font-size: 16px;
     padding: 20px;
     color:white;
     background-color:orange;
     border-radius: 100px;
     text-decoration: none;
 }
+#bottomLogo{
+    width: 20%;
+    height: 20%;
+}
 
 /*Font Awesome*/
 .fa {
-    padding: 20px;
-    font-size: 30px;
-    width: 18px;
+    padding: 10px;
+    font-size: 5px;
+
+    height:15px;
+    width: 15px;
+
     text-align: center;
     text-decoration: none;
     margin: 5px 2px;
-    height:18px;
     border-radius: 50%;
     z-index: 2;
 }
@@ -180,6 +187,9 @@ li{
 
 /*teacher.html*/
     
+#send{
+    
+}
 #yourRoomCode,#names,#playGame,#players,#options,#restartGameButton{
    display:none;
 }
@@ -189,6 +199,11 @@ li{
 }
 li, label{
     font-family: 'Poppins', sans-serif;
+}
+li{
+    padding:0;
+    list-style-type:none;
+    font-size: 30px;
 }
 table {
     border-collapse: collapse;
@@ -204,11 +219,6 @@ td, th {
     font-size:20px;
     background-color: #800000;
 }
-li{
-    padding:0;
-    list-style-type:none;
-    font-size: 30px;
-}
 #roundNum{
     margin-bottom: 15px;
 }
@@ -221,7 +231,6 @@ li{
 .slidecontainer {
   width: 100%;
 }
-
 .slider {
   -webkit-appearance: none;
   width: 30%;
