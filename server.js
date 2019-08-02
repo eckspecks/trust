@@ -66,7 +66,7 @@ var currRound = 0;
 var lookingForGame = [];
 var gameCodeUsers = [];
 var teacherIDs = [];
-
+var playerIDs = [];
 function indexOfArray(array, item) {
     for (var i = 0; i < array.length; i++) {
         if (array[i].toString() === item.toString()) return i;
@@ -76,13 +76,13 @@ function indexOfArray(array, item) {
 
 io.on('connection', function(socket){
     
-    console.log('a user connected');
+    //console.log('a user connected');
     
     socket.on('message', function(msg){
         //teacher creates a new roomNumber
         socket.join(roomnum);
         players.push(new Array(0));
-        
+        playerIDs.push(new Array(0));
         moves.push(new Array(0));
         roomnum++;
         
@@ -97,7 +97,7 @@ io.on('connection', function(socket){
         if(index!=-1){
             lookingForGame.splice(index,1);
         }
-        console.log(array);
+       // console.log(array);
         for(var i =0;i<teacherIDs.length;i++){
             var id = teacherIDs[i].split("~~~")[0];
             var code = teacherIDs[i].split("~~~")[1];
@@ -146,7 +146,7 @@ io.on('connection', function(socket){
         socket.join(roomNumber);
         //if code from player is found in the set, return success
         socket.emit('code',"success " + roomNumber);
-        console.log("success! Room number:" + roomNumber + " Players Code:" + playersCode);
+        //console.log("success! Room number:" + roomNumber + " Players Code:" + playersCode);
         
     }else{  
         //if not, return failure
@@ -174,40 +174,43 @@ io.on('connection', function(socket){
          io.to(roomNum).emit('nicknameError',"limit" + " " +nick)
          return false;
      }
-     console.log(theNickname);
-     console.log("Success! " + nick +" is now registered in room" + roomNum);
+//     console.log(theNickname);
+//     console.log("Success! " + nick +" is now registered in room" + roomNum);
      players[roomNum].push(nick);
+     playerIDs[roomNum].push(socket.id);
      io.to(roomNum).emit('nickname',nick);
+     io.to(roomNum).emit('playerIds',socket.id);
      io.to(roomNum).emit('nicknameError',"success" + " " +nick);
 });
     
     
  socket.on('readyToPlay',function(gameCode){
-     console.log(gameCode);
+     //console.log(gameCode);
      var nick = gameCode.split(",")[2];
      var roomNumber = array.indexOf(gameCode.split(",")[1]);
-     
-     if(gameCode.split(",")[0]==="restart"){
-        roomNumber = gameCode.split(",")[1];
-        io.to(roomNumber).emit('readyToPlay',"restart," + nick);
-        
-     }else{
+     //console.log(players);
         //sends the nickname of each player in the teacher's room to the teacher
         io.to(roomNumber).emit('readyToPlay',"ready a");
-        
+        io.to(roomNumber).emit("round","");
         for (var i=array.length-1; i>=0; i--) {
             if (array[i] === gameCode.split(",")[1]) {
               array[i]+="~";
            }
         }
-     }     
+      
  
 });    
           
 socket.on('move',function(theMove){
     console.log("move: " +theMove);
-    var roomNum = theMove.split(",")[1];
+    var arr = theMove.split(",");
+    var roomNum =arr[1];    
+    var id= arr[4];
+    
     moves[roomNum].push(theMove);
+
+    
+    io.to(id).emit('oppMoveAgainstYou',arr[0]+","+arr[2]);
     io.to(roomNum).emit('score',theMove);
     if(moves[roomNum].length=== (players[roomNum].length * (players[roomNum].length-1)  )){
         io.to(roomNum).emit('everybody',"everybody");
@@ -216,36 +219,28 @@ socket.on('move',function(theMove){
 }); 
     
     
-socket.on('updateBoard',function(update){
-    var roomNum = update.split(" ")[1];
+socket.on('resetMoves',function(update){
     
-    if(update.split(" ")[0]==="reset"){
         //resets the moves array
-        moves[roomNum] = new Array(0);    
-    }else{
-        
-        for(var i =0;i<moves[roomNum].length;i++){
-            io.to(roomNum).emit('updateBoard',moves[roomNum][i]);
-        }
-        
-    }
+        moves[update] = new Array(0);    
+    
 });
     
 socket.on('numberOfUsers',function(users){
-  var teachersCode = users.split(" ")[users.split(" ").length-1];   
-  console.log(teachersCode);
+  var arr = users.split("~");
+  var teachersCode = arr[2];   
   var roomNumber = array.indexOf(teachersCode);
-  io.to(roomNumber).emit('numberOfUsers',users.substring(0, users.lastIndexOf(" ")));
-
+  io.to(roomNumber).emit('numberOfUsers',arr[0]+"~"+arr[1]);
   console.log("Users: " + users);
 });
- 
+    
+
+    
 socket.on('score',function(score){  
   console.log("Score: " + score);
   var roomNum = score.split(",")[2];
   var totScore = score.split(",")[4];
     
-  console.log("totalscore : " + score.split(",")[0] + "  " +totScore);
   io.to(roomNum).emit('lead',score.split(",")[0] + "," + totScore);  
 
 });
@@ -257,16 +252,16 @@ socket.on('chat message', function(msg){
   io.to(roomNum).emit('chat message', msg);
 });  
 socket.on('kicked',function(kick){
-  
+  console.log(kick);
   var lastIndex = kick.lastIndexOf(" ");
   kick = kick.substr(0, lastIndex);
         
   var roomNumber = array.indexOf(kick.split(",")[0]);   
-  console.log("is this running?");
   var index = players[roomNumber].indexOf(kick.split(",")[1]);
 
   if(index>-1){
     players[roomNumber].splice(index,1);
+    playerIDs[roomNumber].splice(index,1);
   }  
 
   io.to(roomNumber).emit('youGotKicked', kick.split(",")[1]);
@@ -283,14 +278,12 @@ socket.on('restartGame',function(e){
     currRound=0;
     var roomNum = array.indexOf(e+"~");
     moves[roomNum] = new Array(0);    
-    console.log("restartGame! " + e + " " + roomNum + " f " + array);
     io.to(roomNum).emit('r',"reset");
     io.to(roomNum).emit('readyToPlay',"ready a");
 
 });    
 socket.on('lookingForGame',function(e){
   lookingForGame.push(socket.id)
-  console.log( lookingForGame);
   if(lookingForGame.length>=2){
           io.to(lookingForGame[0]).emit('startGame',lookingForGame[0]+"~~~"+lookingForGame[1]);
           io.to(lookingForGame[1]).emit('startGame',lookingForGame[1]+"~~~"+lookingForGame[0]);
@@ -311,6 +304,12 @@ socket.on('quickMove',function(e){
 socket.on('teacherID',function(e){
  teacherIDs.push(socket.id+"~~~"+e);
 }); 
-
+socket.on('nextRound',function(e){
+ var roomNum = e.split(",")[0];
+ var index = players[roomNum].indexOf(e.split(",")[1]);
+ 
     
+    
+ io.to(playerIDs[roomNum][index]).emit('round',"?");
+}); 
 });
