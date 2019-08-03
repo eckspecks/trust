@@ -3,14 +3,14 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 const path = require('path');
-const ip = require("ip");
 const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, 'index.html');
 const app = express();
 app.use(express.static('images'));
 app.use(express.static(path.join(__dirname, 'public')));
-
 const server = http.createServer(app);
+
+
 app.get("/", function(req, res)
 {
     res.sendFile(__dirname + "/index.html");
@@ -76,6 +76,7 @@ function indexOfArray(array, item) {
 }
 
 io.on('connection', function(socket){
+    
 
     //console.log('a user connected');
     socket.on('message', function(msg){
@@ -177,10 +178,14 @@ io.on('connection', function(socket){
      
      playerIDs[roomNum].push(socket.id);
      io.to(roomNum).emit('nickname',nick);
-    
      
+
+    http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
+      resp.on('data', function(ip) {
+        io.to(socket.id).emit('ip',socket.request.socket.remoteAddress);
+      });
+    });
      
-     io.to(socket.id).emit('ip',ip.address());
      io.to(roomNum).emit('playerIds',socket.id);
      io.to(roomNum).emit('nicknameError',"success" + " " +nick);
 });
