@@ -3,8 +3,6 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 const path = require('path');
-var geoip = require('geoip-lite');
-
 
 const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, 'index.html');
