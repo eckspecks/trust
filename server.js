@@ -180,9 +180,9 @@ io.on('connection', function(socket){
      io.to(roomNum).emit('nickname',nick);
      
 
-    http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
+         http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
       resp.on('data', function(ip) {
-        io.to(socket.id).emit('ip',socket.request.socket.remoteAddress);
+        console.log("My public IP address is: " + ip);
       });
     });
      
