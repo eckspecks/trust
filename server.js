@@ -3,6 +3,8 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 const path = require('path');
+var geoip = require('geoip-lite');
+
 
 const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, 'index.html');
@@ -24,7 +26,8 @@ app.get("/styles.css", function(req, res)
     res.sendFile(__dirname + "/styles.css");
 });
 app.get("/js/student.js", function(req, res)
-{
+{   
+
     res.sendFile(__dirname + "/js/student.js");
 });
 app.get("/js/teacher.js", function(req, res)
@@ -75,14 +78,14 @@ function indexOfArray(array, item) {
 }
 
 io.on('connection', function(socket){
-    
+
     //console.log('a user connected');
-    
     socket.on('message', function(msg){
         //teacher creates a new roomNumber
         socket.join(roomnum);
         players.push(new Array(0));
         playerIDs.push(new Array(0));
+
         moves.push(new Array(0));
         roomnum++;
         
@@ -108,11 +111,7 @@ io.on('connection', function(socket){
                 
                 
                 array[index] = "NULL";
-                
-                
-                
-                
-                
+    
                 
                 return false;
                 
@@ -177,8 +176,10 @@ io.on('connection', function(socket){
 //     console.log(theNickname);
 //     console.log("Success! " + nick +" is now registered in room" + roomNum);
      players[roomNum].push(nick);
+     
      playerIDs[roomNum].push(socket.id);
      io.to(roomNum).emit('nickname',nick);
+     io.to(socket.id).emit('ip',socket.request.socket.remoteAddress);
      io.to(roomNum).emit('playerIds',socket.id);
      io.to(roomNum).emit('nicknameError',"success" + " " +nick);
 });
@@ -281,6 +282,7 @@ socket.on('restartGame',function(e){
     io.to(roomNum).emit('r',"reset");
     io.to(roomNum).emit('readyToPlay',"ready a");
     io.to(roomNum).emit('round',"ready");
+
 
 });    
 socket.on('lookingForGame',function(e){
