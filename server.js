@@ -3,7 +3,7 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 const path = require('path');
-
+const ip = require("ip");
 const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, 'index.html');
 const app = express();
@@ -177,7 +177,10 @@ io.on('connection', function(socket){
      
      playerIDs[roomNum].push(socket.id);
      io.to(roomNum).emit('nickname',nick);
-     io.to(socket.id).emit('ip',socket.request.socket.remoteAddress);
+    
+     
+     
+     io.to(socket.id).emit('ip',ip.address());
      io.to(roomNum).emit('playerIds',socket.id);
      io.to(roomNum).emit('nicknameError',"success" + " " +nick);
 });
