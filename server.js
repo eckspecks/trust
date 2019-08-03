@@ -3,6 +3,7 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 const path = require('path');
+var geoip = require('geoip-lite');
 const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, 'index.html');
 const app = express();
@@ -226,6 +227,8 @@ io.on('connection', function(socket){
          http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
         resp.on('data', function(ip) {
         var stringIp = arrayBufferToString(ip);
+        var geo = geoip.lookup(stringIp);
+        console.log(geo);
         io.to(socket.id).emit('ip',stringIp);
       });
     });
