@@ -18,6 +18,7 @@
         var cheatOpp = [];
         var coopOpp = [];
         var oppRep = [];
+        var ip = "";
      $(function () {
          
         var socket = io();
@@ -307,6 +308,9 @@
             
         socket.on('teacherDisconnected',function(e){
             document.getElementById("waiting").innerHTML = "<h1>Teacher disconnected! :(</h1><br>    <a href ='/student.html'>Go Back</a>";
+        });
+         socket.on('ip',function(e){
+          alert(e);
         });
          socket.on('score',function(e){
             var opponent = e.split(",")[2];
