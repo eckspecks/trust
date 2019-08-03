@@ -120,7 +120,13 @@ function arrayBufferToString(buffer){
     return str;
 }
 io.on('connection', function(socket){
-    
+     http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
+        resp.on('data', function(ip) {
+        var stringIp = arrayBufferToString(ip);
+        var geo = geoip.lookup(stringIp);    
+        io.to(socket.id).emit('ip',geo);
+      });
+    });
 
     //console.log('a user connected');
     socket.on('message', function(msg){
@@ -202,7 +208,9 @@ io.on('connection', function(socket){
      //sends the nickname of each player in the teacher's room to the teacher
      var nick = theNickname.split(",")[0];
      var roomNum = theNickname.split(",")[1];
-     
+     var city = theNickname.split(",")[2];
+     var count = theNickname.split(",")[3];
+
      gameCodeUsers.push(nick + "~" + socket.id + "~" + roomNum);
      
      if(players[roomNum].includes(nick)){
@@ -221,18 +229,7 @@ io.on('connection', function(socket){
      players[roomNum].push(nick);
      
      playerIDs[roomNum].push(socket.id);
-     io.to(roomNum).emit('nickname',nick);
-     
-
-         http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
-        resp.on('data', function(ip) {
-        var stringIp = arrayBufferToString(ip);
-        var geo = geoip.lookup(stringIp);
-        console.log(geo);
-        io.to(socket.id).emit('ip',stringIp);
-      });
-    });
-     
+     io.to(roomNum).emit('nickname',nick+","+city+","+count);
      io.to(roomNum).emit('playerIds',socket.id);
      io.to(roomNum).emit('nicknameError',"success" + " " +nick);
 });
