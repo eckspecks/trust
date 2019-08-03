@@ -18,7 +18,8 @@
         var cheatOpp = [];
         var coopOpp = [];
         var oppRep = [];
-        var ip = "";
+        var city = "Unknown";
+        var country = "Unknown";
      $(function () {
          
         var socket = io();
@@ -67,7 +68,7 @@
             
           //sends the roomNum and nickname to the server   
            e.preventDefault(); // prevents page reloading
-           socket.emit('nickname', $("#studentNick").val().trim() + "," + roomNum);
+           socket.emit('nickname', $("#studentNick").val().trim() + "," + roomNum+","+city+","+country);
         
           return false;
         });
@@ -310,8 +311,10 @@
             document.getElementById("waiting").innerHTML = "<h1>Teacher disconnected! :(</h1><br>    <a href ='/student.html'>Go Back</a>";
         });
          socket.on('ip',function(e){
-          alert(e);
-        });
+             var ip = JSON.stringify(e).split(",");
+             city = ip[6].split("\"")[3];
+             country = ip[2].split("\"")[3];
+         });
          socket.on('score',function(e){
             var opponent = e.split(",")[2];
             var move = e.split(",")[0];
