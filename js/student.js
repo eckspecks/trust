@@ -17,6 +17,10 @@
         var oppMoves = [];
         var cheatOpp = [];
         var coopOpp = [];
+        var oppRep = [];
+        var city = "Unknown";
+        var allnicks = false;
+        var country = "Unknown";
      $(function () {
          
         var socket = io();
@@ -56,20 +60,48 @@
                     e.innerHTML = "Must Enter Nickname";
                     return false;
             }
-            if(nick.indexOf(",")!==-1 || nick.indexOf("~")!==-1){
+            if(nick.indexOf(",")!==-1 || nick.indexOf("~")!==-1 || nick.indexOf(":")!==-1){
                 var e = document.getElementById("nickError");
                     e.style.display = 'block';
-                    e.innerHTML = "Nickname cannot include commas or squiggly lines";
+                    e.innerHTML = "Nickname cannot include special characters";
                     return false;
             }
             
           //sends the roomNum and nickname to the server   
            e.preventDefault(); // prevents page reloading
-           socket.emit('nickname', $("#studentNick").val().trim() + "," + roomNum);
+           socket.emit('nickname', $("#studentNick").val().trim() + "," + roomNum+","+city+","+country);
         
           return false;
         });
-         
+        socket.on('allNicks',function(nickname){
+           if(allnicks){
+               return false;
+           }    
+           allnicks = true;
+           //adds the names that the server sends back to the list of connected players
+           var ul = document.getElementById("studentNames");
+           var nicks = nickname.split("~")[0];
+           var locations = nickname.split("~")[1].split(",");
+           for(var i =0;i<nicks.split(",").length;i++){
+                var li = document.createElement("li");
+                console.log(nicks);
+                console.log(locations);
+                li.appendChild(document.createTextNode(nicks.split(",")[i] + " (" + locations[i].split(":")[0] + " " + locations[i].split(":")[1]+")"));
+
+                ul.appendChild(li);    
+         //  players.push(arr[0]);
+        }
+        });
+         socket.on('nickname',function(nickname){
+            if(!allnicks){
+                return false;
+            }
+           var ul = document.getElementById("studentNames");
+           var li = document.createElement("li");
+           var arr = nickname.split(",");
+           li.appendChild(document.createTextNode(arr[0] + "(" + arr[1] + " " + arr[2] + ")"));
+           ul.appendChild(li);
+         });
         socket.on('nicknameError',function(error){
             if((error.substr(error.indexOf(' ')+1)) !== nick){
                 return false;
@@ -155,7 +187,7 @@
               if(timeleft <= -1 || rest){
                 rest = false;
                 
-            
+                
                
                 clearInterval(downloadTimer);
                 document.getElementById("countdown0").innerHTML = "Round Done"
@@ -211,7 +243,8 @@
             var opps = opponents.length;
             play= Array(opps).fill(0);
             oppScore=Array(opps).fill(0);
-           
+            oppRep=Array(opps).fill(0);
+
             haveIPlayed = Array(opps).fill(false);
        
             for(var i =0; i<opponents.length;i++){
@@ -239,7 +272,26 @@
             if(msg===nick){
               document.getElementById("waiting").innerHTML= "<h1>You got kicked by the teacher! :(</h1><br>    <a href ='/student.html'>Go Back</a>";
               kicked = true;
+              return false;
             }
+             
+        var listItems = $("#studentNames li");
+        listItems.each(function(idx, li) {
+            var product = $(li);
+            var text = product.text();
+            
+            if(text.split("(")[0].trim()===msg){
+                product.hide();
+            }
+            
+        });
+             
+             
+             
+             
+             
+             
+             
         }); 
           socket.on('opt', function(msg){
           permRounds = msg.split(",")[0];
@@ -252,30 +304,32 @@
         });
         socket.on('r', function(msg){
             
-        totScore = 0;
-        document.getElementById("leaderboard").style.display = "none";
-        document.getElementById("totalScores").style.display = "none";
-        for(var i=0;i<=opponents.length;i++){
-            document.getElementById("yourScore"+i).innerHTML="<p>"+0+"</p>";
-            document.getElementById("oppScore"+i).innerHTML="<p>"+0+"</p>"; 
-        }
-        var opps = opponents.length;
-        leadArray = [];
-        for(var i =0; i<opponents.length;i++){
-               // alert(opponents[i]);
-                    leadArray.push(opponents[i] + ":0");
-                if(!anon){
-                    document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
-                }
-        }
-        leadArray.push(nick + ":0");    
-            
-        play= Array(opps).fill(0);
-        oppScore=Array(opps).fill(0);
-        oppMove=Array(opps).fill("null");
-        haveIPlayed = Array(opps).fill(false);
-        cheatOpp = Array(opps).fill(false);
-        rounds = permRounds;
+            totScore = 0;
+            document.getElementById("leaderboard").style.display = "none";
+            document.getElementById("totalScores").style.display = "none";
+            for(var i=0;i<=opponents.length;i++){
+                document.getElementById("yourScore"+i).innerHTML="<p>"+0+"</p>";
+                document.getElementById("oppScore"+i).innerHTML="<p>"+0+"</p>"; 
+                document.getElementById("oppRep"+i).innerHTML="<p>"+0+"</p>"; 
+            }
+            var opps = opponents.length;
+            leadArray = [];
+            for(var i =0; i<opponents.length;i++){
+                   // alert(opponents[i]);
+                        leadArray.push(opponents[i] + ":0");
+                    if(!anon){
+                        document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
+                    }
+            }
+            leadArray.push(nick + ":0");    
+
+            play= Array(opps).fill(0);
+            oppScore=Array(opps).fill(0);
+            oppRep = Array(opps).fill(0);
+            oppMove=Array(opps).fill("null");
+            haveIPlayed = Array(opps).fill(false);
+            cheatOpp = Array(opps).fill(false);
+            rounds = permRounds;
             
         });
          
@@ -304,6 +358,21 @@
         socket.on('teacherDisconnected',function(e){
             document.getElementById("waiting").innerHTML = "<h1>Teacher disconnected! :(</h1><br>    <a href ='/student.html'>Go Back</a>";
         });
+         socket.on('ip',function(e){
+             var ip = JSON.stringify(e).split(",");
+             city = ip[6].split("\"")[3];
+             country = ip[2].split("\"")[3];
+         });
+         socket.on('score',function(e){
+            var opponent = e.split(",")[2];
+            var move = e.split(",")[0];
+            var index = opponents.indexOf(opponent);
+            if(move==1){
+            oppRep[index]++;
+            }else{
+            oppRep[index]--;
+            }
+        });
          socket.on('oppMoveAgainstYou',function(e){
            var index = opponents.indexOf(e.split(",")[1]);
            oppMoves[index] = e;
@@ -331,7 +400,7 @@
          
          
          
-          function updateBoard(){
+        function updateBoard(){
               
                
         for(var i =0;i<opponents.length;i++){
@@ -383,6 +452,8 @@
              coopOpp[i] = false;
              document.getElementById("yourScore"+i).innerHTML="<p>"+play[i]+"</p>";
              document.getElementById("oppScore"+i).innerHTML="<p>"+oppScore[i]+"</p>";
+             document.getElementById("oppRep"+i).innerHTML="<p>"+oppRep[i]+"</p>";
+
             socket.emit('score',nick+ "," + play[i] + ","+roomNum + "," +opponents[i] + "," +totScore);   
 
         }

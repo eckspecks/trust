@@ -43,6 +43,15 @@
                 <h3>Gremlin Chance:</h3><input type="range" min="0" max="10" value="0" class="slider" id="slideNum">
                 <label for="slideNum" id="chanceVal">5%</label>
             </div>
+    
+    <script>
+        var slider = document.getElementById("slideNum");
+        var output = document.getElementById("chanceVal");
+        output.innerHTML = slider.value + "%";
+        slider.oninput = function() {
+            output.innerHTML = this.value + "%";
+        }
+    </script>
 
         </div>
 

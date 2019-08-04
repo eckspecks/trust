@@ -3,14 +3,15 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 const path = require('path');
-
+var geoip = require('geoip-lite');
 const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, 'index.html');
 const app = express();
 app.use(express.static('images'));
 app.use(express.static(path.join(__dirname, 'public')));
-
 const server = http.createServer(app);
+
+
 app.get("/", function(req, res)
 {
     res.sendFile(__dirname + "/index.html");
@@ -24,7 +25,8 @@ app.get("/styles.css", function(req, res)
     res.sendFile(__dirname + "/styles.css");
 });
 app.get("/js/student.js", function(req, res)
-{
+{   
+
     res.sendFile(__dirname + "/js/student.js");
 });
 app.get("/js/teacher.js", function(req, res)
@@ -67,6 +69,7 @@ var lookingForGame = [];
 var gameCodeUsers = [];
 var teacherIDs = [];
 var playerIDs = [];
+var geo = [];
 function indexOfArray(array, item) {
     for (var i = 0; i < array.length; i++) {
         if (array[i].toString() === item.toString()) return i;
@@ -74,15 +77,67 @@ function indexOfArray(array, item) {
     return -1;
 }
 
+function arrayBufferToString(buffer){
+    var byteArray = new Uint8Array(buffer);
+    var str = "", cc = 0, numBytes = 0;
+    for(var i=0, len = byteArray.length; i<len; ++i){
+        var v = byteArray[i];
+        if(numBytes > 0){
+            //2 bit determining that this is a tailing byte + 6 bit of payload
+            if((cc&192) === 192){
+                //processing tailing-bytes
+                cc = (cc << 6) | (v & 63);
+            }else{
+                throw new Error("this is no tailing-byte");
+            }
+        }else if(v < 128){
+            //single-byte
+            numBytes = 1;
+            cc = v;
+        }else if(v < 192){
+            //these are tailing-bytes
+            throw new Error("invalid byte, this is a tailing-byte")
+        }else if(v < 224){
+            //3 bits of header + 5bits of payload
+            numBytes = 2;
+            cc = v & 31;
+        }else if(v < 240){
+            //4 bits of header + 4bit of payload
+            numBytes = 3;
+            cc = v & 15;
+        }else{
+            //UTF-8 theoretically supports up to 8 bytes containing up to 42bit of payload
+            //but JS can only handle 16bit.
+            throw new Error("invalid encoding, value out of range")
+        }
+
+        if(--numBytes === 0){
+            str += String.fromCharCode(cc);
+        }
+    }
+    if(numBytes){
+        throw new Error("the bytes don't sum up");
+    }
+    return str;
+}
 io.on('connection', function(socket){
-    
+     http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
+        resp.on('data', function(ip) {
+        var stringIp = arrayBufferToString(ip);
+        var geo = geoip.lookup(stringIp);    
+        io.to(socket.id).emit('ip',geo);
+      });
+    });
+
     //console.log('a user connected');
-    
     socket.on('message', function(msg){
         //teacher creates a new roomNumber
         socket.join(roomnum);
         players.push(new Array(0));
+        geo.push(new Array(0));
+
         playerIDs.push(new Array(0));
+
         moves.push(new Array(0));
         roomnum++;
         
@@ -108,11 +163,7 @@ io.on('connection', function(socket){
                 
                 
                 array[index] = "NULL";
-                
-                
-                
-                
-                
+    
                 
                 return false;
                 
@@ -160,7 +211,9 @@ io.on('connection', function(socket){
      //sends the nickname of each player in the teacher's room to the teacher
      var nick = theNickname.split(",")[0];
      var roomNum = theNickname.split(",")[1];
-     
+     var city = theNickname.split(",")[2];
+     var count = theNickname.split(",")[3];
+
      gameCodeUsers.push(nick + "~" + socket.id + "~" + roomNum);
      
      if(players[roomNum].includes(nick)){
@@ -177,8 +230,10 @@ io.on('connection', function(socket){
 //     console.log(theNickname);
 //     console.log("Success! " + nick +" is now registered in room" + roomNum);
      players[roomNum].push(nick);
+     geo[roomNum].push(city + ":"+count);
      playerIDs[roomNum].push(socket.id);
-     io.to(roomNum).emit('nickname',nick);
+     io.to(roomNum).emit('nickname',nick+","+city+","+count);
+     io.to(roomNum).emit('allNicks',players[roomNum]+"~"+geo[roomNum]);
      io.to(roomNum).emit('playerIds',socket.id);
      io.to(roomNum).emit('nicknameError',"success" + " " +nick);
 });
@@ -252,18 +307,17 @@ socket.on('chat message', function(msg){
   io.to(roomNum).emit('chat message', msg);
 });  
 socket.on('kicked',function(kick){
-  console.log(kick);
   var lastIndex = kick.lastIndexOf(" ");
-  kick = kick.substr(0, lastIndex);
-        
-  var roomNumber = array.indexOf(kick.split(",")[0]);   
+  var roomNumber = indexOfArray(array,kick.split(",")[0]);
+   
+  console.log(players + " " +roomNumber + " " + array);
   var index = players[roomNumber].indexOf(kick.split(",")[1]);
 
   if(index>-1){
     players[roomNumber].splice(index,1);
     playerIDs[roomNumber].splice(index,1);
+      geo[roomNumber].splice(index,1);
   }  
-
   io.to(roomNumber).emit('youGotKicked', kick.split(",")[1]);
 });
 socket.on('options',function(e){
@@ -281,6 +335,7 @@ socket.on('restartGame',function(e){
     io.to(roomNum).emit('r',"reset");
     io.to(roomNum).emit('readyToPlay',"ready a");
     io.to(roomNum).emit('round',"ready");
+
 
 });    
 socket.on('lookingForGame',function(e){
