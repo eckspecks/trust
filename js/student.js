@@ -86,7 +86,7 @@
                 var li = document.createElement("li");
                 console.log(nicks);
                 console.log(locations);
-                li.appendChild(document.createTextNode(nicks.split(",")[i] + " from " + locations[i].split(":")[0] + " " + locations[i].split(":")[1]));
+                li.appendChild(document.createTextNode(nicks.split(",")[i] + " (" + locations[i].split(":")[0] + " " + locations[i].split(":")[1]+")"));
 
                 ul.appendChild(li);    
          //  players.push(arr[0]);
@@ -99,7 +99,7 @@
            var ul = document.getElementById("studentNames");
            var li = document.createElement("li");
            var arr = nickname.split(",");
-           li.appendChild(document.createTextNode(arr[0] + " from " + arr[1] + " " + arr[2]));
+           li.appendChild(document.createTextNode(arr[0] + "(" + arr[1] + " " + arr[2] + ")"));
            ul.appendChild(li);
          });
         socket.on('nicknameError',function(error){
@@ -272,7 +272,26 @@
             if(msg===nick){
               document.getElementById("waiting").innerHTML= "<h1>You got kicked by the teacher! :(</h1><br>    <a href ='/student.html'>Go Back</a>";
               kicked = true;
+              return false;
             }
+             
+        var listItems = $("#studentNames li");
+        listItems.each(function(idx, li) {
+            var product = $(li);
+            var text = product.text();
+            
+            if(text.split("(")[0].trim()===msg){
+                product.hide();
+            }
+            
+        });
+             
+             
+             
+             
+             
+             
+             
         }); 
           socket.on('opt', function(msg){
           permRounds = msg.split(",")[0];
