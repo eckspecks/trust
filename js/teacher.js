@@ -26,7 +26,7 @@
            //adds the names that the server sends back to the list of connected players
            var ul = document.getElementById("names");
            var li = document.createElement("li");
-           li.appendChild(document.createTextNode(arr[0] + " From " + arr[1] + " , " + arr[2] ));
+           li.appendChild(document.createTextNode(arr[0] + "(" + arr[1] + " , " + arr[2]+")" ));
            var button = document.createElement("button");
            button.setAttribute('class',"kicked");
            button.innerHTML = " Kick";
@@ -47,13 +47,11 @@
                return false;
            }    
             
-           var theId = $(this).attr('id');
+           var theId = parseInt($(this).attr('id'));
            var ulElem = document.getElementById("names");
-           var text =  ulElem.childNodes[theId].textContent; 
+           var text =  ulElem.childNodes[theId].textContent.split("(")[0]; 
            socket.emit('kicked',teachersCode + ","+text);
-    
-           var lastIndex = text.lastIndexOf(" ");
-           text = text.substr(0, lastIndex);
+
             
            var index = players.indexOf(players[theId]);
            if(index>-1){
@@ -62,6 +60,11 @@
            } 
             
            ulElem.removeChild(ulElem.childNodes[theId]);
+           for(var i = theId;i<ulElem.childNodes.length;i++){
+               console.log(i);
+               document.getElementById((i+1)+"!").id = i+"!";
+                document.getElementById((i+1)).id = i;
+           }
            users--;
        });
           socket.on('userDisconnected',function(restart){ 

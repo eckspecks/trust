@@ -19,6 +19,7 @@
         var coopOpp = [];
         var oppRep = [];
         var city = "Unknown";
+        var allnicks = false;
         var country = "Unknown";
      $(function () {
          
@@ -59,10 +60,10 @@
                     e.innerHTML = "Must Enter Nickname";
                     return false;
             }
-            if(nick.indexOf(",")!==-1 || nick.indexOf("~")!==-1){
+            if(nick.indexOf(",")!==-1 || nick.indexOf("~")!==-1 || nick.indexOf(":")!==-1){
                 var e = document.getElementById("nickError");
                     e.style.display = 'block';
-                    e.innerHTML = "Nickname cannot include commas or squiggly lines";
+                    e.innerHTML = "Nickname cannot include special characters";
                     return false;
             }
             
@@ -72,7 +73,35 @@
         
           return false;
         });
-         
+        socket.on('allNicks',function(nickname){
+           if(allnicks){
+               return false;
+           }    
+           allnicks = true;
+           //adds the names that the server sends back to the list of connected players
+           var ul = document.getElementById("studentNames");
+           var nicks = nickname.split("~")[0];
+           var locations = nickname.split("~")[1].split(",");
+           for(var i =0;i<nicks.split(",").length;i++){
+                var li = document.createElement("li");
+                console.log(nicks);
+                console.log(locations);
+                li.appendChild(document.createTextNode(nicks.split(",")[i] + " from " + locations[i].split(":")[0] + " " + locations[i].split(":")[1]));
+
+                ul.appendChild(li);    
+         //  players.push(arr[0]);
+        }
+        });
+         socket.on('nickname',function(nickname){
+            if(!allnicks){
+                return false;
+            }
+           var ul = document.getElementById("studentNames");
+           var li = document.createElement("li");
+           var arr = nickname.split(",");
+           li.appendChild(document.createTextNode(arr[0] + " from " + arr[1] + " " + arr[2]));
+           ul.appendChild(li);
+         });
         socket.on('nicknameError',function(error){
             if((error.substr(error.indexOf(' ')+1)) !== nick){
                 return false;
