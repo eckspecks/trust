@@ -33,6 +33,10 @@ html{
     font-family:courier; 
     font-size:50%;
 }
+#logo{
+    width: 50%;
+    height: 50%;
+}
 
 /*Index.html*/
 
