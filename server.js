@@ -69,6 +69,7 @@ var lookingForGame = [];
 var gameCodeUsers = [];
 var teacherIDs = [];
 var playerIDs = [];
+var geo = [];
 function indexOfArray(array, item) {
     for (var i = 0; i < array.length; i++) {
         if (array[i].toString() === item.toString()) return i;
@@ -133,6 +134,8 @@ io.on('connection', function(socket){
         //teacher creates a new roomNumber
         socket.join(roomnum);
         players.push(new Array(0));
+        geo.push(new Array(0));
+
         playerIDs.push(new Array(0));
 
         moves.push(new Array(0));
@@ -227,9 +230,10 @@ io.on('connection', function(socket){
 //     console.log(theNickname);
 //     console.log("Success! " + nick +" is now registered in room" + roomNum);
      players[roomNum].push(nick);
-     
+     geo[roomNum].push(city + ":"+count);
      playerIDs[roomNum].push(socket.id);
      io.to(roomNum).emit('nickname',nick+","+city+","+count);
+     io.to(roomNum).emit('allNicks',players[roomNum]+"~"+geo[roomNum]);
      io.to(roomNum).emit('playerIds',socket.id);
      io.to(roomNum).emit('nicknameError',"success" + " " +nick);
 });
@@ -303,16 +307,16 @@ socket.on('chat message', function(msg){
   io.to(roomNum).emit('chat message', msg);
 });  
 socket.on('kicked',function(kick){
-  console.log(kick);
   var lastIndex = kick.lastIndexOf(" ");
-  kick = kick.substr(0, lastIndex);
-        
-  var roomNumber = array.indexOf(kick.split(",")[0]);   
+  var roomNumber = indexOfArray(array,kick.split(",")[0]);
+   
+  console.log(players + " " +roomNumber + " " + array);
   var index = players[roomNumber].indexOf(kick.split(",")[1]);
 
   if(index>-1){
     players[roomNumber].splice(index,1);
     playerIDs[roomNumber].splice(index,1);
+      geo[roomNumber].splice(index,1);
   }  
 
   io.to(roomNumber).emit('youGotKicked', kick.split(",")[1]);
