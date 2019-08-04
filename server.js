@@ -318,7 +318,6 @@ socket.on('kicked',function(kick){
     playerIDs[roomNumber].splice(index,1);
       geo[roomNumber].splice(index,1);
   }  
-
   io.to(roomNumber).emit('youGotKicked', kick.split(",")[1]);
 });
 socket.on('options',function(e){
