@@ -1,47 +1,48 @@
 <html>
 <head>
-   <title>Trust Game</title>
-       <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trust Game</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
     
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="/js/teacher.js"></script>
-      
     
-<body>
 <div id="top">
-    <a href="index.html">
-    <img id ="logo" align="left" src="nobel.png"></a>
+    <a href="index.html"><img id ="logo" align="left" src="nobel.png"></a>
     <br>
-    <p id="copyright" align="left" style="font-family:courier; font-size:50%;">&copy;2019 Nobel Coaching</p>
+    <p id="copyright" align="left">&copy;2019 Nobel Coaching</p>
 </div>
+
+<body>
     
-<div>
-    <button id="send" onclick="gen()" >Create Room Code</button>
-</div>
     
-<div id="hideAfterPlayGame">
-        <h1 id="yourRoomCode">Your Room Code</h1>
-        <h1 id="code"></h1>
-        <h1 id="error"></h1>
-        <h1 id="players">Players Connected:</h1>    
-        <ul id="names"></ul>
-    
-    <div id="options">
-        <h1>Rounds:</h1><input id="roundNum" type="text" value="5">
-        <h1>Seconds Per Round:</h1><input id="secsPerRound" type="text" value="30">
-        <br>
-        <br>   
-        <input type="checkbox" id="anon" name="anonymous">
-        <label for="anon">Anonymous Opponents?</label>
-        
-        <div>
-            <h1>Gremlin Chance:</h1><input type="range" min="0" max="10" value="0" class="slider" id="slideNum">
-            <label for="slideNum" id="chanceVal">5%</label>
-        </div>
-          
+    <div>
+        <button id="send" onclick="gen()" >Create Room Code</button>
     </div>
+
+    <div id="hideAfterPlayGame">
+            <h1 id="yourRoomCode">Your Room Code</h1>
+            <h1 id="code"></h1>
+            <h1 id="error"></h1>
+            <h1 id="players">Players Connected:</h1>    
+            <ul id="names"></ul>
+
+        <div id="options">
+            <h3>Options</h3>
+            <label for="roundNum">Rounds: </label><input id="roundNum" type="text" value="5">
+            <br>
+            <label for="secsPerRound">Seconds Per Round: </label><input id="secsPerRound" type="text" value="30">
+            <br>
+            <br>   
+            <input type="checkbox" id="anon" name="anonymous">
+            <label for="anon">Anonymous Opponents?</label>
+
+            <div>
+                <h3>Gremlin Chance:</h3><input type="range" min="0" max="10" value="0" class="slider" id="slideNum">
+                <label for="slideNum" id="chanceVal">5%</label>
+            </div>
     
     <script>
         var slider = document.getElementById("slideNum");
@@ -52,15 +53,28 @@
         }
     </script>
 
-        <div id="playGameButton"> 
-        <button id="playGame" >Play Game</button>
         </div>
-        </div>
-        <br>
-        <div id="tableDiv">
-            
-    
-        </div>
-        <div id="restartGameButton"><button id="restartGame">Restart Game</button></div>
+
+        <script>
+            var slider = document.getElementById("slideNum");
+            var output = document.getElementById("chanceVal");
+            output.innerHTML = slider.value + "%";
+
+            slider.oninput = function() {
+                output.innerHTML = this.value + "%";
+            }
+        </script>
+
+            <div id="playGameButton"> 
+                <button id="playGame" >Play Game</button>
+            </div>
+    </div>
+            <br>
+            <div id="tableDiv">
+
+
+            </div>
+    <div id="restartGameButton"><button id="restartGame">Restart Game</button></div>
 </body>
+
 </html>
