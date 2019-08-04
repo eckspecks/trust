@@ -116,7 +116,7 @@ button, .green-button{
 #top{
     margin-top: 10px;
     margin-left: 10px;
-    margin-bottom: 75px;
+    margin-bottom: 50px;
 }
 #enterNickname,#ready0,#waiting,#ready1,#ready2,#ready3,#ready4,#ready5,#ready6,#ready7,#ready8,#ready9{
     display:none;            
@@ -198,6 +198,10 @@ li{
     color: orange;
     font-weight: 100;
 }
+#playGame{
+    margin:auto;
+    margin-top: 10px;
+}
 li, label{
     font-family: 'Poppins', sans-serif;
 }
@@ -224,9 +228,8 @@ td, th {
     margin-bottom: 15px;
 }
 #playGameButton{
-    width:300px;
-    margin:auto;
-    text-align:center;
+    align-items: center;
+    width: 100%;
 }
 
 .slidecontainer {
