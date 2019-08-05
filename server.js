@@ -10,7 +10,6 @@ const app = express();
 app.use(express.static('images'));
 app.use(express.static(path.join(__dirname, 'public')));
 const server = http.createServer(app);
-const getIP = require('external-ip')();
 
 app.get("/", function(req, res)
 {
@@ -122,14 +121,10 @@ function arrayBufferToString(buffer){
 }
 io.on('connection', function(socket){
        
-      getIP((err, ip) => {
-    if (err) {
-        io.to(socket.id).emit('ip',"error");
-        throw err;
-    }   
+        var ip = socket.handshake.address;
+        console.log(ip.address + ":" + ip.port)
         var geo = geoip.lookup(ip);    	
         io.to(socket.id).emit('ip',geo);
-});
       
 
 
