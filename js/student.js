@@ -366,6 +366,9 @@
         });
          socket.on('ip',function(e){
              console.log(e);
+             if(e==null){
+                 return false;
+             }
              var ip = JSON.stringify(e).split(",");
              city = ip[6].split("\"")[3];
              country = ip[2].split("\"")[3];
