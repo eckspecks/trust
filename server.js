@@ -10,7 +10,7 @@ const app = express();
 app.use(express.static('images'));
 app.use(express.static(path.join(__dirname, 'public')));
 const server = http.createServer(app);
-
+var ip = require('ip');
 
 app.get("/", function(req, res)
 {
@@ -121,13 +121,9 @@ function arrayBufferToString(buffer){
     return str;
 }
 io.on('connection', function(socket){
-     http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
-        resp.on('data', function(ip) {
-        var stringIp = arrayBufferToString(ip);
        // var geo = geoip.lookup(stringIp);    
-        io.to(socket.id).emit('ip',stringIp);
-      });
-    });
+        io.to(socket.id).emit('ip',ip.address());
+    
 
     //console.log('a user connected');
     socket.on('message', function(msg){
