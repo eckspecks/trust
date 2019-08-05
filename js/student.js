@@ -288,10 +288,6 @@
              
              
              
-             
-             
-             
-             
         }); 
           socket.on('opt', function(msg){
           permRounds = msg.split(",")[0];
@@ -299,6 +295,9 @@
           secs = msg.split(",")[1];
           if(msg.split(",")[2]==="true"){
               anon = true;
+          }
+          if(msg.split(",")[3]==="true"){
+              alert("A?");
           }
           
         });
@@ -359,6 +358,7 @@
             document.getElementById("waiting").innerHTML = "<h1>Teacher disconnected! :(</h1><br>    <a href ='/student.html'>Go Back</a>";
         });
          socket.on('ip',function(e){
+             console.log(e);
              var ip = JSON.stringify(e).split(",");
              city = ip[6].split("\"")[3];
              country = ip[2].split("\"")[3];
