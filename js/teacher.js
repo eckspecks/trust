@@ -1,512 +1,239 @@
-        var opponents =[];
-        var rounds =10;
-        var play=[];
-        var oppScore= [];
-        var nick = "";
-        var roomNum = 0;
-        var timeleft =0;
-        var kicked=  false;
-        var secs =0;
-        var permRounds = 10;
-        var haveIPlayed = [];
-        var leadArray = [];
-        var totScore = 0;
-        var anon = false;
-        var rest = false;
-        var oppIDs = [];
-        var oppMoves = [];
-        var cheatOpp = [];
-        var coopOpp = [];
-        var oppRep = [];
-        var city = "Unknown";
-        var allnicks = false;
-        var country = "Unknown";
+        var matrix = [];
+        var users=0;
+        var players=[];
+        var ids = [];
+        var x = 0;
+        var y = 0;
+        var j = 0;
+        var currRound = 1;
+        var gamestarted = false;
      $(function () {
          
         var socket = io();
+        var teachersCode ="";
          
-         
-        $("#submitRoomCode").click(function(e){
-                    
+        $("#send").click(function(e){
+          //sends the generated code to server     
           e.preventDefault(); // prevents page reloading
-        
-          //sends the code that player has put in to the server
-          socket.emit('code', $("#studentRoomCode").val());
-            
-            //gets a message back from the server whether or not the code was successful
-            socket.on('code',function(isCodeSuccessful){
-             
-               var e = document.getElementById("codeError");
-                
-               //if it is not valid, tell user    
-               if(isCodeSuccessful==="failure"){
-                    e.style.display = 'block';
-                    e.innerHTML = "Invalid Room Code";
-                }else{
-                    //allows user to enter nickname if it is successful
-                    roomNum = isCodeSuccessful.split(" ")[1];
-                    document.getElementById("enterNickname").style.display = 'block';
-                    document.getElementById("student").style.display = 'none';
-                }
-            }) 
+          teachersCode = $("#code").text();
+          socket.emit('message', teachersCode);
+            socket.emit('teacherID',teachersCode);
           return false;
         });
          
-        $("#nickname").click(function(e){
-         nick =  $("#studentNick").val().trim();
-            if(nick.length==0){
-                var e = document.getElementById("nickError");
-                    e.style.display = 'block';
-                    e.innerHTML = "Must Enter Nickname";
-                    return false;
-            }
-            if(nick.indexOf(",")!==-1 || nick.indexOf("~")!==-1 || nick.indexOf(":")!==-1){
-                var e = document.getElementById("nickError");
-                    e.style.display = 'block';
-                    e.innerHTML = "Nickname cannot include special characters";
-                    return false;
-            }
-            
-          //sends the roomNum and nickname to the server   
-           e.preventDefault(); // prevents page reloading
-           socket.emit('nickname', $("#studentNick").val().trim() + "," + roomNum+","+city+","+country);
-        
-          return false;
+        socket.on('nickname', function(nick){
+           var arr = nick.split(",");
+           //adds the names that the server sends back to the list of connected players
+           var ul = document.getElementById("names");
+           var li = document.createElement("li");
+           li.appendChild(document.createTextNode(arr[0] + "(" + arr[1] + " , " + arr[2]+")" ));
+           var button = document.createElement("button");
+           button.setAttribute('class',"kicked");
+           button.innerHTML = " Kick";
+           button.setAttribute("id",users);
+           li.appendChild(button);
+           li.setAttribute("id",users+"!");
+           ul.appendChild(li);
+           users++;
+           
+           players.push(arr[0]);
         });
-        socket.on('allNicks',function(nickname){
-           if(allnicks){
+        socket.on('playerIds',function(e){
+            ids.push(e);
+        });
+        $(document).on('click', "button.kicked", function() {
+            
+           if(gamestarted){
                return false;
            }    
-           allnicks = true;
-           //adds the names that the server sends back to the list of connected players
-           var ul = document.getElementById("studentNames");
-           var nicks = nickname.split("~")[0];
-           var locations = nickname.split("~")[1].split(",");
-           for(var i =0;i<nicks.split(",").length;i++){
-                var li = document.createElement("li");
-                console.log(nicks);
-                console.log(locations);
-                li.appendChild(document.createTextNode(nicks.split(",")[i] + " (" + locations[i].split(":")[0] + " " + locations[i].split(":")[1]+")"));
-
-                ul.appendChild(li);    
-         //  players.push(arr[0]);
-        }
-        });
-         socket.on('nickname',function(nickname){
-            if(!allnicks){
-                return false;
-            }
-           var ul = document.getElementById("studentNames");
-           var li = document.createElement("li");
-           var arr = nickname.split(",");
-           li.appendChild(document.createTextNode(arr[0] + "(" + arr[1] + " " + arr[2] + ")"));
-           ul.appendChild(li);
-         });
-        socket.on('nicknameError',function(error){
-            if((error.substr(error.indexOf(' ')+1)) !== nick){
-                return false;
-            }
             
-            if(error.split(" ")[0]==="success"){
-              document.getElementById("enterNickname").innerHTML = "";  
-              document.getElementById("waiting").style.display = "block";  
+           var theId = parseInt($(this).attr('id'));
+           var ulElem = document.getElementById("names");
+           var text =  ulElem.childNodes[theId].textContent.split("(")[0]; 
+           socket.emit('kicked',teachersCode + ","+text);
+
+            
+           var index = players.indexOf(players[theId]);
+           if(index>-1){
+             players.splice(index,1);
+             ids.splice(index,1);
+           } 
+            
+           ulElem.removeChild(ulElem.childNodes[theId]);
+           for(var i = theId;i<ulElem.childNodes.length;i++){
+               console.log(i);
+               document.getElementById((i+1)+"!").id = i+"!";
+                document.getElementById((i+1)).id = i;
+           }
+           users--;
+       });
+          socket.on('userDisconnected',function(restart){ 
+              document.getElementById(players.indexOf(restart)).click();
+          });  
+        $("#playGame").click(function(e){
+            
+          var r = document.getElementById("roundNum").value;
+          var spr = document.getElementById("secsPerRound").value;
+          var c = document.getElementById("anon").checked;
+          var t = document.getElementById("tourn").checked;
+          if(r.length === 0 || spr.length === 0){
+              document.getElementById("error").innerHTML = "Options must not be empty";
               return false;
-            }
-            if(error.split(" ")[0]==="limit"){
-                e.style.display = 'block';
-                e.innerHTML = "Too many people already in room."
-                return false;
-            }
-           var e = document.getElementById("nickError");
-           e.style.display = 'block';
-           e.innerHTML = "Nickname has already been chosen.";       
-        });
-         
-        socket.on('readyToPlay',function(isCodeSuccessful){
+          } 
+          if(!isNumeric(r) || !isNumeric(spr)){
+              document.getElementById("error").innerHTML = "Options must not be numbers";
+              return false;
+          } 
+          if(r<1 || spr<1){
+              document.getElementById("error").innerHTML = "Options must not be negative or zero.";
+              return false;
+          }
+          if(spr<15){
+              document.getElementById("error").innerHTML = "Minimum time per round is 15 seconds";
+              return false;              
+          }
+          socket.emit('options',r + "," + spr + "," + teachersCode + "," + c+","+t); 
+          //sends the generated code to server
+          resetMatrix();
             
+          if(users<2){
+            document.getElementById("error").style.display="block";   
+            document.getElementById("error").innerHTML="Must have more than 1 player";
+            return false;
+          }
+             
+          e.preventDefault(); // prevents page reloading
+          socket.emit('numberOfUsers',players +"~"+ids+"~" +teachersCode);
+
+          socket.emit('readyToPlay',"play," + teachersCode);
+          play();
+          gamestarted = true;
           
-            for(var i =0;i<opponents.length;i++){
-                document.getElementById("ready"+i).style.display = "block";
-                document.getElementById("cheat"+i).style.display = "inline-block";
-                document.getElementById("coop"+i).style.display = "inline-block";
-            }
-           
-            document.getElementById("waiting").style.display = 'none';
-            document.getElementById("student").style.display = 'none';
-            document.getElementById("enterNickname").style.display = 'none';
-            document.getElementById("chatbox").style.display = 'block';
-            document.getElementById("photo").style.display = 'inline-block';
-
-            //timer goes 30 seconds?
-            
-            
-            
-        });
-         
-        $('.cheatButton').click(function(e){
-            e.preventDefault();
-            var id = $(this).attr('id');
-            var opp =opponents[id[id.length-1]];
-            var opponentID = oppIds[id[id.length-1]];
-            
-
-            socket.emit('move',0 + "," + roomNum + "," + nick +"," +opp+","+opponentID );
-            document.getElementById("cheat"+id[id.length-1]).style.display = "none";
-            document.getElementById("coop"+id[id.length-1]).style.display = "none";
-            haveIPlayed[opponents.indexOf(opp)] = true;
-            cheatOpp[opponents.indexOf(opp)] =true;
-
-            return false;
-            
-        }); 
-         
-        $('.coopButton').click(function(e){      
-            e.preventDefault();
-            var id = $(this).attr('id');
-            var opp =opponents[id[id.length-1]];
-
-            var opponentID = oppIds[id[id.length-1]];
-        
-            socket.emit('move',1 + "," + roomNum + "," + nick +"," +opp+","+opponentID );
-            document.getElementById("cheat"+id[id.length-1]).style.display = "none";
-            document.getElementById("coop"+id[id.length-1]).style.display = "none";
-            haveIPlayed[opponents.indexOf(opp)] = true;
-            coopOpp[opponents.indexOf(opp)] =true;
-
-            return false;
-            
-        }); 
-         
-         socket.on('round',function(e){
-              timeleft = secs;
-              var downloadTimer = setInterval(function(){
-              document.getElementById("countdown0").innerHTML = timeleft + " seconds remaining";
-              timeleft -= 1;
-                
-                
-              if(timeleft <= -1 || rest){
-                rest = false;
-                
-                
-               
-                clearInterval(downloadTimer);
-                document.getElementById("countdown0").innerHTML = "Round Done"
-                  
-                updateBoard(); 
-                  
-                socket.emit('resetMoves',roomNum);
-                if(rounds==1){
-                    
-                    document.getElementById("countdown0").innerHTML = "Game over!";
-                    socket.emit('restart',roomNum);
-
-                    for(var i =0; i<opponents.length;i++){
-                        document.getElementById("ready"+i).style.display = "none";
-                        document.getElementById("opp"+i).style.display = "none";
-                    }
-                    
-                    document.getElementById("chatbox").style.display = "none";
-                    document.getElementById("photo").style.display = "none";
-
-                   document.getElementById("leaderboard").style.display = "block";
-                    document.getElementById("totalScores").style.display = "block";
-
-                    return false;
-                }  
-                rounds--;  
-                socket.emit('nextRound',roomNum+","+nick);
-                for(var i =0;i<opponents.length;i++){
-                    document.getElementById("cheat"+i).style.display = "inline-block";
-                    document.getElementById("coop"+i).style.display = "inline-block";
-                }
-              }
-            }, 1000);
-        }); 
-        socket.on('numberOfUsers',function(users){
-            var arr = users.split("~");
-            if(kicked){
-                return false;
-            }
-            opponents = arr[0].split(",");
-            oppIds = arr[1].split(",");
-            for(var i =0;i<opponents.length-1;i++){
-                document.getElementById("ready"+i).style.display="block";
-                
-            }
-            
-            var index = opponents.indexOf(nick);
-            
-            if(index>-1){
-                opponents.splice(index,1);
-                oppIds.splice(index,1);
-            }
-            var opps = opponents.length;
-            play= Array(opps).fill(0);
-            oppScore=Array(opps).fill(0);
-            oppRep=Array(opps).fill(0);
-
-            haveIPlayed = Array(opps).fill(false);
-       
-            for(var i =0; i<opponents.length;i++){
-               // alert(opponents[i]);
-                oppMoves.push("null");
-                leadArray.push(opponents[i] + ":0");
-                if(!anon){
-                document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
-                }
-            }
-            leadArray.push(nick + ":0");
-        }); 
-         
-        $("#sendmsg").click(function(e){
-          socket.emit('chat message', nick + ": " + $('#m').val() + roomNum);
-          $('#m').val('');
           return false;
-        });
-         
-        socket.on('chat message', function(msg){
-          $('#messages').append($('<li>').text(msg));
-          window.scrollTo(0, document.body.scrollHeight);
-        });
-         socket.on('youGotKicked', function(msg){
-            if(msg===nick){
-              document.getElementById("waiting").innerHTML= "<h1>You got kicked by the teacher! :(</h1><br>    <a href ='/student.html'>Go Back</a>";
-              kicked = true;
-              return false;
-            }
-             
-        var listItems = $("#studentNames li");
-        listItems.each(function(idx, li) {
-            var product = $(li);
-            var text = product.text();
-            
-            if(text.split("(")[0].trim()===msg){
-                product.hide();
-            }
-            
-        });
-             
-             
-             
         }); 
-          socket.on('opt', function(msg){
-          permRounds = msg.split(",")[0];
-          rounds = permRounds;
-          secs = msg.split(",")[1];
-          if(msg.split(",")[2]==="true"){
-              anon = true;
-          }
-          if(msg.split(",")[3]==="true"){
-              alert("A?");
-          }
-          
-        });
-        socket.on('r', function(msg){
-            
-            totScore = 0;
-            document.getElementById("leaderboard").style.display = "none";
-            document.getElementById("totalScores").style.display = "none";
-            for(var i=0;i<=opponents.length;i++){
-                document.getElementById("yourScore"+i).innerHTML="<p>"+0+"</p>";
-                document.getElementById("oppScore"+i).innerHTML="<p>"+0+"</p>"; 
-                document.getElementById("oppRep"+i).innerHTML="<p>"+0+"</p>"; 
-            }
-            var opps = opponents.length;
-            leadArray = [];
-            for(var i =0; i<opponents.length;i++){
-                   // alert(opponents[i]);
-                        leadArray.push(opponents[i] + ":0");
-                    if(!anon){
-                        document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
-                    }
-            }
-            leadArray.push(nick + ":0");    
-
-            play= Array(opps).fill(0);
-            oppScore=Array(opps).fill(0);
-            oppRep = Array(opps).fill(0);
-            oppMove=Array(opps).fill("null");
-            haveIPlayed = Array(opps).fill(false);
-            cheatOpp = Array(opps).fill(false);
-            rounds = permRounds;
-            
-        });
          
-         socket.on('lead', function(e){
-            var n = e.split(",")[0];
-            for(var i =0; i<=opponents.length;i++){
-                if(leadArray[i].split(":")[0]===n){
-                    leadArray[i]=n + ":" + e.split(",")[1];
-                }
-            }
-        
-            leadArray = quickSort(leadArray, 0, leadArray.length - 1);
-            var scores = document.getElementById("leaderboard"); 
-            var line = "";
-            for(var i =0;i<leadArray.length;i++){
-                 line+=leadArray[i]+"<br>";
-            }
-            scores.innerHTML = line;
-        });
-         
-        socket.on('everybody',function(e){
-            //not sending all the time?
-           rest = true;
-        });
+        socket.on('score',function(oppScore){   
+            //nickname then score then opponent
+            var nick = oppScore.split(",")[2];
+            var move = oppScore.split(",")[0];
+            var opponent = oppScore.split(",")[3];
             
-        socket.on('teacherDisconnected',function(e){
-            document.getElementById("waiting").innerHTML = "<h1>Teacher disconnected! :(</h1><br>    <a href ='/student.html'>Go Back</a>";
-        });
-         socket.on('ip',function(e){
-             console.log(e);
-             var ip = JSON.stringify(e).split(",");
-             city = ip[6].split("\"")[3];
-             country = ip[2].split("\"")[3];
-         });
-         socket.on('score',function(e){
-            var opponent = e.split(",")[2];
-            var move = e.split(",")[0];
-            var index = opponents.indexOf(opponent);
+            var yIndex = players.indexOf(nick); 
+            var xIndex = players.indexOf(opponent);
+            var arr = matrix[xIndex];
+            if(move==0){
+                
+                matrix[xIndex][yIndex]="Cheat";
+            }
             if(move==1){
-            oppRep[index]++;
-            }else{
-            oppRep[index]--;
+                matrix[xIndex][yIndex]="Coop";
             }
+            
+        }); 
+        socket.on('updateTable',function(e){
+            var tableHTML = "<table id='my-table"+currRound+"'><tbody><tr><td>Round " +currRound+  " </td></tr></tbody></table><br>";
+            $("#tableDiv").append(tableHTML);
+            
+            
+            for(var i =0; i<players.length;i++){
+                appendColumn();
+            }
+            j=0;
+            for(var i =0; i<players.length;i++){
+                appendRow();
+            }
+            
+            resetMatrix();
+            currRound++;
+
         });
-         socket.on('oppMoveAgainstYou',function(e){
-           var index = opponents.indexOf(e.split(",")[1]);
-           oppMoves[index] = e;
+        socket.on('gameDone',function(restart){ 
+           document.getElementById("restartGameButton").style.display = "block";
+        }); 
+        
+        $("#restartGame").click(function(e){
+             
+          socket.emit('restartGame',teachersCode);
+          socket.emit('numberOfUsers',players +"~"+ids+"~" +teachersCode);
+          socket.emit('readyToPlay',"play," + teachersCode);
+          document.getElementById("restartGameButton").style.display = "none";              
+          currRound =1;
+          document.getElementById("tableDiv").innerHTML = "";
+
         });
-         
-          function bothCoop(num){
-            play[num]+=2;
-            totScore+=2;
-            oppScore[num]+=2;
-            document.getElementById("result"+num).innerHTML= "Both you and your opponent cooperated!";   
-          }
-         function playCoop(num){
-            play[num]-=1;
-            totScore-=1;
-            oppScore[num]+=3;
-            document.getElementById("result"+num).innerHTML="You cooperated, but your opponent cheated!";   
-         }
-         function playCheat(num){
-            play[num]+=3;
-            totScore+=3;
-            oppScore[num]-=1;
-            document.getElementById("result"+num).innerHTML="Your opponent cooperated, but you cheated them!"; 
-         }
-         
-         
-         
-         
-        function updateBoard(){
-              
-               
-        for(var i =0;i<opponents.length;i++){
-            var move = oppMoves[i];
-            console.log(move);
+     });
+    
+        function appendRow() {
+            var id='my-table'+currRound;
+            var tbl = document.getElementById(id), // table reference
+                row = tbl.insertRow(tbl.rows.length),      // append table row
+                i;
+            // insert table cells to the new row
+               createCell(row.insertCell(i), players[x], 'row');
+            
+            //adding the numbas
+            var arr = matrix[y];
+            for (i = 1; i < tbl.rows[0].cells.length; i++) {
+                createCell(row.insertCell(i), arr[i-1], 'row');
+            }
+            y++;
+            x++;
+        }
+        
+        function appendColumn() {
+            var id ='my-table'+currRound;
+            var tbl = document.getElementById(id), // table reference
+                i;
+            // open loop for each row and append cell
+            
+            for (i = 0; i < tbl.rows.length; i++) {
+                createCell(tbl.rows[i].insertCell(tbl.rows[i].cells.length), players[j], 'col');
+            }
            
-            if(move=="null"){
-                if(haveIPlayed[i]){
-                    
-                    if(cheatOpp[i]){
-                        playCheat(i);
-                    }
-                    if (coopOpp[i]){
-                       bothCoop(i);
-                    }
-                    
-                    
-                }else{
-                    bothCoop(i);
-                }
-            }else{
-            
-                var cheatOrCoop = move.split(",")[0];
-
-                if(!haveIPlayed[i]){
-                    if(cheatOrCoop==1){
-                        bothCoop(i); 
-                    }else{
-                        playCoop(i);
-                    }
-                }else{
-                    if(cheatOpp[i]){
-                        if(cheatOrCoop==1){
-                            playCheat(i);
-                        }else{
-                            document.getElementById("result"+i).innerHTML= "Both you and your opponent cheated!";
-                        }
-                    }
-                    if(coopOpp[i]){
-                        if(cheatOrCoop==1){
-                            bothCoop(i); 
-                        }else{
-                            playCoop(i);    
-                        }
-                    }
-                }
-            }
-             cheatOpp[i]=false;
-             coopOpp[i] = false;
-             document.getElementById("yourScore"+i).innerHTML="<p>"+play[i]+"</p>";
-             document.getElementById("oppScore"+i).innerHTML="<p>"+oppScore[i]+"</p>";
-             document.getElementById("oppRep"+i).innerHTML="<p>"+oppRep[i]+"</p>";
-
-            socket.emit('score',nick+ "," + play[i] + ","+roomNum + "," +opponents[i] + "," +totScore);   
-
+            j++;
         }
-            
-            for(var i =0;i<opponents.length;i++){
-                oppMoves[i] = "null";
-                haveIPlayed[i]=false;
-            }
+        
+       function createCell(cell, text, style) {
+            var div = document.createElement('div'), // create DIV element
+            txt = document.createTextNode(text); // create text node
+            div.appendChild(txt);                    // append text node to the DIV
+            div.setAttribute('class', style);        // set DIV class attribute
+            div.setAttribute('className', style);    // set DIV class attribute for IE (?!)
+            cell.appendChild(div);                   // append DIV to the table cell
+       }
+        
+        function gen(){
+          //hide and show new buttons
+          document.getElementById("names").style.display="block";
+          document.getElementById("yourRoomCode").style.display = 'block';
+          document.getElementById("code").innerHTML = Math.random().toString(36).substr(2, 6);
+          document.getElementById("send").style.display = "none";
+          document.getElementById("playGame").style.display="block";    
+          document.getElementById("players").style.display="block";    
+          document.getElementById("options").style.display="block";    
+        }
+        
+        function play(){
+            document.getElementById("hideAfterPlayGame").style.display="none";
+        }
+        
+        function resetMatrix(){
+            matrix=[];
+            for(var i =0;i<players.length;i++){
+                
+                var a = [];
+                for(var j =0;j<players.length;j++){
+                    a.push("-");
+                }
+                
+              matrix.push(a);
+          }
+             x=0;
+             y=0;
+             j=0;
+        }
+        
+        function isNumeric(n) {
+            return !isNaN(parseFloat(n)) && isFinite(n);
         }   
-     });      
-    
-        
-function swap(items, leftIndex, rightIndex){
-        var temp = items[leftIndex];
-        items[leftIndex] = items[rightIndex];
-        items[rightIndex] = temp;
-    }
-    function partition(items, left, right) {
-        var pivot   = items[Math.floor((right + left) / 2)].split(":")[1], //middle element
-            i       = left, //left pointer
-            j       = right; //right pointer
-        while (i <= j) {
-            while (items[i].split(":")[1] > pivot) {
-                i++;
-            }
-            while (items[j].split(":")[1] < pivot) {
-                j--;
-            }
-            if (i <= j) {
-                swap(items, i, j); //sawpping two elements
-                i++;
-                j--;
-            }
-        }
-        return i;
-    }
-
-    function quickSort(items, left, right) {
-        var index;
-        if (items.length > 1) {
-            index = partition(items, left, right); //index returned from partition
-            if (left < index - 1) { //more elements on the left side of the pivot
-                quickSort(items, left, index - 1);
-            }
-            if (index < right) { //more elements on the right side of the pivot
-                quickSort(items, index, right);
-            }
-        }
-        return items;
-    }
-   
-        
-        
-    
-    
     
