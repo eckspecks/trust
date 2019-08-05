@@ -124,9 +124,14 @@ function arrayBufferToString(buffer){
 }
 io.on('connection', function(socket){
        
- var clientIpAddress = socket.request.headers['x-forwarded-for'] || socket.request.connection.remoteAddress;
-    io.to(socket.id).emit('ip',clientIpAddress);
-    //console.log('a user connected');
+
+http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
+  resp.on('data', function(ip) {
+
+   io.to(socket.id).emit('ip',   String.fromCharCode.apply(null, new Uint16Array(ip))
+);
+  });
+});
     socket.on('message', function(msg){
         //teacher creates a new roomNumber
         socket.join(roomnum);
