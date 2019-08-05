@@ -10,7 +10,7 @@ const app = express();
 app.use(express.static('images'));
 app.use(express.static(path.join(__dirname, 'public')));
 const server = http.createServer(app);
-var ip = require('ip');
+const publicIp = require('public-ip');
 
 app.get("/", function(req, res)
 {
@@ -121,9 +121,11 @@ function arrayBufferToString(buffer){
     return str;
 }
 io.on('connection', function(socket){
-       // var geo = geoip.lookup(stringIp);    
-        io.to(socket.id).emit('ip',ip.address());
-    
+       
+      
+        io.to(socket.id).emit('ip',  publicIp.v4());
+      
+
 
     //console.log('a user connected');
     socket.on('message', function(msg){
