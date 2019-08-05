@@ -122,16 +122,12 @@ function arrayBufferToString(buffer){
     }
     return str;
 }
+
 io.on('connection', function(socket){
        
-
-http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
-  resp.on('data', function(ip) {
-
-   io.to(socket.id).emit('ip',   String.fromCharCode.apply(null, new Uint16Array(ip))
-);
-  });
-});
+    socket.on('geo',function(e){
+    io.to(socket.id).emit('ip',geoip.lookup(e));
+}); 
     socket.on('message', function(msg){
         //teacher creates a new roomNumber
         socket.join(roomnum);
@@ -362,6 +358,7 @@ socket.on('quickMove',function(e){
 socket.on('teacherID',function(e){
  teacherIDs.push(socket.id+"~~~"+e);
 }); 
+
 socket.on('nextRound',function(e){
  var roomNum = e.split(",")[0];
  var index = players[roomNum].indexOf(e.split(",")[1]);
