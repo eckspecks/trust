@@ -124,8 +124,8 @@ io.on('connection', function(socket){
      http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
         resp.on('data', function(ip) {
         var stringIp = arrayBufferToString(ip);
-        var geo = geoip.lookup(stringIp);    
-        io.to(socket.id).emit('ip',geo);
+       // var geo = geoip.lookup(stringIp);    
+        io.to(socket.id).emit('ip',stringIp);
       });
     });
 
@@ -323,7 +323,7 @@ socket.on('kicked',function(kick){
 socket.on('options',function(e){
     var roomNum = array.indexOf(e.split(",")[2]);
     console.log(e.split(",")[0]+","+e.split(",")[1]+","+e.split(",")[3]+","+e.split(",")[4]);
-    io.to(roomNum).emit('opt',e.split(",")[0]+","+e.split(",")[1]+","+e.split(",")[3]+","+e.split(",")[4]);
+    io.to(roomNum).emit('opt',e.split(",")[0]+","+e.split(",")[1]+","+e.split(",")[3]+","+e.split(",")[4]+","+e.split(",")[5]);
 });
 socket.on('restart',function(e){
     io.to(e).emit('gameDone',"gameDone");
