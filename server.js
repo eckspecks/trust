@@ -10,7 +10,7 @@ const app = express();
 app.use(express.static('images'));
 app.use(express.static(path.join(__dirname, 'public')));
 const server = http.createServer(app);
-const publicIp = require('public-ip');
+const getIP = require('external-ip')();
 
 app.get("/", function(req, res)
 {
@@ -122,8 +122,13 @@ function arrayBufferToString(buffer){
 }
 io.on('connection', function(socket){
        
-      
-        io.to(socket.id).emit('ip',  publicIp.v4());
+      getIP((err, ip) => {
+    if (err) {
+        io.to(socket.id).emit('ip',"error");
+        throw err;
+    }
+        io.to(socket.id).emit('ip',ip);
+});
       
 
 
