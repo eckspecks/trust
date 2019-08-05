@@ -21,10 +21,17 @@
         var city = "Unknown";
         var allnicks = false;
         var country = "Unknown";
+        var ip = "";
+
+      function getIP(json) {
+        ip =  json.ip;
+      }
+
+
      $(function () {
          
         var socket = io();
-         
+         socket.emit('geo',ip);
          
         $("#submitRoomCode").click(function(e){
                     
