@@ -10,6 +10,21 @@ const app = express();
 app.use(express.static('images'));
 app.use(express.static(path.join(__dirname, 'public')));
 const server = http.createServer(app);
+server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+const io = socketIO(server);
+var array = [];
+var roomnum=0;
+var players = [];
+var moves = [];
+var scores = 0;
+var currRound = 0;
+var lookingForGame = [];
+var gameCodeUsers = [];
+var teacherIDs = [];
+var playerIDs = [];
+var geo = [];
+ 
+// inside middleware handler
 
 app.get("/", function(req, res)
 {
@@ -25,8 +40,8 @@ app.get("/styles.css", function(req, res)
 });
 app.get("/js/student.js", function(req, res)
 {   
-
     res.sendFile(__dirname + "/js/student.js");
+    
 });
 app.get("/js/teacher.js", function(req, res)
 {
@@ -56,19 +71,7 @@ app.get("/student.html", function(req, res)
 {
     res.sendFile(__dirname + "/student.html");
 });
-server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
-const io = socketIO(server);
-var array = [];
-var roomnum=0;
-var players = [];
-var moves = [];
-var scores = 0;
-var currRound = 0;
-var lookingForGame = [];
-var gameCodeUsers = [];
-var teacherIDs = [];
-var playerIDs = [];
-var geo = [];
+
 function indexOfArray(array, item) {
     for (var i = 0; i < array.length; i++) {
         if (array[i].toString() === item.toString()) return i;
@@ -121,13 +124,8 @@ function arrayBufferToString(buffer){
 }
 io.on('connection', function(socket){
        
-        var ip = socket.handshake.address;
-        console.log(ip.address + ":" + ip.port)
-        var geo = geoip.lookup(ip);    	
-        io.to(socket.id).emit('ip',geo);
-      
-
-
+ var clientIpAddress = socket.request.headers['x-forwarded-for'] || socket.request.connection.remoteAddress;
+    io.to(socket.id).emit('ip',clientIpAddress);
     //console.log('a user connected');
     socket.on('message', function(msg){
         //teacher creates a new roomNumber
