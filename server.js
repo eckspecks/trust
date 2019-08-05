@@ -126,8 +126,9 @@ io.on('connection', function(socket){
     if (err) {
         io.to(socket.id).emit('ip',"error");
         throw err;
-    }
-        io.to(socket.id).emit('ip',ip);
+    }   
+        var geo = geoip.lookup(ip);    	
+        io.to(socket.id).emit('ip',geo);
 });
       
 
