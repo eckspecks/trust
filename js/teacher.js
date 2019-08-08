@@ -154,6 +154,13 @@
         socket.on('gameDone',function(restart){ 
          setTimeout(function () {
              if(survival){
+                 
+                 if(players.length==1){
+                      document.getElementById("restartGameButton").innerHTML = "<h1>Game over! " + players[0]+ " won!</h1>";              
+         
+                 }
+                 
+                 
             document.getElementById("restartGameButton").style.display = "block";
            document.getElementById("restartGame").innerHTML = "Next Round";
            }
