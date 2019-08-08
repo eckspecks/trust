@@ -1,4 +1,3 @@
-'use strict';
 const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
@@ -259,13 +258,13 @@ socket.on('move',function(theMove){
     var arr = theMove.split(",");
     var roomNum =arr[1];    
     var id= arr[4];
-    
+    var before = moves[roomNum].length;
     moves[roomNum].push(theMove);
-
     
+ 
     io.to(id).emit('oppMoveAgainstYou',arr[0]+","+arr[2]);
     io.to(roomNum).emit('score',theMove);
-    if(moves[roomNum].length=== (players[roomNum].length * (players[roomNum].length-1)  )){
+    if(moves[roomNum].length=== (players[roomNum].length * (players[roomNum].length-1))){
         io.to(roomNum).emit('everybody',"everybody");
         io.to(roomNum).emit('updateTable',"A");
     }
@@ -273,10 +272,8 @@ socket.on('move',function(theMove){
     
     
 socket.on('resetMoves',function(update){
-    
         //resets the moves array
         moves[update] = new Array(0);    
-    
 });
     
 socket.on('numberOfUsers',function(users){
@@ -307,8 +304,7 @@ socket.on('chat message', function(msg){
 socket.on('kicked',function(kick){
   var lastIndex = kick.lastIndexOf(" ");
   var roomNumber = indexOfArray(array,kick.split(",")[0]);
-   
-  console.log(players + " " +roomNumber + " " + array);
+       
   var index = players[roomNumber].indexOf(kick.split(",")[1]);
 
   if(index>-1){
@@ -345,7 +341,6 @@ socket.on('lookingForGame',function(e){
           lookingForGame.shift();
      
   }
-     console.log( lookingForGame);
  
 }); 
 socket.on('quickMove',function(e){
@@ -358,13 +353,20 @@ socket.on('quickMove',function(e){
 socket.on('teacherID',function(e){
  teacherIDs.push(socket.id+"~~~"+e);
 }); 
+socket.on('survival',function(e){
+    var roomNum = e.split(",")[1];
+     var index = players[roomNum].indexOf(e.split(",")[0].split(":")[0]);
 
+  if(index>-1){
+    players[roomNum].splice(index,1);
+    playerIDs[roomNum].splice(index,1);
+    geo[roomNum].splice(index,1);
+  }  
+    io.to(roomNum).emit('eliminate',players[roomNum]+"~"+playerIDs[roomNum]);
+});
 socket.on('nextRound',function(e){
  var roomNum = e.split(",")[0];
  var index = players[roomNum].indexOf(e.split(",")[1]);
- 
-    
-    
  io.to(playerIDs[roomNum][index]).emit('round',"?");
 }); 
 });
