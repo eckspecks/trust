@@ -258,15 +258,16 @@
                                // alert(opponents[i]);
                                 oppMoves.push("null");
                                 leadArray.push(opponents[i] + ":0");
+
                                 if(!anon){
                                 document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
                                 }
+                                
                                 document.getElementById("yourScore"+i).innerHTML="<p>"+play[i]+"</p>";
                                 document.getElementById("oppScore"+i).innerHTML="<p>"+oppScore[i]+"</p>";
                                 document.getElementById("oppRep"+i).innerHTML="<p>"+oppRep[i]+"</p>";
                             }
                             leadArray.push(nick + ":0");
-                            
                             
                             var scores = document.getElementById("leaderboard"); 
                             var line = "";
@@ -275,11 +276,7 @@
                             }
                             scores.innerHTML = line;
                             
-                            
                         }
-                            
-                            
-                            
                             
                         }, 3000);
                     
@@ -291,7 +288,7 @@
 
                     for(var i =0; i<opponents.length;i++){
                         document.getElementById("ready"+i).style.display = "none";
-                        document.getElementById("opp"+i).style.display = "none";
+                        document.getElementById("opp"+i).innerHTML = "";
                     }
                     
                     document.getElementById("chatbox").style.display = "none";
@@ -563,14 +560,14 @@ function swap(items, leftIndex, rightIndex){
         items[rightIndex] = temp;
     }
     function partition(items, left, right) {
-        var pivot   = items[Math.floor((right + left) / 2)].split(":")[1], //middle element
+        var pivot   = Number(items[Math.floor((right + left) / 2)].split(":")[1]), //middle element
             i       = left, //left pointer
             j       = right; //right pointer
         while (i <= j) {
-            while (items[i].split(":")[1] > pivot) {
+            while (Number(items[i].split(":")[1]) > pivot) {
                 i++;
             }
-            while (items[j].split(":")[1] < pivot) {
+            while (Number(items[j].split(":")[1]) < pivot) {
                 j--;
             }
             if (i <= j) {
