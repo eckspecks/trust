@@ -22,7 +22,7 @@
         var allnicks = false;
         var country = "Unknown";
         var ip = "";
-
+        var survival = false;
       function getIP(json) {
         ip =  json.ip;
       }
@@ -91,8 +91,7 @@
            var locations = nickname.split("~")[1].split(",");
            for(var i =0;i<nicks.split(",").length;i++){
                 var li = document.createElement("li");
-                console.log(nicks);
-                console.log(locations);
+              
                 li.appendChild(document.createTextNode(nicks.split(",")[i] + " (" + locations[i].split(":")[0] + " " + locations[i].split(":")[1]+")"));
 
                 ul.appendChild(li);    
@@ -130,14 +129,17 @@
         });
          
         socket.on('readyToPlay',function(isCodeSuccessful){
-            
+            if(kicked){
+                return false;
+            }
           
             for(var i =0;i<opponents.length;i++){
                 document.getElementById("ready"+i).style.display = "block";
                 document.getElementById("cheat"+i).style.display = "inline-block";
                 document.getElementById("coop"+i).style.display = "inline-block";
             }
-           
+            document.getElementById("lead").style.display = "block";
+            document.getElementById("leaderboard").style.display = "block";
             document.getElementById("waiting").style.display = 'none';
             document.getElementById("student").style.display = 'none';
             document.getElementById("enterNickname").style.display = 'none';
@@ -150,13 +152,13 @@
             
         });
          
-        $('.cheatButton').click(function(e){
+        $(document).on("click", ".cheatButton", function(e){
+            console.log("CLICKED CHEAT");
             e.preventDefault();
             var id = $(this).attr('id');
             var opp =opponents[id[id.length-1]];
             var opponentID = oppIds[id[id.length-1]];
-            
-
+        
             socket.emit('move',0 + "," + roomNum + "," + nick +"," +opp+","+opponentID );
             document.getElementById("cheat"+id[id.length-1]).style.display = "none";
             document.getElementById("coop"+id[id.length-1]).style.display = "none";
@@ -167,7 +169,9 @@
             
         }); 
          
-        $('.coopButton').click(function(e){      
+        $(document).on("click", ".coopButton", function(e){  
+            console.log("CLICKED CHEAT");
+
             e.preventDefault();
             var id = $(this).attr('id');
             var opp =opponents[id[id.length-1]];
@@ -185,6 +189,9 @@
         }); 
          
          socket.on('round',function(e){
+             if(kicked){
+                return false;
+             }
               timeleft = secs;
               var downloadTimer = setInterval(function(){
               document.getElementById("countdown0").innerHTML = timeleft + " seconds remaining";
@@ -193,8 +200,7 @@
                 
               if(timeleft <= -1 || rest){
                 rest = false;
-                
-                
+            
                
                 clearInterval(downloadTimer);
                 document.getElementById("countdown0").innerHTML = "Round Done"
@@ -203,8 +209,84 @@
                   
                 socket.emit('resetMoves',roomNum);
                 if(rounds==1){
+                        
+                    if(survival){
+                        
+                        
+                        setTimeout(function () {
+                            var index = 0;
+                            var min = parseInt(leadArray[0].split(":")[1]);
+                            for(var i=0;i<leadArray.length;i++){
+                                var curr = parseInt(leadArray[i].split(":")[1]);
+                                if(curr<min){
+                                    min = curr;
+                                    index = i;
+                                }
+                            }
+                        socket.emit('survival',leadArray[index]+","+roomNum);
+                            
+                        var nickEliminated = leadArray[index].split(":")[0];
+                        if(nickEliminated===nick){
+                            document.getElementById("countdown0").innerHTML = "You were eliminated!";
+                            kicked=true;
+                        }else{
+                            document.getElementById("countdown0").innerHTML = nickEliminated + " was eliminated! <br> Waiting for teacher to start next round...";
+                            
+                            rounds = permRounds;
+
+                            var index = opponents.indexOf(nickEliminated);
+                            
+                            if(index>-1){
+                                opponents.splice(index,1);
+                                oppIds.splice(index,1);
+                            }
+                            var opps = opponents.length;
+                            
+                            if(opps === 0){
+                                document.getElementById("countdown0").innerHTML = "Congrats " + nick + "<br>" + "You are the last survivor! You win!";
+                                return false;
+                            }
+                            
+                            play= Array(opps).fill(0);
+                            oppScore=Array(opps).fill(0);
+                            oppRep=Array(opps).fill(0);
+
+                            haveIPlayed = Array(opps).fill(false);
+                            oppMoves = [];
+                            leadArray = [];
+                            for(var i =0; i<opponents.length;i++){
+                               // alert(opponents[i]);
+                                oppMoves.push("null");
+                                leadArray.push(opponents[i] + ":0");
+                                if(!anon){
+                                document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
+                                }
+                                document.getElementById("yourScore"+i).innerHTML="<p>"+play[i]+"</p>";
+                                document.getElementById("oppScore"+i).innerHTML="<p>"+oppScore[i]+"</p>";
+                                document.getElementById("oppRep"+i).innerHTML="<p>"+oppRep[i]+"</p>";
+                            }
+                            leadArray.push(nick + ":0");
+                            
+                            
+                            var scores = document.getElementById("leaderboard"); 
+                            var line = "";
+                            for(var i =0;i<leadArray.length;i++){
+                                 line+=leadArray[i]+"<br>";
+                            }
+                            scores.innerHTML = line;
+                            
+                            
+                        }
+                            
+                            
+                            
+                            
+                        }, 3000);
                     
-                    document.getElementById("countdown0").innerHTML = "Game over!";
+                    }else{                    
+                        document.getElementById("countdown0").innerHTML = "Game over!";
+                    }
+                    
                     socket.emit('restart',roomNum);
 
                     for(var i =0; i<opponents.length;i++){
@@ -215,9 +297,8 @@
                     document.getElementById("chatbox").style.display = "none";
                     document.getElementById("photo").style.display = "none";
 
-                   document.getElementById("leaderboard").style.display = "block";
                     document.getElementById("totalScores").style.display = "block";
-
+                    
                     return false;
                 }  
                 rounds--;  
@@ -304,12 +385,14 @@
               anon = true;
           }
           if(msg.split(",")[3]==="true"){
-              alert("A?");
+              survival = true;
           }
           
         });
         socket.on('r', function(msg){
-            
+            if(kicked){
+                return false;
+            }
             totScore = 0;
             document.getElementById("leaderboard").style.display = "none";
             document.getElementById("totalScores").style.display = "none";
@@ -365,7 +448,6 @@
             document.getElementById("waiting").innerHTML = "<h1>Teacher disconnected! :(</h1><br>    <a href ='/student.html'>Go Back</a>";
         });
          socket.on('ip',function(e){
-             console.log(e);
              if(e==null){
                  return false;
              }
@@ -415,7 +497,6 @@
                
         for(var i =0;i<opponents.length;i++){
             var move = oppMoves[i];
-            console.log(move);
            
             if(move=="null"){
                 if(haveIPlayed[i]){

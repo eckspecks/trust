@@ -7,6 +7,7 @@
         var j = 0;
         var currRound = 1;
         var gamestarted = false;
+        var survival = false;
      $(function () {
          
         var socket = io();
@@ -92,6 +93,9 @@
               document.getElementById("error").innerHTML = "Minimum time per round is 15 seconds";
               return false;              
           }
+          if(t){
+            survival = true;
+          }
           socket.emit('options',r + "," + spr + "," + teachersCode + "," + c+","+t); 
           //sends the generated code to server
           resetMatrix();
@@ -148,18 +152,31 @@
 
         });
         socket.on('gameDone',function(restart){ 
-           document.getElementById("restartGameButton").style.display = "block";
+         setTimeout(function () {
+             if(survival){
+            document.getElementById("restartGameButton").style.display = "block";
+           document.getElementById("restartGame").innerHTML = "Next Round";
+           }
+            document.getElementById("restartGameButton").style.display = "block";
+
+        }, 5000);
+         
         }); 
-        
+         socket.on('eliminate',function(array){ 
+            players = array.split("~")[0].split(",");
+            ids = array.split("~")[1].split(",");
+        }); 
         $("#restartGame").click(function(e){
-             
+         
+            
+            
           socket.emit('restartGame',teachersCode);
           socket.emit('numberOfUsers',players +"~"+ids+"~" +teachersCode);
           socket.emit('readyToPlay',"play," + teachersCode);
           document.getElementById("restartGameButton").style.display = "none";              
           currRound =1;
           document.getElementById("tableDiv").innerHTML = "";
-
+          
         });
      });
     
