@@ -137,6 +137,7 @@
                 document.getElementById("ready"+i).style.display = "block";
                 document.getElementById("cheat"+i).style.display = "inline-block";
                 document.getElementById("coop"+i).style.display = "inline-block";
+                document.getElementById("opp"+i).style.display = "block";
             }
             document.getElementById("lead").style.display = "block";
             document.getElementById("leaderboard").style.display = "block";
@@ -230,6 +231,9 @@
                             document.getElementById("countdown0").innerHTML = "You were eliminated!";
                             kicked=true;
                         }else{
+                            for(var i =0; i<opponents.length;i++){
+                                document.getElementById("opp"+i).style.display = "none";
+                            }
                             document.getElementById("countdown0").innerHTML = nickEliminated + " was eliminated! <br> Waiting for teacher to start next round...";
                             
                             rounds = permRounds;
@@ -258,7 +262,6 @@
                                // alert(opponents[i]);
                                 oppMoves.push("null");
                                 leadArray.push(opponents[i] + ":0");
-
                                 if(!anon){
                                 document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
                                 }
@@ -397,6 +400,8 @@
                 document.getElementById("yourScore"+i).innerHTML="<p>"+0+"</p>";
                 document.getElementById("oppScore"+i).innerHTML="<p>"+0+"</p>"; 
                 document.getElementById("oppRep"+i).innerHTML="<p>"+0+"</p>"; 
+                document.getElementById("oppRep"+i).style.display ="none"; 
+
             }
             var opps = opponents.length;
             leadArray = [];
