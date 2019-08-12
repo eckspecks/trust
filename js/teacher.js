@@ -8,6 +8,7 @@
         var currRound = 1;
         var gamestarted = false;
         var survival = false;
+        var win = "";
      $(function () {
          
         var socket = io();
@@ -73,19 +74,20 @@
           });  
         $("#playGame").click(function(e){
             
-          var r = document.getElementById("roundNum").value;
+          var r = Number(document.getElementById("roundNumMin").value);
+          var max = Number(document.getElementById("roundNumMax").value);
           var spr = document.getElementById("secsPerRound").value;
           var c = document.getElementById("anon").checked;
           var t = document.getElementById("tourn").checked;
-          if(r.length === 0 || spr.length === 0){
+          if(r.length === 0 || spr.length === 0 || max.length===0){
               document.getElementById("error").innerHTML = "Options must not be empty";
               return false;
           } 
           if(!isNumeric(r) || !isNumeric(spr)){
-              document.getElementById("error").innerHTML = "Options must not be numbers";
+              document.getElementById("error").innerHTML = "Options must be numbers";
               return false;
           } 
-          if(r<1 || spr<1){
+          if(r<1 || spr<1||max<1){
               document.getElementById("error").innerHTML = "Options must not be negative or zero.";
               return false;
           }
@@ -93,10 +95,15 @@
               document.getElementById("error").innerHTML = "Minimum time per round is 15 seconds";
               return false;              
           }
+          if(max<r){
+              document.getElementById("error").innerHTML = "Max # of rounds cannot be less than min";
+              return false;
+          }
           if(t){
             survival = true;
           }
-          socket.emit('options',r + "," + spr + "," + teachersCode + "," + c+","+t); 
+            
+          socket.emit('options',r + "," + spr + "," + teachersCode + "," + c+","+t+","+max); 
           //sends the generated code to server
           resetMatrix();
             
@@ -149,34 +156,34 @@
             
             resetMatrix();
             currRound++;
-
         });
+         
         socket.on('gameDone',function(restart){ 
          setTimeout(function () {
+             
              if(survival){
+                
+                document.getElementById("restartGameButton").style.display = "block";
+                document.getElementById("restartGame").innerHTML = "Next Round";
                  
-                 if(players.length==1){
-                      document.getElementById("restartGameButton").innerHTML = "<h1>Game over! " + players[0]+ " won!</h1>"; document.getElementById("tableDiv").style.display = "none";             
-         
-                 }
-                 
-                 
-            document.getElementById("restartGameButton").style.display = "block";
-           document.getElementById("restartGame").innerHTML = "Next Round";
-           }
+             }
+             
             document.getElementById("restartGameButton").style.display = "block";
 
         }, 5000);
          
         }); 
+         
          socket.on('eliminate',function(array){ 
             players = array.split("~")[0].split(",");
             ids = array.split("~")[1].split(",");
         }); 
+         socket.on('leadWinner',function(array){ 
+            win = array;
+            document.getElementById("restartGameButton").innerHTML = "<h1>Game over! " + win + " won!</h1>"; document.getElementById("tableDiv").style.display = "none"; 
+        }); 
         $("#restartGame").click(function(e){
-         
-            
-            
+        
           socket.emit('restartGame',teachersCode);
           socket.emit('numberOfUsers',players +"~"+ids+"~" +teachersCode);
           socket.emit('readyToPlay',"play," + teachersCode);
