@@ -11,6 +11,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const server = http.createServer(app);
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 const io = socketIO(server);
+
 var array = [];
 var roomnum=0;
 var players = [];
@@ -22,50 +23,60 @@ var gameCodeUsers = [];
 var teacherIDs = [];
 var playerIDs = [];
 var geo = [];
- 
-// inside middleware handler
-
+var numMoves = [];
+var rounds = [];
+var range = [];
 app.get("/", function(req, res)
 {
     res.sendFile(__dirname + "/index.html");
 });
+
 app.get("/a.html", function(req, res)
 {
     res.sendFile(__dirname + "/a.html");
 });
+
 app.get("/styles.css", function(req, res)
 {
     res.sendFile(__dirname + "/styles.css");
 });
+
 app.get("/js/student.js", function(req, res)
 {   
     res.sendFile(__dirname + "/js/student.js");
     
 });
+
 app.get("/js/teacher.js", function(req, res)
 {
     res.sendFile(__dirname + "/js/teacher.js");
 });
+
 app.get("/js/quickPlay.js", function(req, res)
 {
     res.sendFile(__dirname + "/js/quickPlay.js");
 });
+
 app.get("/index.html", function(req, res)
 {
     res.sendFile(__dirname + "/index.html");
 });
+
 app.get("/quickPlay.html", function(req, res)
 {
     res.sendFile(__dirname + "/quickPlay.html");
 });
+
 app.get("/aboutus.html", function(req, res)
 {
     res.sendFile(__dirname + "/aboutus.html");
 });
+
 app.get("/teacher.html", function(req, res)
 {
     res.sendFile(__dirname + "/teacher.html");
 });
+
 app.get("/student.html", function(req, res)
 {
     res.sendFile(__dirname + "/student.html");
@@ -127,6 +138,7 @@ io.on('connection', function(socket){
     socket.on('geo',function(e){
     io.to(socket.id).emit('ip',geoip.lookup(e));
 }); 
+    
     socket.on('message', function(msg){
         //teacher creates a new roomNumber
         socket.join(roomnum);
@@ -134,10 +146,10 @@ io.on('connection', function(socket){
         geo.push(new Array(0));
 
         playerIDs.push(new Array(0));
-
+        numMoves.push(new Array(0));
         moves.push(new Array(0));
         roomnum++;
-        
+        range.push("");
         //adds the room code to array
         array.push(msg);
 }); 
@@ -235,7 +247,6 @@ io.on('connection', function(socket){
      io.to(roomNum).emit('nicknameError',"success" + " " +nick);
 });
     
-    
  socket.on('readyToPlay',function(gameCode){
      //console.log(gameCode);
      var nick = gameCode.split(",")[2];
@@ -254,26 +265,25 @@ io.on('connection', function(socket){
 });    
           
 socket.on('move',function(theMove){
-    console.log("move: " +theMove);
     var arr = theMove.split(",");
     var roomNum =arr[1];    
     var id= arr[4];
     var before = moves[roomNum].length;
     moves[roomNum].push(theMove);
-    
- 
+    numMoves[roomNum]++;
+    console.log(numMoves[roomNum]);
     io.to(id).emit('oppMoveAgainstYou',arr[0]+","+arr[2]);
     io.to(roomNum).emit('score',theMove);
-    if(moves[roomNum].length=== (players[roomNum].length * (players[roomNum].length-1))){
+    if(numMoves[roomNum]=== (players[roomNum].length * (players[roomNum].length-1))){
         io.to(roomNum).emit('everybody',"everybody");
         io.to(roomNum).emit('updateTable',"A");
     }
 }); 
     
-    
 socket.on('resetMoves',function(update){
         //resets the moves array
-        moves[update] = new Array(0);    
+        moves[update] = new Array(0);  
+        numMoves[update] = 0;
 });
     
 socket.on('numberOfUsers',function(users){
@@ -283,8 +293,6 @@ socket.on('numberOfUsers',function(users){
   io.to(roomNumber).emit('numberOfUsers',arr[0]+"~"+arr[1]);
   console.log("Users: " + users);
 });
-    
-
     
 socket.on('score',function(score){  
   console.log("Score: " + score);
@@ -301,6 +309,7 @@ socket.on('chat message', function(msg){
 
   io.to(roomNum).emit('chat message', msg);
 });  
+    
 socket.on('kicked',function(kick){
   var lastIndex = kick.lastIndexOf(" ");
   var roomNumber = indexOfArray(array,kick.split(",")[0]);
@@ -314,14 +323,23 @@ socket.on('kicked',function(kick){
   }  
   io.to(roomNumber).emit('youGotKicked', kick.split(",")[1]);
 });
+    
 socket.on('options',function(e){
+    
     var roomNum = array.indexOf(e.split(",")[2]);
-    console.log(e.split(",")[0]+","+e.split(",")[1]+","+e.split(",")[3]+","+e.split(",")[4]);
-    io.to(roomNum).emit('opt',e.split(",")[0]+","+e.split(",")[1]+","+e.split(",")[3]+","+e.split(",")[4]+","+e.split(",")[5]);
+    var r = Number(e.split(",")[5]);
+    var min = Number(e.split(",")[0]);
+    
+    range[roomNum]=min +","+r;
+    console.log(range);
+    var firstRound  =Math.floor(Math.random() * (+r - +min)) + +min;
+    io.to(roomNum).emit('opt',firstRound+","+e.split(",")[1]+","+e.split(",")[3]+","+e.split(",")[4]);
 });
+    
 socket.on('restart',function(e){
     io.to(e).emit('gameDone',"gameDone");
 });
+    
 socket.on('restartGame',function(e){
     currRound=0;
     var roomNum = array.indexOf(e+"~");
@@ -329,9 +347,8 @@ socket.on('restartGame',function(e){
     io.to(roomNum).emit('r',"reset");
     io.to(roomNum).emit('readyToPlay',"ready a");
     io.to(roomNum).emit('round',"ready");
-
-
-});    
+});  
+    
 socket.on('lookingForGame',function(e){
   lookingForGame.push(socket.id)
   if(lookingForGame.length>=2){
@@ -343,6 +360,7 @@ socket.on('lookingForGame',function(e){
   }
  
 }); 
+    
 socket.on('quickMove',function(e){
   var move = e.split(",")[0];
   var nick = e.split(",")[1];
@@ -350,9 +368,24 @@ socket.on('quickMove',function(e){
     io.to(opp).emit('move',move);
  
 });  
+    
 socket.on('teacherID',function(e){
  teacherIDs.push(socket.id+"~~~"+e);
+});
+ socket.on('requestRounds',function(e){
+     console.log(e);
+     var min = range[e].split(",")[0];
+     var max = range[e].split(",")[1];
+     var firstRound  =Math.floor(Math.random() * (+max - +min)) + +min;
+     io.to(e).emit('roundNums',firstRound);
+});   
+socket.on('winner',function(e){
+    console.log("A!" + e);
+     var roomNum = e.split(",")[1];
+     var winner = e.split(",")[0];
+     io.to(roomNum).emit('leadWinner',winner);
 }); 
+       
 socket.on('survival',function(e){
     var roomNum = e.split(",")[1];
      var index = players[roomNum].indexOf(e.split(",")[0].split(":")[0]);
@@ -364,6 +397,7 @@ socket.on('survival',function(e){
   }  
     io.to(roomNum).emit('eliminate',players[roomNum]+"~"+playerIDs[roomNum]);
 });
+
 socket.on('nextRound',function(e){
  var roomNum = e.split(",")[0];
  var index = players[roomNum].indexOf(e.split(",")[1]);

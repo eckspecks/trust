@@ -145,6 +145,15 @@ img{
     vertical-align: top;
     display:inline;
 }
+#oppRep0,#oppRep1,#oppRep2,#oppRep3,#oppRep4,#oppRep5,#oppRep6,#oppRep7,#oppRep8,#oppRep9,#myRep{
+    background-color:yellow;
+    text-align: center;
+    margin-left:39%;
+    margin-right:39%;
+    height: 40px;
+}
+
+
 #oneline0{
     padding-left:180px;
 }
