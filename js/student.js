@@ -298,7 +298,7 @@
                             
                         }, 3000);
                     
-                    }else{ 
+                    }else{
                         socket.emit("requestRounds",roomNum);
 
                         document.getElementById("countdown0").innerHTML = "Game over!";
@@ -468,6 +468,7 @@
            rest = true;
         });
           socket.on('roundNums',function(e){
+              console.log("ROUNDS " + e);
            rounds=e;
         });  
         socket.on('teacherDisconnected',function(e){
