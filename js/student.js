@@ -313,8 +313,6 @@
 
                     document.getElementById("chatbox").style.display = "none";
                     document.getElementById("photo").style.display = "none";
-
-                    document.getElementById("totalScores").style.display = "block";
                     
                     return false;
                 }  
@@ -412,6 +410,8 @@
           
         });
         socket.on('r', function(msg){
+            rounds = permRounds;
+            console.log("?");
             if(kicked){
                 return false;
             }
@@ -419,11 +419,9 @@
             document.getElementById("leaderboard").style.display = "none";
             document.getElementById("hideRep").style.display = "none";
 
-            document.getElementById("totalScores").style.display = "none";
             for(var i=0;i<=opponents.length;i++){
                 document.getElementById("yourScore"+i).innerHTML="<p>"+0+"</p>";
                 document.getElementById("oppScore"+i).innerHTML="<p>"+0+"</p>"; 
-                document.getElementById("oppRep"+i).style.display ="none";  
             }
             var opps = opponents.length;
             leadArray = [];
