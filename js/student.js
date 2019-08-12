@@ -298,7 +298,9 @@
                             
                         }, 3000);
                     
-                    }else{                    
+                    }else{ 
+                        socket.emit("requestRounds",roomNum);
+
                         document.getElementById("countdown0").innerHTML = "Game over!";
                     }
                     
@@ -416,14 +418,13 @@
             }
             totScore = 0;
             document.getElementById("leaderboard").style.display = "none";
-                        document.getElementById("myRep").style.display = "none";
+            document.getElementById("hideRep").style.display = "none";
 
             document.getElementById("totalScores").style.display = "none";
             for(var i=0;i<=opponents.length;i++){
                 document.getElementById("yourScore"+i).innerHTML="<p>"+0+"</p>";
                 document.getElementById("oppScore"+i).innerHTML="<p>"+0+"</p>"; 
-                document.getElementById("oppRep"+i).style.display ="none"; 
-
+                document.getElementById("oppRep"+i).style.display ="none";  
             }
             var opps = opponents.length;
             leadArray = [];
@@ -571,7 +572,6 @@
              document.getElementById("yourScore"+i).innerHTML="<p>"+play[i]+"</p>";
              document.getElementById("oppScore"+i).innerHTML="<p>"+oppScore[i]+"</p>";
              var percentage = (oppCoopRep[i])/(oppCoopRep[i] + oppCheatRep[i]).toFixed(2);
-             console.log(percentage.toFixed(2));
              document.getElementById("oppRep"+i).style.background=percentageToHsl(percentage,0,120);
              var myPercentage = playCoopRep/(playCoopRep+playCheatRep);
              myPercentage = myPercentage.toFixed(2);
