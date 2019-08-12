@@ -196,7 +196,7 @@
         }); 
          
          socket.on('round',function(e){
-             
+             console.log(rounds + " A " + permRounds);
              if(kicked){
                 return false;
              }
@@ -299,7 +299,6 @@
                         }, 3000);
                     
                     }else{
-                        socket.emit("requestRounds",roomNum);
 
                         document.getElementById("countdown0").innerHTML = "Game over!";
                     }
@@ -402,7 +401,7 @@
         }); 
           socket.on('opt', function(msg){
           permRounds = msg.split(",")[0];
-          rounds = permRounds;
+          rounds = Number(permRounds);
           secs = msg.split(",")[1];
           if(msg.split(",")[2]==="true"){
               anon = true;
@@ -442,7 +441,7 @@
             oppMove=Array(opps).fill("null");
             haveIPlayed = Array(opps).fill(false);
             cheatOpp = Array(opps).fill(false);
-            rounds = permRounds;
+            rounds = Number(permRounds);
             
         });
          
@@ -468,8 +467,7 @@
            rest = true;
         });
           socket.on('roundNums',function(e){
-              console.log("ROUNDS " + e);
-           rounds=e;
+           rounds=Number(e);
         });  
         socket.on('teacherDisconnected',function(e){
             document.getElementById("waiting").innerHTML = "<h1>Teacher disconnected! :(</h1><br>    <a href ='/student.html'>Go Back</a>";
@@ -486,8 +484,7 @@
             var opponent = e.split(",")[2];
             var move = e.split(",")[0];
             var index = opponents.indexOf(opponent);
-            console.log(  "A "+e);
-            console.log("B " + index);
+           
             if(move==1){
             oppCoopRep[index]++;
             }else{
@@ -517,9 +514,6 @@
             oppScore[num]-=1;
             document.getElementById("result"+num).innerHTML="Your opponent cooperated, but you cheated them!"; 
          }
-         
-         
-         
          
         function updateBoard(){
               
