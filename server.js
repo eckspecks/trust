@@ -270,8 +270,11 @@ socket.on('move',function(theMove){
     var id= arr[4];
     var before = moves[roomNum].length;
     moves[roomNum].push(theMove);
+    
+    console.log("before " + numMoves[roomNum]);
     numMoves[roomNum]++;
-    console.log(numMoves[roomNum]);
+    console.log("after " + numMoves[roomNum]);
+    
     io.to(id).emit('oppMoveAgainstYou',arr[0]+","+arr[2]);
     io.to(roomNum).emit('score',theMove);
     if(numMoves[roomNum]=== (players[roomNum].length * (players[roomNum].length-1))){
@@ -333,7 +336,7 @@ socket.on('options',function(e){
     range[roomNum]=min +","+r;
     console.log(range);
     var firstRound  =Math.floor(Math.random() * (+r - +min)) + +min;
-    io.to(roomNum).emit('opt',firstRound+","+e.split(",")[1]+","+e.split(",")[3]+","+e.split(",")[4]);
+    io.to(roomNum).emit('opt',firstRound+","+e.split(",")[1]+","+e.split(",")[3]+","+e.split(",")[4]+","+e.split(",")[6]);
 });
     
 socket.on('restart',function(e){
