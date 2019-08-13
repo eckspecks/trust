@@ -16,6 +16,7 @@
         var oppIDs = [];
         var oppMoves = [];
         var cheatOpp = [];
+        var showScores = false;
         var coopOpp = [];
         var oppCoopRep = [];
         var oppCheatRep = [];
@@ -150,10 +151,20 @@
                 document.getElementById("coop"+i).style.display = "inline-block";
                 document.getElementById("opp"+i).style.display = "block";
             }
-            document.getElementById("lead").style.display = "block";
-            document.getElementById("leaderboard").style.display = "block";
-                        document.getElementById("hideRep").style.display = "block";
-
+           
+            if(!anon){
+                document.getElementById("lead").style.display = "block";
+                document.getElementById("leaderboard").style.display = "block";
+                document.getElementById("hideRep").style.display = "block";
+               
+            
+            }else{
+                 for(var i =0;i<opponents.length;i++){
+                    document.getElementById("h1rep"+i).style.display = "none";
+                }
+            }
+          
+            
             document.getElementById("waiting").style.display = 'none';
             document.getElementById("student").style.display = 'none';
             document.getElementById("enterNickname").style.display = 'none';
@@ -216,7 +227,8 @@
                   
                 socket.emit('resetMoves',roomNum);
                 if(rounds==1){
-                        
+                    showScores = false;
+                    document.getElementById("leaderboard").style.display = "block";
                     if(survival){
                         
                         setTimeout(function () {
@@ -407,7 +419,9 @@
           if(msg.split(",")[3]==="true"){
               survival = true;
           }
-          
+          if(msg.split(",")[4]==="true"){
+              showScores = true;
+          }
         });
         socket.on('r', function(msg){
             rounds = permRounds;
@@ -444,7 +458,9 @@
         });
          
          socket.on('lead', function(e){
+             
             var n = e.split(",")[0];
+             
             for(var i =0; i<=opponents.length;i++){
                 if(leadArray[i].split(":")[0]===n){
                     leadArray[i]=n + ":" + e.split(",")[1];
@@ -452,6 +468,17 @@
             }
         
             leadArray = quickSort(leadArray, 0, leadArray.length - 1);
+             
+             
+            if(showScores){
+                for(var i =0;i<opponents.length;i++){
+                    leadArray[i]=leadArray[i].split(":")[0];
+                }  
+            }
+                        
+ 
+             
+             
             var scores = document.getElementById("leaderboard"); 
             var line = "";
             for(var i =0;i<leadArray.length;i++){

@@ -79,6 +79,8 @@
           var spr = document.getElementById("secsPerRound").value;
           var c = document.getElementById("anon").checked;
           var t = document.getElementById("tourn").checked;
+          var s = document.getElementById("showScores").checked;
+  
           if(r.length === 0 || spr.length === 0 || max.length===0){
               document.getElementById("error").innerHTML = "Options must not be empty";
               return false;
@@ -103,7 +105,7 @@
             survival = true;
           }
             
-          socket.emit('options',r + "," + spr + "," + teachersCode + "," + c+","+t+","+max); 
+          socket.emit('options',r + "," + spr + "," + teachersCode + "," + c+","+t+","+max+","+s); 
           //sends the generated code to server
           resetMatrix();
             
