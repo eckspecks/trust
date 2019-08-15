@@ -3,32 +3,32 @@
    <title>Trust Game</title>
        <link rel="stylesheet" href="styles.css">
 </head>
-    
+
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="/js/teacher.js"></script>
-      
-    
+
+
 <body>
 <div id="top">
     <a href="index.html">
-    <img id ="logo" align="left" src="nobel.png" alt="Nobel"></a>
+    <img id ="logo" align="left" src="./images/nobel.png" alt="Nobel"></a>
     <br>
     <br>
     <p id="copyright" align="left" style="font-family:courier; font-size:50%;">&copy;2019 Nobel Coaching</p>
 </div>
-    
+
 <div>
     <button id="send" onclick="gen()" >Create Room Code</button>
 </div>
-    
+
 <div id="hideAfterPlayGame">
         <h1 id="yourRoomCode">Your Room Code</h1>
         <h1 id="code"></h1>
         <h1 id="error"></h1>
-        <h1 id="players">Players Connected:</h1>    
+        <h1 id="players">Players Connected:</h1>
         <ul id="names"></ul>
-    
+
     <div id="options">
         <h1>Rounds (min):</h1><input id="roundNumMin" type="text" value="5">
         <br>
@@ -38,7 +38,7 @@
         <br>
         <h1>Seconds Per Round:</h1><input id="secsPerRound" type="text" value="30">
         <br>
-        <br>   
+        <br>
         <input type="checkbox" id="anon" name="anonymous">
         <label for="anon">Anonymous Opponents?</label>
         <br>
@@ -49,9 +49,9 @@
             <h1>Gremlin Chance:</h1><input type="range" min="0" max="10" value="0" class="slider" id="slideNum">
             <label for="slideNum" id="chanceVal">5%</label>
         </div>
-          
+
     </div>
-    
+
     <script>
         var slider = document.getElementById("slideNum");
         var output = document.getElementById("chanceVal");
@@ -61,14 +61,14 @@
         }
     </script>
 
-        <div id="playGameButton"> 
+        <div id="playGameButton">
         <button id="playGame" >Play Game</button>
         </div>
         </div>
         <br>
         <div id="tableDiv">
-            
-    
+
+
         </div>
         <div id="restartGameButton"><button id="restartGame">Restart Game</button></div>
 </body>
