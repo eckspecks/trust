@@ -1,11 +1,9 @@
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-
     <title>Trust Game</title>
-
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/custom.css">
 </head>
 
     <script src="/socket.io/socket.io.js"></script>
@@ -15,18 +13,18 @@
 
 <body>
 
-    <div id="top">
-        <a href="index.html">
-        <img id ="logo" align="left" src="./images/nobel.png" alt="Nobel"></a>
-        <br>
-        <br>
-        <p id="copyright" align="left" style="font-family:courier; font-size:50%;">&copy;2019 Nobel Coaching</p>
+    <div class="top">
+      <a href="index.html">
+      <img class="logo" align="left" src="./images/nobel.png" alt="Nobel"></a>
+
+        <p class="copyright" align="left">&copy;2019 Nobel Coaching</p>
+
     </div>
 
     <div id="student">
         <input type= "text" id="studentRoomCode" placeholder="Enter room code">
         <h1 id="codeError"></h1>
-        <button id="submitRoomCode">Submit Room Code</button>
+        <button id="submitRoomCode" class="green-button">Submit Room Code</button>
 
         <div>
           <a class = "green-button" href="quickPlay.html">Quick Play</a>
@@ -37,7 +35,7 @@
         <input type= "text" id="studentNick" placeholder="Enter name">
         <br>
         <h1 id="nickError"></h1>
-        <button class = "green-button" id="nickname">Enter Nickname</button>
+        <button class="green-button" id="nickname">Enter Nickname</button>
     </div>
 
     <div id="waiting"><h2>Waiting for teacher to start game</h2>
@@ -46,7 +44,9 @@
       <ul id="studentNames"></ul>
     </div>
 
-    <div id="hide">
+    <!-- Game stuff starts here -->
+
+    <div class="container">
 
       <div id ="info">
         <h1 id = "countdown0"></h1><br>
@@ -58,7 +58,7 @@
         <body>
             <ul id="messages"></ul>
             <form action="">
-            <input id="m" autocomplete="off"/><button id="sendmsg">Send</button>
+            <input id="m" autocomplete="off"/><button id="sendmsg" class="green-button">Send</button>
             </form>
         </body>
       </div>
@@ -66,182 +66,188 @@
       <h1 id = "lead" style="display:none">Leaderboard</h1>
       <h1 id="leaderboard" style="display:none"></h1>
       <h1 id="hideRep" style="display:none">My Rep:<div id="myRep" class="repute"></div></h1>
-      <h1 id="opp0"></h1>
 
-      <div id="ready0" class="theGame">
+
+      <div id="ready0" class="col-xs-12 col-md-6 gameCell">
+        <h1 id="opp0"></h1>
 
         <div id="oneline0">
           <h1 id="result0"></h1>
+
           <h3>Your Score: <p id="yourScore0">0</p></h3>
           <h3>Your Opponent's Score: <p id="oppScore0">0</p></h3>
           <h3>Your Opponents Rep: <div id= "oppRep0" class="repute"></div></h3>
         </div>
 
-      <br>
       <form id="cheatorcoop0" style="display:block">
-        <button id="cheat0" class="cheatButton">Cheat</button>
-
-        <button id="coop0" class="coopButton">Cooperate</button>
-
+        <button id="cheat0" class="cheatButton green-button ">Cheat</button>
+        <button id="coop0" class="coopButton green-button ">Cooperate</button>
       </form>
-      <br>
     </div>
 
 
+    <div id="ready1" class="col-xs-12 col-md-6 gameCell">
+      <h1 id="opp1"></h1>
 
-    <h1 id="opp1"></h1>
-    <div id="ready1" >
-    <div id="oneline1" >
-    <h1 id="result1"></h1>
+      <div id="oneline1" >
+        <h1 id="result1"></h1>
 
-    <h3>Your Score: <p id="yourScore1">0</p></h3>
-    <h3>Your Opponent's Score: <p id="oppScore1">0</p></h3>
-    <h3>Your Opponents Rep: <div id="oppRep1" class="repute"></div></h3>
+        <h3>Your Score: <p id="yourScore1">0</p></h3>
+        <h3>Your Opponent's Score: <p id="oppScore1">0</p></h3>
+        <h3>Your Opponents Rep: <div id="oppRep1" class="repute"></div></h3>
+      </div>
 
+      <form id="cheatorcoop1" style="display:block">
+        <button id="cheat1" class="cheatButton green-button ">Cheat</button>
+        <button id="coop1" class="coopButton green-button ">Cooperate</button>
+      </form>
     </div>
-        <form id="cheatorcoop1" style="display:block">
-        <button id="cheat1" class="cheatButton">Cheat</button>
 
-        <button id="coop1" class="coopButton">Cooperate</button>
-        </form>
+
+    <div id="ready2" class="col-xs-12 col-md-6 gameCell">
+      <h1 id="opp2"></h1>
+
+      <div id="oneline2" >
+        <h1 id="result2"></h1>
+
+        <h3>Your Score: <p id="yourScore2">0</p></h3>
+        <h3>Your Opponent's Score: <p id="oppScore2">0</p></h3>
+        <h3>Your Opponents Rep: <div id="oppRep2" class="repute"></div></h3>
+      </div>
+
+      <form id="cheatorcoop2" style="display:inline">
+        <button id="cheat2" class="cheatButton green-button ">Cheat</button>
+        <button id="coop2" class="coopButton green-button ">Cooperate</button>
+      </form>
     </div>
-    <h1 id="opp2"></h1>
 
-    <div id="ready2" >
-    <div id="oneline2" >
-    <h1 id="result2"></h1>
 
-    <h3>Your Score: <p id="yourScore2">0</p></h3>
-    <h3>Your Opponent's Score: <p id="oppScore2">0</p></h3>
-    <h3>Your Opponents Rep: <div id="oppRep2" class="repute"></div></h3>
+    <div id="ready3" class="col-xs-12 col-md-6 gameCell">
+      <h1 id="opp3"></h1>
 
+      <div id="oneline3" >
+        <h1 id="result3"></h1>
+
+        <h3>Your Score: <p id="yourScore3">0</p></h3>
+      <h3>Your Opponent's Score: <p id="oppScore3">0</p></h3>
+      <h3>Your Opponents Rep: <div id="oppRep3" class="repute"></div></h3>
+
+      </div>
+
+      <form id="cheatorcoop3" style="display:inline">
+        <button id="cheat3" class="cheatButton green-button ">Cheat</button>
+        <button id="coop3" class="coopButton green-button ">Cooperate</button>
+      </form>
     </div>
-        <form id="cheatorcoop2" style="display:inline">
-        <button id="cheat2" class="cheatButton">Cheat</button>
 
-        <button id="coop2" class="coopButton">Cooperate</button>
-        </form>
+
+    <div id="ready4" class="col-xs-12 col-md-6 gameCell">
+      <h1 id="opp4"></h1>
+
+      <div id="oneline4">
+        <h1 id="result4"></h1>
+
+        <h3>Your Score: <p id="yourScore4">0</p></h3>
+        <h3>Your Opponent's Score: <p id="oppScore4">0</p></h3>
+        <h3>Your Opponents Rep: <div id="oppRep4" class="repute"></div></h3>
+      </div>
+
+      <form id="cheatorcoop4" style="display:inline">
+        <button id="cheat4" class="cheatButton green-button ">Cheat</button>
+        <button id="coop4" class="coopButton green-button ">Cooperate</button>
+      </form>
     </div>
-    <h1 id="opp3"></h1>
 
-    <div id="ready3" >
-    <div id="oneline3" >
-    <h1 id="result3"></h1>
 
-    <h3>Your Score: <p id="yourScore3">0</p></h3>
-    <h3>Your Opponent's Score: <p id="oppScore3">0</p></h3>
-    <h3>Your Opponents Rep: <div id="oppRep3" class="repute"></div></h3>
+    <div id="ready5" class="col-xs-12 col-md-6 gameCell">
+      <h1 id="opp5"></h1>
 
+      <div id="oneline5">
+        <h1 id="result5"></h1>
+
+        <h3>Your Score: <p id="yourScore5">0</p></h3>
+        <h3>Your Opponent's Score: <p id="oppScore5">0</p></h3>
+        <h3>Your Opponents Rep: <div id="oppRep5" class="repute"></div></h3>
+      </div>
+
+      <form id="cheatorcoop5" style="display:inline">
+        <button id="cheat5" class="cheatButton green-button">Cheat</button>
+        <button id="coop5" class="coopButton green-button">Cooperate</button>
+      </form>
     </div>
-        <form id="cheatorcoop3" style="display:inline">
-        <button id="cheat3" class="cheatButton">Cheat</button>
 
-        <button id="coop3" class="coopButton">Cooperate</button>
-        </form>
+
+    <div id="ready6" class="col-xs-12 col-md-6 gameCell">
+      <h1 id="opp6"></h1>
+
+      <div id="oneline6">
+        <h1 id="result6"></h1>
+
+        <h3>Your Score: <p id="yourScore6">0</p></h3>
+        <h3>Your Opponent's Score: <p id="oppScore6">0</p></h3>
+        <h3>Your Opponents Rep: <div id="oppRep6" class="repute"></div></h3>
+      </div>
+
+      <form id="cheatorcoop6" style="display:inline">
+        <button id="cheat6" class="cheatButton green-button">Cheat</button>
+        <button id="coop6" class="coopButton green-button">Cooperate</button>
+      </form>
     </div>
-    <h1 id="opp4"></h1>
 
-    <div id="ready4">
-    <div id="oneline4" >
-    <h1 id="result4"></h1>
 
-    <h3>Your Score: <p id="yourScore4">0</p></h3>
-    <h3>Your Opponent's Score: <p id="oppScore4">0</p></h3>
-    <h3>Your Opponents Rep: <div id="oppRep4" class="repute"></div></h3>
+    <div id="ready7" class="col-xs-12 col-md-6 gameCell">
+      <h1 id="opp7"></h1>
 
+      <div id="oneline7">
+        <h1 id="result7"></h1>
+
+        <h3>Your Score: <p id="yourScore7">0</p></h3>
+        <h3>Your Opponent's Score: <p id="oppScore7">0</p></h3>
+        <h3>Your Opponents Rep: <div id="oppRep7" class="repute"></div></h3>
     </div>
-        <form id="cheatorcoop4" style="display:inline">
-        <button id="cheat4" class="cheatButton">Cheat</button>
 
-        <button id="coop4" class="coopButton">Cooperate</button>
-        </form>
+      <form id="cheatorcoop7" style="display:inline">
+        <button id="cheat7" class="cheatButton green-button">Cheat</button>
+        <button id="coop7" class="coopButton green-button">Cooperate</button>
+      </form>
     </div>
-    <h1 id="opp5"></h1>
 
-     <div id="ready5">
-    <div id="oneline5" >
-    <h1 id="result5"></h1>
 
-    <h3>Your Score: <p id="yourScore5">0</p></h3>
-    <h3>Your Opponent's Score: <p id="oppScore5">0</p></h3>
-    <h3>Your Opponents Rep: <div id="oppRep5" class="repute"></div></h3>
+    <div id="ready8" class="col-xs-12 col-md-6 gameCell">
+      <h1 id="opp8"></h1>
 
+      <div id="oneline8">
+        <h1 id="result8"></h1>
+
+        <h3>Your Score: <p id="yourScore8">0</p></h3>
+        <h3>Your Opponent's Score: <p id="oppScore8">0</p></h3>
+        <h3>Your Opponents Rep: <div id="oppRep8"class="repute"></div></h3>
     </div>
-        <form id="cheatorcoop5" style="display:inline">
-        <button id="cheat5" class="cheatButton">Cheat</button>
 
-        <button id="coop5" class="coopButton">Cooperate</button>
-        </form>
+      <form id="cheatorcoop8" style="display:inline">
+        <button id="cheat8" class="cheatButton green-button">Cheat</button>
+        <button id="coop8" class="coopButton green-button">Cooperate</button>
+      </form>
     </div>
-    <h1 id="opp6"></h1>
 
-     <div id="ready6">
-    <div id="oneline6" >
-    <h1 id="result6"></h1>
 
-    <h3>Your Score: <p id="yourScore6">0</p></h3>
-    <h3>Your Opponent's Score: <p id="oppScore6">0</p></h3>
-    <h3>Your Opponents Rep: <div id="oppRep6" class="repute"></div></h3>
+    <div id="ready9" class="col-xs-12 col-md-6 gameCell">
+      <h1 id="opp9"></h1>
 
+      <div id="oneline9">
+        <h1 id="result9"></h1>
+
+        <h3>Your Score: <p id="yourScore9">0</p></h3>
+        <h3>Your Opponent's Score: <p id="oppScore9">0</p></h3>
+        <h3>Your Opponents Rep: <div id="oppRep9" class="repute"></div></h3>
+      </div>
+
+      <form id="cheatorcoop9" style="display:inline">
+        <button id="cheat9" class="cheatButton green-button">Cheat</button>
+        <button id="coop9" class="coopButton green-button">Cooperate</button>
+      </form>
     </div>
-        <form id="cheatorcoop6" style="display:inline">
-        <button id="cheat6" class="cheatButton">Cheat</button>
 
-        <button id="coop6" class="coopButton">Cooperate</button>
-        </form>
-    </div>
-    <h1 id="opp7"></h1>
-
-     <div id="ready7">
-    <div id="oneline7" >
-    <h1 id="result7"></h1>
-
-    <h3>Your Score: <p id="yourScore7">0</p></h3>
-    <h3>Your Opponent's Score: <p id="oppScore7">0</p></h3>
-    <h3>Your Opponents Rep: <div id="oppRep7" class="repute"></div></h3>
-
-    </div>
-        <form id="cheatorcoop7" style="display:inline">
-        <button id="cheat7" class="cheatButton">Cheat</button>
-
-        <button id="coop7" class="coopButton">Cooperate</button>
-        </form>
-    </div>
-    <h1 id="opp8"></h1>
-
-     <div id="ready8">
-    <div id="oneline8" >
-    <h1 id="result8"></h1>
-
-    <h3>Your Score: <p id="yourScore8">0</p></h3>
-    <h3>Your Opponent's Score: <p id="oppScore8">0</p></h3>
-    <h3>Your Opponents Rep: <div id="oppRep8"class="repute"></div></h3>
-
-    </div>
-        <form id="cheatorcoop8" style="display:inline">
-        <button id="cheat8" class="cheatButton">Cheat</button>
-
-        <button id="coop8" class="coopButton">Cooperate</button>
-        </form>
-    </div>
-    <h1 id="opp9"></h1>
-
-     <div id="ready9">
-    <div id="oneline9" >
-
-    <h1 id="result9"></h1>
-
-    <h3>Your Score: <p id="yourScore9">0</p></h3>
-    <h3>Your Opponent's Score: <p id="oppScore9">0</p></h3>
-    <h3>Your Opponents Rep: <div id="oppRep9" class="repute"></div></h3>
-
-    </div>
-        <form id="cheatorcoop9" style="display:inline">
-        <button id="cheat9" class="cheatButton">Cheat</button>
-
-        <button id="coop9" class="coopButton">Cooperate</button>
-        </form>
-    </div>
 </div>
 </body>
 </html>

@@ -1,4 +1,38 @@
 /*All*/
+html{
+    max-height: 100%;
+}
+body{
+    text-align: center;
+    background-color: #f5f3e2;
+    align-items: center;
+    margin: auto;
+}
+img{
+    vertical-align: top;
+    display:inline;
+}
+li{
+    list-style-type:none;
+    font-family: 'Catamaran',sans-serif;
+}
+li, label{
+    font-family: 'Poppins', sans-serif;
+}
+li{
+    list-style-type:none;
+    font-size: 30px;
+}
+table {
+    border-collapse: collapse;
+}
+td, th {
+    border: 1px solid #999;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+/* Text */
 h1, h2, h3{
     font-family: 'Poppins', sans-serif;
 }
@@ -10,18 +44,50 @@ h2{
 h3{
   font-size: 20px;
 }
-body{
+
+/* Buttons */
+.green-button{
+    height:80px;
+    width: 240px;
+
+    font-size: 26px;
+    font-family: 'Poppins', sans-serif;
+    color: white;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 100px;
+
     text-align: center;
-    background-color: #f5f3e2;
-    align-items: center;
-    margin: auto;
+    vertical-align: middle;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+
+    margin: 5px 10px;
+    line-height: 80px;
 }
-html{
-    max-height: 100%;
+.cheatButton, .coopButton{
+  height: 40px;
+  width: 120px;
+  font-size: 16px;
+  line-height: normal;
+  border-radius: 10px;
+}
+.green-button:hover, .cheatButton:hover, .coopButton:hover{
+  /* box-shadow: -5px -5px 10px DarkGreen inset; */
+  /* opacity: .8; */
+  background-color: #3a8c3d;
+  color: white;
+  text-decoration: none;
 }
 
 /*Logo & Copyright*/
-#bottom{
+.top{
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-bottom: 50px;
+}
+.bottom{
     vertical-align: baseline;
     position: fixed;
     bottom: 0;
@@ -29,11 +95,11 @@ html{
     margin: auto;
     padding-bottom: 10px;
 }
-#copyright{
+.copyright{
     font-family:courier;
     font-size:50%;
 }
-#logo{
+.logo{
     width: 94px;
     height: 43px;
 }
@@ -49,23 +115,7 @@ html{
 #green{
     margin-bottom:50px;
 }
-button, .green-button{
-    height:80px;
-    width: 240px;
-    font-family: 'Poppins', sans-serif;
-    color: white;
-    background-color: #4CAF50;
-    border: none;
-    text-align: center;
-    vertical-align: middle;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 26px;
-    margin: 5px 10px;
-    cursor: pointer;
-    border-radius: 100px;
-    line-height: 80px;
-}
+
 #about{
     margin-bottom: 40px;
     margin-top: 50px;
@@ -101,7 +151,6 @@ button, .green-button{
 .fa:hover {
     opacity: 0.7;
 }
-
 .fa-facebook {
     background: #3B5998;
     color: white;
@@ -117,20 +166,11 @@ button, .green-button{
 }
 
 /*student.html*/
-#top{
-    margin-top: 10px;
-    margin-left: 10px;
-    margin-bottom: 50px;
-}
-/*TEMPORARY*/
-#hide{
-  /* display: none; */
-  align-items: center;
-}
-/* TEMPORARY
+
+/* TEMPORARY*/
  #enterNickname,#ready0,#waiting,#ready1,#ready2,#ready3,#ready4,#ready5,#ready6,#ready7,#ready8,#ready9{
     display:none;
- } */
+ }
 #studentRoomCode{
     align-self: center;
 }
@@ -141,13 +181,6 @@ button, .green-button{
     font-family: 'Poppins', sans-serif;
     align-self: center;
 }
-waiting{
-    margin-right:186px;
-}
-img{
-    vertical-align: top;
-    display:inline;
-}
 .repute{
     background-color:yellow;
     text-align: center;
@@ -155,39 +188,13 @@ img{
     margin-right:39%;
     height: 40px;
 }
-
-#cheatButton, #coopButton{
-  height: 40px!important;
-  width: 120px!important;
-  border-radius: 40%!important;
-}
-
-@media only screen and (max-width: 768px) {
-
-/*
-    #oneline0,#oneline1,#oneline2,#oneline3,#oneline4,#oneline5,#oneline6,#oneline7,#oneline8,#oneline9{
-        padding-left:0px !important;
-    }
-    #info{
-        padding-right:0px !important;
-    }
-*/
-    #cheat0,#cheat1,#cheat2,#cheat3,#cheat4,#cheat5,#cheat6,#cheat7,#cheat8,#cheat9{
-        margin-bottom:20px;
-    }
-
-}
-
 #info{
     padding-right:175px;
     font-family: 'Catamaran',sans-serif;
     font-weight: bold;
     font-size:25px;
 }
-li{
-    list-style-type:none;
-    font-family: 'Catamaran',sans-serif;
-}
+
 #chatbox button{
     width:100px;
     height:47px;
@@ -198,6 +205,17 @@ li{
     font-family: 'Catamaran',sans-serif;
     font-size:20px;
 }
+.gameCell{
+  padding-bottom: 5px;
+  border: 1px solid grey;
+}
+@media only screen and (max-width: 768px) {
+
+    #cheat0,#cheat1,#cheat2,#cheat3,#cheat4,#cheat5,#cheat6,#cheat7,#cheat8,#cheat9{
+        margin-bottom:20px;
+    }
+
+}
 
 /*quickplay.html*/
 #connecting{
@@ -206,10 +224,6 @@ li{
 
 /*teacher.html*/
 
-
-#send{
-
-}
 #yourRoomCode,#names,#playGame,#players,#options,#restartGameButton{
    display:none;
 }
@@ -221,22 +235,7 @@ li{
     margin:auto;
     margin-top: 10px;
 }
-li, label{
-    font-family: 'Poppins', sans-serif;
-}
-li{
-    padding:0;
-    list-style-type:none;
-    font-size: 30px;
-}
-table {
-    border-collapse: collapse;
-}
-td, th {
-    border: 1px solid #999;
-    padding: 0.5rem;
-    text-align: left;
-}
+
 #names button{
     height:50px;
     width:102px;
