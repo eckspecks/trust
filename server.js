@@ -36,13 +36,13 @@ app.get("/a.html", function(req, res)
     res.sendFile(__dirname + "/a.html");
 });
 
-app.get("/custom.css", function(req, res)
+app.get("/css/custom.css", function(req, res)
 {
-    res.sendFile(__dirname + "/custom.css");
+    res.sendFile(__dirname + "/css/custom.css");
 });
-app.get("/bootstrap.min.css", function(req, res)
+app.get("/css/bootstrap.min.css", function(req, res)
 {
-    res.sendFile(__dirname + "/bootstrap.min.css");
+    res.sendFile(__dirname + "/css/bootstrap.min.css");
 });
 app.get("/styles.css", function(req, res)
 {
