@@ -36,11 +36,18 @@ app.get("/a.html", function(req, res)
     res.sendFile(__dirname + "/a.html");
 });
 
+app.get("/custom.css", function(req, res)
+{
+    res.sendFile(__dirname + "/custom.css");
+});
+app.get("/bootstrap.min.css", function(req, res)
+{
+    res.sendFile(__dirname + "/bootstrap.min.css");
+});
 app.get("/styles.css", function(req, res)
 {
     res.sendFile(__dirname + "/styles.css");
 });
-
 app.get("/js/student.js", function(req, res)
 {   
     res.sendFile(__dirname + "/js/student.js");
