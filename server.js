@@ -52,9 +52,13 @@ app.get("/a.html", function(req, res)
     res.sendFile(__dirname + "/a.html");
 });
 
-app.get("/styles.css", function(req, res)
+app.get("/css/custom.css", function(req, res)
 {
-    res.sendFile(__dirname + "/styles.css");
+    res.sendFile(__dirname + "/css/custom.css");
+});
+app.get("/css/bootstrap.min.css", function(req, res)
+{
+    res.sendFile(__dirname + "/css/bootstrap.min.css");
 });
 
 app.get("/js/student.js", function(req, res)
