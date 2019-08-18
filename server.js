@@ -11,7 +11,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const server = http.createServer(app);
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 const io = socketIO(server);
-
+const mariadb = require('mariadb/callback');
 var array = [];
 var roomnum=0;
 var players = [];
@@ -26,28 +26,38 @@ var geo = [];
 var numMoves = [];
 var rounds = [];
 var range = [];
+const pool = mariadb.createConnection({
+     host: 'localhost',
+     user:'root', 
+     password: 'eatMyass1!',
+     database: 'login',
+     connectionLimit: 2
+});
+
+
+
 app.get("/", function(req, res)
 {
     res.sendFile(__dirname + "/index.html");
 });
-
+app.get("/login.html", function(req, res)
+{
+    res.sendFile(__dirname + "/login.html");
+});
+app.get("/register.html", function(req, res)
+{
+    res.sendFile(__dirname + "/register.html");
+});
 app.get("/a.html", function(req, res)
 {
     res.sendFile(__dirname + "/a.html");
 });
 
-app.get("/css/custom.css", function(req, res)
-{
-    res.sendFile(__dirname + "/css/custom.css");
-});
-app.get("/css/bootstrap.min.css", function(req, res)
-{
-    res.sendFile(__dirname + "/css/bootstrap.min.css");
-});
 app.get("/styles.css", function(req, res)
 {
     res.sendFile(__dirname + "/styles.css");
 });
+
 app.get("/js/student.js", function(req, res)
 {   
     res.sendFile(__dirname + "/js/student.js");
@@ -412,5 +422,34 @@ socket.on('nextRound',function(e){
  var roomNum = e.split(",")[0];
  var index = players[roomNum].indexOf(e.split(",")[1]);
  io.to(playerIDs[roomNum][index]).emit('round',"?");
+});
+socket.on('register',function(e){
+    console.log(e);
+    var user = e.split(",")[0];
+    var pw = e.split(",")[1];
+    var maria = "INSERT INTO login(USER,PW,ELO,REP) VALUES ('"+user+"','"+pw+"',5000,0)";     
+    
+    pool.query(maria,function (err,rows,fields){
+        if(err){
+            socket.emit('pwError',"err");
+        }else{
+            socket.emit('success',"s");
+        }
+    });
+    
 }); 
+ socket.on('checkIfValid',function(e){
+    var user = e.split(",")[0];
+    var pw = e.split(",")[1];
+    var maria = "SELECT * FROM login WHERE USER ='" + user + "' AND PW ='" +pw+"'";
+    pool.query(maria,function (err,rows,fields){
+        
+        if(err){
+            console.log("err");
+        }else{
+            socket.emit('loginWorked',rows);
+        }
+    }); 
+});    
+    
 });

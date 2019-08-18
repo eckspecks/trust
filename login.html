@@ -1,0 +1,51 @@
+<html>
+   <script src="/socket.io/socket.io.js"></script>
+   <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+   <script>
+    $(function () {
+        var socket = io(); 
+          $("#submitPassword").click(function(e){
+            var u =   $('#username').val();
+            var p =   $('#password').val();
+            if(u.length ===0||p.length===0){
+                document.getElementById("err").innerHTML = "Cant leave username/password empty!";
+            }
+            socket.emit('checkIfValid',u+","+p);   
+        });
+         socket.on('loginWorked',function(e){
+         
+
+            if(e.length===0){
+                document.getElementById("err").innerHTML = "Password or username incorrect!";
+                return false;
+            }    
+            var arr = JSON.stringify(e[0]).split("\"");
+            var user = arr[3];
+            var elo = arr[10].replace(/\D/g,'');
+            var rep = arr[12].replace(/\D/g,'');
+            document.getElementById("hideAfter").style.display = "none";
+            document.getElementById("details").innerHTML = "Username : " + user + " <br>Elo: "+elo + "<br>Reputation: "+rep;
+                         document.getElementById("showAfter").style.display="block";
+
+             
+             
+             
+         });
+        
+    });
+   </script>
+<div id="hideAfter">
+<p>Username:</p><input type="text" id="username">
+<br><br>
+<p>Password</p><input type="text" id="password">
+<br><br>
+<h1 id="err"></h1>
+<button id="submitPassword">Submit</button>
+<a href="register.html">register</a>
+</div>
+<div id="showAfter" style="display:none">
+<h1 id="details"> </h1>
+<button>Play Game</button>
+<button>Show leaderboard</button>
+</div>
+</html>

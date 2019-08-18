@@ -1,0 +1,56 @@
+<html>
+      <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+    
+            var matrix = [];
+        var users=0;
+        var players=[];
+        var ids = [];
+        var x = 0;
+        var y = 0;
+        var j = 0;
+        var currRound = 1;
+        var gamestarted = false;
+        var survival = false;
+        var win = "";
+     $(function () {
+         
+        var socket = io();
+         
+        $("#register").click(function(e){
+            var u =   $('#username').val();
+            var p =   $('#password').val();
+            if(u.length ===0||p.length===0){
+                document.getElementById("err").innerHTML = "Cant leave username/password empty!";
+                return false;
+            }
+            
+            
+            socket.emit('register',$('#username').val()+","+$('#password').val());   
+        });
+            socket.on('pwError',function(e){
+            document.getElementById("err").innerHTML = "Username already taken!";
+        });
+          socket.on('success',function(e){
+              
+            document.getElementById("bod").style.display = "none";
+        
+            document.getElementById("err").innerHTML = "Success! <br> <a href='login.html'>go back to login</a>";
+ 
+        });
+     });
+    
+        
+    
+    
+    </script>
+<div id="bod">
+<p>Username:</p><input type="text" id="username">
+<br><br>
+<p>Password</p><input type="text" id="password">
+<br><br>
+<button id="register">register</button>
+</div>
+<h1 id="err"></h1>
+</html>
