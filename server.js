@@ -30,7 +30,7 @@ const pool = mariadb.createConnection({
     host: 'nkpl8b2jg68m87ht.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
     user:'i7yfsfwwj6vcv7jg', 
     password: 'ixuhsca5pwh6kea4',
-    database: 'hgyvwfusqvvc1qa3
+    database: 'hgyvwfusqvvc1qa3'
      
 });
 
