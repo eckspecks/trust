@@ -25,13 +25,25 @@
             var rep = arr[12].replace(/\D/g,'');
             document.getElementById("hideAfter").style.display = "none";
             document.getElementById("details").innerHTML = "Username : " + user + " <br>Elo: "+elo + "<br>Reputation: "+rep;
-                         document.getElementById("showAfter").style.display="block";
-
-             
-             
-             
+            document.getElementById("showAfter").style.display="block"
          });
-        
+        $("#leaderboard").click(function(e){
+            document.getElementById("leaderboardH1").innerHTML="Leaderboard";
+            socket.emit('loginLeaderboard',"");
+        });
+           socket.on('leaderWorked',function(e){
+            var doc = document.getElementById("lead");
+            for(var i =0;i<e.length;i++){
+                var row = doc.insertRow(-1);
+                var arr = JSON.stringify(e[i]).split("\"");
+                var user = arr[3];
+                var elo = arr[10].replace(/\D/g,'');
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                cell1.innerHTML = user;
+                cell2.innerHTML = elo;
+            }
+         });
     });
    </script>
 <div id="hideAfter">
@@ -46,6 +58,9 @@
 <div id="showAfter" style="display:none">
 <h1 id="details"> </h1>
 <button>Play Game</button>
-<button>Show leaderboard</button>
+<button id="leaderboard">Show leaderboard</button>
+<h1 id="leaderboardH1"></h1>
+<table id="lead">
+</table>
 </div>
 </html>
