@@ -5,8 +5,6 @@
         var nick = "";
         var roomNum = 0;
         var timeleft =0;
-        var cheatOpp = [];
-        var coopOpp = [];
         var kicked=  false;
         var secs =0;
         var permRounds = 10;
@@ -15,6 +13,12 @@
         var totScore = 0;
         var anon = false;
         var rest = false;
+        var oppIDs = [];
+        var oppMoves = [];
+        var cheatOpp = [];
+        var coopOpp = [];
+        var oppRep = [];
+        var ip = "";
      $(function () {
          
         var socket = io();
@@ -90,16 +94,9 @@
          
         socket.on('readyToPlay',function(isCodeSuccessful){
             
-            if(kicked){
-                return false;
-            }
-            
-            if(isCodeSuccessful.split(",")[0]==="restart" && isCodeSuccessful.split(",")[1]!== nick){
-                return false;
-            }
+          
             for(var i =0;i<opponents.length;i++){
                 document.getElementById("ready"+i).style.display = "block";
-
                 document.getElementById("cheat"+i).style.display = "inline-block";
                 document.getElementById("coop"+i).style.display = "inline-block";
             }
@@ -108,162 +105,121 @@
             document.getElementById("student").style.display = 'none';
             document.getElementById("enterNickname").style.display = 'none';
             document.getElementById("chatbox").style.display = 'block';
-            
+            document.getElementById("photo").style.display = 'inline-block';
+
             //timer goes 30 seconds?
             
-            timeleft = secs;
-            var downloadTimer = setInterval(function(){
+            
+            
+        });
+         
+        $('.cheatButton').click(function(e){
+            e.preventDefault();
+            var id = $(this).attr('id');
+            var opp =opponents[id[id.length-1]];
+            var opponentID = oppIds[id[id.length-1]];
+            
+
+            socket.emit('move',0 + "," + roomNum + "," + nick +"," +opp+","+opponentID );
+            document.getElementById("cheat"+id[id.length-1]).style.display = "none";
+            document.getElementById("coop"+id[id.length-1]).style.display = "none";
+            haveIPlayed[opponents.indexOf(opp)] = true;
+            cheatOpp[opponents.indexOf(opp)] =true;
+
+            return false;
+            
+        }); 
+         
+        $('.coopButton').click(function(e){      
+            e.preventDefault();
+            var id = $(this).attr('id');
+            var opp =opponents[id[id.length-1]];
+
+            var opponentID = oppIds[id[id.length-1]];
+        
+            socket.emit('move',1 + "," + roomNum + "," + nick +"," +opp+","+opponentID );
+            document.getElementById("cheat"+id[id.length-1]).style.display = "none";
+            document.getElementById("coop"+id[id.length-1]).style.display = "none";
+            haveIPlayed[opponents.indexOf(opp)] = true;
+            coopOpp[opponents.indexOf(opp)] =true;
+
+            return false;
+            
+        }); 
+         
+         socket.on('round',function(e){
+              timeleft = secs;
+              var downloadTimer = setInterval(function(){
               document.getElementById("countdown0").innerHTML = timeleft + " seconds remaining";
               timeleft -= 1;
                 
                 
               if(timeleft <= -1 || rest){
                 rest = false;
-
-                for(var i =0;i<opponents.length;i++){
-                    if(!haveIPlayed[i]){
-                        var opp =opponents[i];
-                        socket.emit('move',1 + "," + roomNum + "," + nick + "," + opp);
-                        coopOpp[i] =true;
-                        haveIPlayed[i] = false;
-                        
-                    }
-                }  
-                  
-                  
-                socket.emit('updateBoard',"play " + roomNum);
+                
+                
+               
                 clearInterval(downloadTimer);
-                  
                 document.getElementById("countdown0").innerHTML = "Round Done"
                   
-                socket.emit('updateBoard',"reset " + roomNum);
+                updateBoard(); 
                   
+                socket.emit('resetMoves',roomNum);
                 if(rounds==1){
+                    
                     document.getElementById("countdown0").innerHTML = "Game over!";
                     socket.emit('restart',roomNum);
-                    
 
                     for(var i =0; i<opponents.length;i++){
                         document.getElementById("ready"+i).style.display = "none";
                         document.getElementById("opp"+i).style.display = "none";
-
                     }
+                    
                     document.getElementById("chatbox").style.display = "none";
+                    document.getElementById("photo").style.display = "none";
 
-                    document.getElementById("leaderboard").style.display = "block";
+                   document.getElementById("leaderboard").style.display = "block";
                     document.getElementById("totalScores").style.display = "block";
 
                     return false;
                 }  
                 rounds--;  
-                socket.emit('readyToPlay',"restart," +roomNum + "," + nick);
+                socket.emit('nextRound',roomNum+","+nick);
+                for(var i =0;i<opponents.length;i++){
+                    document.getElementById("cheat"+i).style.display = "inline-block";
+                    document.getElementById("coop"+i).style.display = "inline-block";
+                }
               }
             }, 1000);
-            
-        });
-         
-        $('.cheatButton').click(function(e){
-            
-            var id = $(this).attr('id');
-            var opp =opponents[id[id.length-1]];
-            
-            socket.emit('move',0 + "," + roomNum + "," + nick +"," +opp );
-            document.getElementById("cheat"+id[id.length-1]).style.display = "none";
-            document.getElementById("coop"+id[id.length-1]).style.display = "none";
-            cheatOpp[opponents.indexOf(opp)] =true;
-            haveIPlayed[opponents.indexOf(opp)] = true;
-            return false;
-            
         }); 
-        $('.coopButton').click(function(e){        
-            var id = $(this).attr('id');
-            var opp =opponents[id[id.length-1]];
-            
-            socket.emit('move',1 + "," + roomNum + "," + nick + "," + opp);
-            document.getElementById("cheat"+id[id.length-1]).style.display = "none";
-            document.getElementById("coop"+id[id.length-1]).style.display = "none";
-            coopOpp[opponents.indexOf(opp)] =true;
-            haveIPlayed[opponents.indexOf(opp)] = true;
-            return false;
-            
-        }); 
-        socket.on('updateBoard',function(oppMove){
-            //alert(oppMove);
-            //first is cheat/coop
-            //second is roomNum
-            //third is nick
-            //fourth is opponent
-            var cheatOrCoop = oppMove.split(",")[0];
-            var nickName = oppMove.split(",")[2];
-             
-            
-            if(nickName !== nick && oppMove.split(",")[3] !== nick){
-                return 0;
-            }
-            
-            if(nickName!==nick){
-                var oppNum = opponents.indexOf(nickName);
-            if(cheatOpp[oppNum]){
-                if(cheatOrCoop==1){
-                    //you cheated, opp cooperated
-                        play[oppNum]+=3;
-                    totScore+=3;
-                        oppScore[oppNum]-=1;
-                        document.getElementById("photo"+oppNum).src="youcheat.png";
-                }else{
-                    //both cheat
-                        document.getElementById("photo"+oppNum).src="bothcheat.png"
-                }
-            }
-            
-            if(coopOpp[oppNum]){
-                if(cheatOrCoop==1){
-                    //both cooperated
-                        play[oppNum]+=2;
-                    totScore+=2;
-                        oppScore[oppNum]+=2;
-                        document.getElementById("photo"+oppNum).src="bothcoop.png";
-                }else{
-                    //you coop, opp cheated :(
-                        play[oppNum]-=1;
-                        totScore-=1;
-                        oppScore[oppNum]+=3;
-                        document.getElementById("photo"+oppNum).src="theycheat.png";
-                }
-            }
-                
-            cheatOpp[oppNum]=false;
-            coopOpp[oppNum] = false; 
-            document.getElementById("yourScore"+oppNum).innerHTML="<p>"+play[oppNum]+"</p>";
-            document.getElementById("oppScore"+oppNum).innerHTML="<p>"+oppScore[oppNum]+"</p>";
-            socket.emit('score',nick+ "," + play[oppNum] + ","+roomNum + "," +opponents[oppNum] + "," +totScore);    
-            }
-        });
-         
         socket.on('numberOfUsers',function(users){
+            var arr = users.split("~");
             if(kicked){
                 return false;
             }
-            opponents = users.split(",");
-                
+            opponents = arr[0].split(",");
+            oppIds = arr[1].split(",");
             for(var i =0;i<opponents.length-1;i++){
                 document.getElementById("ready"+i).style.display="block";
+                
             }
             
             var index = opponents.indexOf(nick);
             
             if(index>-1){
                 opponents.splice(index,1);
+                oppIds.splice(index,1);
             }
             var opps = opponents.length;
             play= Array(opps).fill(0);
             oppScore=Array(opps).fill(0);
-            cheatOpp = Array(opps).fill(false);
-            coopOpp = Array(opps).fill(false);
+            oppRep=Array(opps).fill(0);
+
             haveIPlayed = Array(opps).fill(false);
        
             for(var i =0; i<opponents.length;i++){
                // alert(opponents[i]);
+                oppMoves.push("null");
                 leadArray.push(opponents[i] + ":0");
                 if(!anon){
                 document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
@@ -299,31 +255,32 @@
         });
         socket.on('r', function(msg){
             
-        totScore = 0;
-        document.getElementById("leaderboard").style.display = "none";
-        document.getElementById("totalScores").style.display = "none";
-        for(var i=0;i<=opponents.length;i++){
-            document.getElementById("yourScore"+i).innerHTML="<p>"+0+"</p>";
-            document.getElementById("oppScore"+i).innerHTML="<p>"+0+"</p>"; 
-            document.getElementById("photo"+i).src= "before.png";
-        }
-        var opps = opponents.length;
-        leadArray = [];
-        for(var i =0; i<opponents.length;i++){
-               // alert(opponents[i]);
-                    leadArray.push(opponents[i] + ":0");
-                if(!anon){
-                    document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
-                }
-        }
-        leadArray.push(nick + ":0");    
-            
-        play= Array(opps).fill(0);
-        oppScore=Array(opps).fill(0);
-        haveIPlayed = Array(opps).fill(false);
-        cheatOpp = Array(opps).fill(false);
-        coopOpp = Array(opps).fill(false);
-        rounds = permRounds;
+            totScore = 0;
+            document.getElementById("leaderboard").style.display = "none";
+            document.getElementById("totalScores").style.display = "none";
+            for(var i=0;i<=opponents.length;i++){
+                document.getElementById("yourScore"+i).innerHTML="<p>"+0+"</p>";
+                document.getElementById("oppScore"+i).innerHTML="<p>"+0+"</p>"; 
+                document.getElementById("oppRep"+i).innerHTML="<p>"+0+"</p>"; 
+            }
+            var opps = opponents.length;
+            leadArray = [];
+            for(var i =0; i<opponents.length;i++){
+                   // alert(opponents[i]);
+                        leadArray.push(opponents[i] + ":0");
+                    if(!anon){
+                        document.getElementById("opp"+i).innerHTML ="Opponent: " + opponents[i];
+                    }
+            }
+            leadArray.push(nick + ":0");    
+
+            play= Array(opps).fill(0);
+            oppScore=Array(opps).fill(0);
+            oppRep = Array(opps).fill(0);
+            oppMove=Array(opps).fill("null");
+            haveIPlayed = Array(opps).fill(false);
+            cheatOpp = Array(opps).fill(false);
+            rounds = permRounds;
             
         });
          
@@ -345,8 +302,116 @@
         });
          
         socket.on('everybody',function(e){
+            //not sending all the time?
            rest = true;
         });
+            
+        socket.on('teacherDisconnected',function(e){
+            document.getElementById("waiting").innerHTML = "<h1>Teacher disconnected! :(</h1><br>    <a href ='/student.html'>Go Back</a>";
+        });
+         socket.on('ip',function(e){
+          alert(e);
+        });
+         socket.on('score',function(e){
+            var opponent = e.split(",")[2];
+            var move = e.split(",")[0];
+            var index = opponents.indexOf(opponent);
+            if(move==1){
+            oppRep[index]++;
+            }else{
+            oppRep[index]--;
+            }
+        });
+         socket.on('oppMoveAgainstYou',function(e){
+           var index = opponents.indexOf(e.split(",")[1]);
+           oppMoves[index] = e;
+        });
+         
+          function bothCoop(num){
+            play[num]+=2;
+            totScore+=2;
+            oppScore[num]+=2;
+            document.getElementById("result"+num).innerHTML= "Both you and your opponent cooperated!";   
+          }
+         function playCoop(num){
+            play[num]-=1;
+            totScore-=1;
+            oppScore[num]+=3;
+            document.getElementById("result"+num).innerHTML="You cooperated, but your opponent cheated!";   
+         }
+         function playCheat(num){
+            play[num]+=3;
+            totScore+=3;
+            oppScore[num]-=1;
+            document.getElementById("result"+num).innerHTML="Your opponent cooperated, but you cheated them!"; 
+         }
+         
+         
+         
+         
+        function updateBoard(){
+              
+               
+        for(var i =0;i<opponents.length;i++){
+            var move = oppMoves[i];
+            console.log(move);
+           
+            if(move=="null"){
+                if(haveIPlayed[i]){
+                    
+                    if(cheatOpp[i]){
+                        playCheat(i);
+                    }
+                    if (coopOpp[i]){
+                       bothCoop(i);
+                    }
+                    
+                    
+                }else{
+                    bothCoop(i);
+                }
+            }else{
+            
+                var cheatOrCoop = move.split(",")[0];
+
+                if(!haveIPlayed[i]){
+                    if(cheatOrCoop==1){
+                        bothCoop(i); 
+                    }else{
+                        playCoop(i);
+                    }
+                }else{
+                    if(cheatOpp[i]){
+                        if(cheatOrCoop==1){
+                            playCheat(i);
+                        }else{
+                            document.getElementById("result"+i).innerHTML= "Both you and your opponent cheated!";
+                        }
+                    }
+                    if(coopOpp[i]){
+                        if(cheatOrCoop==1){
+                            bothCoop(i); 
+                        }else{
+                            playCoop(i);    
+                        }
+                    }
+                }
+            }
+             cheatOpp[i]=false;
+             coopOpp[i] = false;
+             document.getElementById("yourScore"+i).innerHTML="<p>"+play[i]+"</p>";
+             document.getElementById("oppScore"+i).innerHTML="<p>"+oppScore[i]+"</p>";
+             document.getElementById("oppRep"+i).innerHTML="<p>"+oppRep[i]+"</p>";
+
+            socket.emit('score',nick+ "," + play[i] + ","+roomNum + "," +opponents[i] + "," +totScore);   
+
+        }
+            
+            for(var i =0;i<opponents.length;i++){
+                oppMoves[i] = "null";
+                haveIPlayed[i]=false;
+            }
+        }   
      });      
     
         
@@ -388,4 +453,9 @@ function swap(items, leftIndex, rightIndex){
         }
         return items;
     }
+   
+        
+        
+    
+    
     

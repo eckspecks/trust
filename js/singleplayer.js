@@ -1,11 +1,12 @@
-var opp = "";
-var id ="";
-var oppMove = "null";
-var playMove = "null";
 var oppS = 0;
 var playS = 0;
 var rounds = 10;
+var playerCheated = 0;
+var lastPlayerMove = 0;
+var moves = 0;
+var botType = 0;
 
+var bots = ["Copycat", "Grudger", "Detective", "Copykitten", "Simpleton", "Random"];
 
 $(function () {
   

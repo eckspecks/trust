@@ -3,7 +3,7 @@
     <link rel="stylesheet" href="styles.css">
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-    <script src="/js/quickPlay.js"></script>
+    <script src="/js/singleplayer.js"></script>
     <script src="https://cdn.db-ip.com/js/dbip.js" data-api-key="p6bcac47ae71f0285cb6343d9697e56e41a2cb92"></script>
 </head>
 <div id="top">
@@ -12,13 +12,20 @@
         <br>
         <p id="copyright" align="left" style="font-family:courier; font-size:50%;">&copy;2019 Nobel Coaching</p>
     </div>
-<h1 id="connecting">Connecting to other players...</h1>
-    <div id="ready" class="theGame" style="display:none">
-    <h1 id="country"></h1>
-    <h1 id="wait"></h1>
-    <div id="oneline">
+<h1 id="option">Bot Types:</h1>
+    <button class = "green-button" id = "copycat">Copycat</button>
+    <button class = "green-button" id = "grudger">Grudger</button>
+    <button class = "green-button" id = "detective">Detective</button>
+    <button class = "green-button" id = "copykitten">Copykitten</button>
+    <button class = "green-button" id = "simpleton">Simpleton</button>
+    <button class = "green-button" id = "random">Random</button>
+    
+    
+    
+    
         
         
+    <!-- 
     <h1>Your Score: <p id="yourScore">0</p></h1>
     <img id ="photo" src="before.png"> 
     
@@ -29,7 +36,6 @@
         <form id="cheatorcoop" style="display:block">
         <button id="cheat" class="cheatButton">Cheat</button>
 
-        <!-- gotta find a better way to do this -->
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
         <button id="coop" class="coopButton">Cooperate</button>
@@ -37,7 +43,7 @@
         </form>
         <br>
     
-    </div>  
+    </div>-->
     <div id="afterGame" style="display:none">
     <div id="green">
     <a href="index.html">Home</a>
