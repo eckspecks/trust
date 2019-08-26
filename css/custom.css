@@ -81,6 +81,42 @@ h3{
   text-decoration: none;
 }
 
+#about{
+    margin-bottom: 40px;
+    margin-top: 50px;
+}
+#about a{
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    padding: 20px;
+    color:white;
+    background-color:orange;
+    border-radius: 100px;
+    text-decoration: none;
+}
+#about a:hover{
+  background-color: #d98c00;
+}
+
+.rgstr-button{
+  font-family: 'Poppins', sans-serif;
+  color: #4CAF50;
+  background-color: white;
+  font-size: 16px;
+
+  border-radius: 100px;
+  text-decoration: none;
+
+  padding: 20px;
+
+  line-height: 20px;
+}
+.rgstr-button:hover{
+  text-decoration: none;
+  background-color: #f0f0f0;
+  color: #4CAF50;
+}
+
 /*Logo & Copyright*/
 .top{
     margin-top: 10px;
@@ -98,6 +134,7 @@ h3{
 .copyright{
     font-family:courier;
     font-size:50%;
+    margin-top: 5px;
 }
 .logo{
     width: 94px;
@@ -109,60 +146,13 @@ h3{
 #title{
     margin-top: 50px;
 }
-#green a:hover, #about a:hover{
-    opacity: .9;
-}
 #green{
     margin-bottom:50px;
 }
 
-#about{
-    margin-bottom: 40px;
-    margin-top: 50px;
-}
-#about a{
-    font-family: 'Poppins', sans-serif;
-    font-size: 16px;
-    padding: 20px;
-    color:white;
-    background-color:orange;
-    border-radius: 100px;
-    text-decoration: none;
-}
 #bottomLogo{
     width: 20%;
     height: 20%;
-}
-
-/*Font Awesome*/
-.fa {
-    padding: 10px;
-    font-size: 5px;
-
-    height:15px;
-    width: 15px;
-
-    text-align: center;
-    text-decoration: none;
-    margin: 5px 2px;
-    border-radius: 50%;
-    z-index: 2;
-}
-.fa:hover {
-    opacity: 0.7;
-}
-.fa-facebook {
-    background: #3B5998;
-    color: white;
-}
-
-.fa-twitter {
-    background: #55ACEE;
-    color: white;
-}
-.fa-instagram {
-    background: #125688;
-    color: white;
 }
 
 /*student.html*/
