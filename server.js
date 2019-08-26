@@ -13,25 +13,30 @@ server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 const io = socketIO(server);
 const mariadb = require('mariadb/callback');
 var array = [];
-var roomnum=0;
+var roomnum=0; 
 var players = [];
 var moves = [];
 var scores = 0;
 var currRound = 0;
-var lookingForGame = [];
 var gameCodeUsers = [];
 var teacherIDs = [];
 var playerIDs = [];
 var geo = [];
 var numMoves = [];
 var rounds = [];
-var range = [];
+var range = []; 
+var loginIDs = [];
+var loginMoves = [];
+var loginRoomNum = 0;
+var loginUsers =0;
+loginIDs.push(new Array(0));
+
 const pool = mariadb.createConnection({
-    host: 'nkpl8b2jg68m87ht.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
-    user:'i7yfsfwwj6vcv7jg', 
-    password: 'ixuhsca5pwh6kea4',
-    database: 'hgyvwfusqvvc1qa3'
-     
+     host: 'nkpl8b2jg68m87ht.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+     user:'i7yfsfwwj6vcv7jg', 
+     password: 'ixuhsca5pwh6kea4',
+     database: 'hgyvwfusqvvc1qa3',
+         
 });
 
 
@@ -160,12 +165,11 @@ io.on('connection', function(socket){
     io.to(socket.id).emit('ip',geoip.lookup(e));
 }); 
     
-    socket.on('message', function(msg){
+socket.on('message', function(msg){
         //teacher creates a new roomNumber
         socket.join(roomnum);
         players.push(new Array(0));
         geo.push(new Array(0));
-
         playerIDs.push(new Array(0));
         numMoves.push(new Array(0));
         moves.push(new Array(0));
@@ -178,10 +182,7 @@ io.on('connection', function(socket){
     socket.on('disconnect', function() {
         const _id = socket.id;
         
-        var index = lookingForGame.indexOf(_id);
-        if(index!=-1){
-            lookingForGame.splice(index,1);
-        }
+      
        // console.log(array);
         for(var i =0;i<teacherIDs.length;i++){
             var id = teacherIDs[i].split("~~~")[0];
@@ -292,9 +293,7 @@ socket.on('move',function(theMove){
     var before = moves[roomNum].length;
     moves[roomNum].push(theMove);
     
-    console.log("before " + numMoves[roomNum]);
     numMoves[roomNum]++;
-    console.log("after " + numMoves[roomNum]);
     
     io.to(id).emit('oppMoveAgainstYou',arr[0]+","+arr[2]);
     io.to(roomNum).emit('score',theMove);
@@ -372,18 +371,7 @@ socket.on('restartGame',function(e){
     io.to(roomNum).emit('readyToPlay',"ready a");
     io.to(roomNum).emit('round',"ready");
 });  
-    
-socket.on('lookingForGame',function(e){
-  lookingForGame.push(socket.id)
-  if(lookingForGame.length>=2){
-          io.to(lookingForGame[0]).emit('startGame',lookingForGame[0]+"~~~"+lookingForGame[1]);
-          io.to(lookingForGame[1]).emit('startGame',lookingForGame[1]+"~~~"+lookingForGame[0]);
-          lookingForGame.shift();
-          lookingForGame.shift();
-     
-  }
- 
-}); 
+
     
 socket.on('quickMove',function(e){
   var move = e.split(",")[0];
@@ -457,12 +445,68 @@ socket.on('register',function(e){
 });    
   socket.on('loginLeaderboard',function(e){
    var maria = "SELECT * FROM login ORDER BY ELO DESC limit 10";
-    pool.query(maria,function (err,rows,fields){
+        pool.query(maria,function (err,rows,fields){
         if(err){
             socket.emit('pwError',"err");
         }else{
             socket.emit('leaderWorked',rows);
         }
     });
-});     
+}); 
+
+socket.on('loginGame',function(e){
+    loginUsers++;
+    loginIDs[loginRoomNum].push(socket.id);
+    
+    var timer = setInterval(function(){
+                                 
+    if(loginUsers>=3){
+        
+        for(var i =0;i<loginIDs[loginRoomNum].length;i++){
+            io.to(loginIDs[loginRoomNum][i]).emit('gameStart',loginIDs[loginRoomNum]+":"+loginIDs[loginRoomNum][i]+":"+loginRoomNum); 
+            io.to(loginIDs[loginRoomNum][i]).emit('anotherRound',""); 
+
+        }
+        loginIDs.push(new Array(0));
+        loginMoves.push(new Array(0));
+        loginRoomNum++;
+        loginUsers =0;
+    }
+    },10000);
+}); 
+
+socket.on('loginMove',function(e){
+    var arr = e.split(",");
+    console.log(arr);
+    var move = arr[0];
+    var playId = arr[1];
+    var oppId = arr[2];
+    var roomNum = arr[3];
+    for(var i=0;i<loginIDs[roomNum].length;i++){
+        io.to(loginIDs[roomNum][i]).emit('updateRep',oppId+","+move);
+    }
+    io.to(oppId).emit('oppMove',playId + "," + move);
+    loginMoves[roomNum].push(move+","+playId+","+oppId);
+    console.log(loginMoves[roomNum]);
+    if(loginMoves[roomNum].length === (loginIDs[roomNum].length * (loginIDs[roomNum].length-1))){
+        for(var i=0;i<loginIDs[roomNum].length;i++){
+            io.to(loginIDs[roomNum][i]).emit('everybody',"");
+        }
+    }
+}); 
+socket.on('resetLoginMoves',function(e){
+    loginMoves[e] = new Array(0);
+}); 
+socket.on('loginScore',function(e){
+    var roomNum = e.split(",")[2];
+    for(var i =0;i<loginIDs[roomNum].length;i++){
+        var id = loginIDs[roomNum][i];
+        io.to(id).emit('leaderboardUpdate',e.split(",")[0] +","+e.split(",")[4]);
+    }
+}); 
+socket.on('nextRoundLogin',function(e){
+ var roomNum = e.split(",")[0];
+ var index = loginIDs[roomNum].indexOf(e.split(",")[1]);
+ io.to(loginIDs[roomNum][index]).emit('anotherRound',"?");
+});
 });
