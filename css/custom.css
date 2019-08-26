@@ -273,3 +273,10 @@ h3{
   background: #4CAF50;
   cursor: pointer;
 }
+
+/* login.html */
+#hideAfter{
+  align-self: center;
+  margin-top: auto;
+  margin-bottom: auto; 
+}
