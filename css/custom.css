@@ -108,8 +108,9 @@ h3{
   text-decoration: none;
 
   padding: 20px;
+  margin-top: 10px;
 
-  line-height: 20px;
+  line-height: 70px;
 }
 .rgstr-button:hover{
   text-decoration: none;
@@ -199,13 +200,6 @@ h3{
   padding-bottom: 5px;
   border: 1px solid grey;
 }
-@media only screen and (max-width: 768px) {
-
-    #cheat0,#cheat1,#cheat2,#cheat3,#cheat4,#cheat5,#cheat6,#cheat7,#cheat8,#cheat9{
-        margin-bottom:20px;
-    }
-
-}
 
 /*quickplay.html*/
 #connecting{
@@ -277,6 +271,9 @@ h3{
 /* login.html */
 #hideAfter{
   align-self: center;
-  margin-top: auto;
-  margin-bottom: auto; 
+  margin-top: 20vh;
+}
+  /* TEMPORARY */
+#showAfter{
+  display: auto;
 }
