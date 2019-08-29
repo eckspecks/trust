@@ -1,11 +1,6 @@
 <html>
     <head>
-      <title>Trust Game</title>
-      <link rel="stylesheet" href="/css/custom.css">
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="stylesheet" href="css/bootstrap.min.css">
-      <link rel="stylesheet" href="css/custom.css">
+        <link rel="stylesheet" href="/css/custom.css">
     </head>
    <script src="/socket.io/socket.io.js"></script>
    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
@@ -20,6 +15,7 @@
         var cheatOpp = [];
         var coopOpp = [];
         var leadArray = [];
+        var myusers = "";
         var myid = "";
         var rest = false;
         var oppMoves = [];
@@ -29,24 +25,24 @@
         var roomNum = 0;
         var oppCheatRep =[];
         var oppCoopRep= [];
+        var users = [];
        var gameover = false;
     $(function () {
-        var socket = io();
+        var socket = io(); 
           $("#submitPassword").click(function(e){
             var u =   $('#username').val();
             var p =   $('#password').val();
             if(u.length ===0||p.length===0){
                 document.getElementById("err").innerHTML = "Cant leave username/password empty!";
             }
-            socket.emit('checkIfValid',u+","+p);
+            socket.emit('checkIfValid',u+","+p);   
         });
          socket.on('loginWorked',function(e){
-
-
+         
             if(e.length===0){
                 document.getElementById("err").innerHTML = "Password or username incorrect!";
                 return false;
-            }
+            }    
             var arr = JSON.stringify(e[0]).split("\"");
             var user = arr[3];
             username = user;
@@ -57,13 +53,14 @@
             document.getElementById("showAfter").style.display="block"
          });
          socket.on('everybody',function(e){
+             console.log("everybody");
             rest = true;
          });
          socket.on('updateRep',function(e){
             var opponent = e.split(",")[0];
             var move = e.split(",")[1];
             var index = opps.indexOf(opponent);
-
+           
             if(move==1){
             oppCoopRep[index]++;
             }else{
@@ -84,19 +81,24 @@
             socket.emit("loginGame",username);
         });
             socket.on('gameStart',function(e){
+            console.log(e);
 
+            users = e.split(":")[2].split(",");
             opps = e.split(":")[0].split(",");
             for(var i = 0;i<opps.length;i++){
-                if(opps[i]===e.split(":")[1]){
+                if(opps[i]===e.split(":")[3]){
                     myid = opps[i];
+                    myusers = users[i];
+                    users.splice(i,1);
                     opps.splice(i,1);
+
                 }
             }
-            roomNum = e.split(":")[2];
+            roomNum = e.split(":")[1];
             haveIPlayed = Array(opps).fill(false);
-            cheatOpp = Array(opps).fill(false);
-            coopOpp = Array(opps).fill(false);
-
+            cheatOpp = Array(opps).fill(false);   
+            coopOpp = Array(opps).fill(false);   
+                
             document.getElementById("search").style.display ="none";
             document.getElementById("game").style.display = "block";
 
@@ -104,17 +106,19 @@
                 oppMoves.push("null");
                 oppScore.push(0);
                 play.push(0);
+                leadArray.push(users[i] + ":0");
                 oppCheatRep.push(0);
                 oppCoopRep.push(0);
                 document.getElementById("ready"+i).style.display = "block";
             }
+            leadArray.push(myusers+":0");
          });
-
+        
             socket.on('anotherRound',function(e){
-
-
+                
+                
                         var downloadTimer = setInterval(function(){
-
+                            
                             document.getElementById("countdown").innerHTML = timeleft + " seconds remaining";
                             timeleft -= 1;
                             if(timeleft<0 || rest){
@@ -124,15 +128,19 @@
                                 document.getElementById("countdown").innerHTML = "Round Done"
                                 updateBoard();
                                 socket.emit('resetLoginMoves',roomNum);
-
+                                
                                 if(rounds==1){
                                     document.getElementById("leadtext").style.display = "block";
-
                                     document.getElementById("loginLead").style.display = "block";
                                     document.getElementById("game").style.display = "none";
+                                     setTimeout(function () {
+                                        socket.emit('updateELO',myusers+":"+432);
+
+                                    }, 5000);
+                                    
                                     return false;
                                 }
-
+                                
                                 timeleft=30;
                                 rounds--;
                                 socket.emit('nextRoundLogin',roomNum+","+myid);
@@ -145,7 +153,7 @@
                             return false;
                         },1000);
             });
-
+        
            socket.on('leaderWorked',function(e){
             document.getElementById("leaderboard").style.display = "none";
             var doc = document.getElementById("lead");
@@ -165,7 +173,7 @@
             e.preventDefault();
             var id = $(this).attr('id');
             var opponentID = opps[id[id.length-1]];
-
+        
             socket.emit('loginMove',0 + "," + myid +","+opponentID+","+roomNum );
             document.getElementById("cheat"+id[id.length-1]).style.display = "none";
             document.getElementById("coop"+id[id.length-1]).style.display = "none";
@@ -174,99 +182,99 @@
 
             return false;
         });
-
+        
          $(document).on("click", ".coopButton", function(e){
             playCoopRep++;
             e.preventDefault();
             var id = $(this).attr('id');
             var opponentID = opps[id[id.length-1]];
-
+        
             socket.emit('loginMove',1 + "," + myid +","+opponentID+","+roomNum );
             document.getElementById("cheat"+id[id.length-1]).style.display = "none";
             document.getElementById("coop"+id[id.length-1]).style.display = "none";
             haveIPlayed[opps.indexOf(opponentID)] = true;
             coopOpp[opps.indexOf(opponentID)] =true;
-
+            
             return false;
         });
-//
-//         socket.on('leaderboardUpdate', function(e){
-//
-//            var n = e.split(",")[0];
-//
-//            for(var i =0; i<=opps.length;i++){
-//                if(leadArray[i].split(":")[0]===n){
-//                    leadArray[i]=n + ":" + e.split(",")[1];
-//                }
-//            }
-//
-//            leadArray = quickSort(leadArray, 0, leadArray.length - 1);
-//
-//            if(showScores){
-//                for(var i =0;i<opps.length;i++){
-//                    leadArray[i]=leadArray[i].split(":")[0];
-//                }
-//            }
-//
-//            var scores = document.getElementById("leaderboard");
-//            var line = "";
-//            for(var i =0;i<leadArray.length;i++){
-//                 line+=leadArray[i]+"<br>";
-//            }
-//            scores.innerHTML = line;
-//        });
-
+              socket.on('eloUpdateWorked', function(e){
+             
+         
+        });
+         socket.on('leaderboardUpdate', function(e){
+             
+            var n = e.split(",")[0];
+             
+            for(var i =0; i<=opps.length;i++){
+                if(leadArray[i].split(":")[0]===n){
+                    leadArray[i]=n + ":" + e.split(",")[1];
+                }
+            }
+        
+            leadArray = quickSort(leadArray, 0, leadArray.length - 1);
+            
+           
+                    
+            var scores = document.getElementById("leadtext"); 
+            var line = "";
+            for(var i =0;i<leadArray.length;i++){
+                 line+=leadArray[i]+"<br>";
+            }
+            scores.innerHTML = line;
+             console.log(leadArray);
+        });
+         
           function bothCoop(num){
             play[num]+=2;
             totScore+=2;
             oppScore[num]+=2;
-            document.getElementById("result"+num).innerHTML= "Both you and your opponent cooperated!";
+            document.getElementById("result"+num).innerHTML= "Both you and your opponent cooperated!";   
           }
          function playCoop(num){
             play[num]-=1;
             totScore-=1;
             oppScore[num]+=3;
-            document.getElementById("result"+num).innerHTML="You cooperated, but your opponent cheated!";
+            document.getElementById("result"+num).innerHTML="You cooperated, but your opponent cheated!";   
          }
          function playCheat(num){
             play[num]+=3;
             totScore+=3;
             oppScore[num]-=1;
-            document.getElementById("result"+num).innerHTML="Your opponent cooperated, but you cheated them!";
+            document.getElementById("result"+num).innerHTML="Your opponent cooperated, but you cheated them!"; 
          }
         function updateBoard(){
             for(var i =0;i<opps.length;i++){
                 var move = oppMoves[i];
-
+                
                 if(move=="null"){
-
+                    
                 if(haveIPlayed[i]){
-
+                    
                     if(cheatOpp[i]){
                         playCheat(i);
                     }
                     if (coopOpp[i]){
                        bothCoop(i);
                     }
-
-
+                    
+                    
                 }else{
                     bothCoop(i);
                 }
             }else{
-
+                
                 var cheatOrCoop = move.split(",")[1];
 
                 if(!haveIPlayed[i]){
                     if(cheatOrCoop==1){
-                        bothCoop(i);
+                        bothCoop(i); 
                     }else{
                         playCoop(i);
                     }
                 }else{
-
+                    
                     if(cheatOpp[i]){
-
+                        
                         if(cheatOrCoop==1){
                             playCheat(i);
                         }else{
@@ -275,43 +283,77 @@
                     }
                     if(coopOpp[i]){
                         if(cheatOrCoop==1){
-                            bothCoop(i);
+                            bothCoop(i); 
                         }else{
-                            playCoop(i);
+                            playCoop(i);    
                         }
                     }
                 }
-
+              
                 }
              cheatOpp[i]=false;
              coopOpp[i] = false;
              document.getElementById("yourScore"+i).innerHTML="<p>"+play[i]+"</p>";
              document.getElementById("oppScore"+i).innerHTML="<p>"+oppScore[i]+"</p>";
-             socket.emit('loginScore',myid+ "," + play[i] + ","+roomNum + "," +opps[i] + "," +totScore);
-             var percentage = (oppCoopRep[i])/(oppCoopRep[i] + oppCheatRep[i]).toFixed(2);
+             socket.emit('loginScore',myusers+ "," + play[i] + ","+roomNum + "," +users[i] + "," +totScore);   
+             var percentage = (oppCheatRep[i])/(oppCoopRep[i] + oppCheatRep[i]).toFixed(2);
              document.getElementById("oppRep"+i).style.background=percentageToHsl(percentage,0,120);
              var myPercentage = playCoopRep/(playCoopRep+playCheatRep);
              myPercentage = myPercentage.toFixed(2);
-
+             
             }
 
         }
+         function swap(items, leftIndex, rightIndex){
+        var temp = items[leftIndex];
+        items[leftIndex] = items[rightIndex];
+        items[rightIndex] = temp;
+    }
+    function partition(items, left, right) {
+        var pivot   = Number(items[Math.floor((right + left) / 2)].split(":")[1]), //middle element
+            i       = left, //left pointer
+            j       = right; //right pointer
+        while (i <= j) {
+            while (Number(items[i].split(":")[1]) > pivot) {
+                i++;
+            }
+            while (Number(items[j].split(":")[1]) < pivot) {
+                j--;
+            }
+            if (i <= j) {
+                swap(items, i, j); //sawpping two elements
+                i++;
+                j--;
+            }
+        }
+        return i;
+    }
+
+    function quickSort(items, left, right) {
+        var index;
+        if (items.length > 1) {
+            index = partition(items, left, right); //index returned from partition
+            if (left < index - 1) { //more elements on the left side of the pivot
+                quickSort(items, left, index - 1);
+            }
+            if (index < right) { //more elements on the right side of the pivot
+                quickSort(items, index, right);
+            }
+        }
+        return items;
+    }
           function percentageToHsl(percentage, hue0, hue1) {
             var hue = (percentage * (hue1 - hue0)) + hue0;
             return 'hsl(' + hue + ', 100%, 50%)';
         }
-
+        
     });
    </script>
-
-   <body>
-   <div id="hideAfter">
-
-    <h1>Username:</h1><input type="text" id="username">
-    <br><br>
-
-    <h1>Password</h1><input type="text" id="password">
-    <br><br>
+<div id="hideAfter">
+<h1>Username:</h1><input type="text" id="username">
+<br><br>
+<h1>Password</h1><input type="password" id="password">
+<br><br>
 
     <h1 id="err"></h1>
 
