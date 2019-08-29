@@ -29,17 +29,18 @@ var loginIDs = [];
 var loginMoves = [];
 var loginRoomNum = 0;
 var loginUsers =0;
+var loginUsernames = [];
+
 loginIDs.push(new Array(0));
+loginUsernames.push(new Array(0));
+
 
 const pool = mariadb.createConnection({
      host: 'nkpl8b2jg68m87ht.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
      user:'i7yfsfwwj6vcv7jg', 
      password: 'ixuhsca5pwh6kea4',
-     database: 'hgyvwfusqvvc1qa3',
-         
+     database: 'hgyvwfusqvvc1qa3',         
 });
-
-
 
 app.get("/", function(req, res)
 {
@@ -200,6 +201,16 @@ socket.on('message', function(msg){
                 
             }
         }
+        for(var i =0;i<loginIDs.length;i++){
+            var arr = loginIDs[i];
+            for(var j =0;i<arr.length;i++){
+                if(arr[j]===_id){
+                    loginIDs[i].splice(j,1);
+                    loginUsernames[i].splice(j,1);
+                    return false;
+                }
+            }
+        }
         for(var i =0; i<gameCodeUsers.length;i++){
             
             var nick = gameCodeUsers[i].split("~")[0];
@@ -209,7 +220,7 @@ socket.on('message', function(msg){
             if(id===_id){
                 io.to(roomNum).emit('userDisconnected',nick);
                 gameCodeUsers.splice(i,1);
-                
+                loginUsers--;
         
                 return false;
             }
@@ -456,17 +467,20 @@ socket.on('register',function(e){
 
 socket.on('loginGame',function(e){
     loginUsers++;
+
     loginIDs[loginRoomNum].push(socket.id);
-    
+    loginUsernames[loginRoomNum].push(e);
+   console.log(loginUsernames);
+    console.log(loginIDs);
     var timer = setInterval(function(){
-                                 
+ 
     if(loginUsers>=3){
         
         for(var i =0;i<loginIDs[loginRoomNum].length;i++){
-            io.to(loginIDs[loginRoomNum][i]).emit('gameStart',loginIDs[loginRoomNum]+":"+loginIDs[loginRoomNum][i]+":"+loginRoomNum); 
+            io.to(loginIDs[loginRoomNum][i]).emit('gameStart',loginIDs[loginRoomNum]+":"+loginRoomNum+":"+loginUsernames[loginRoomNum]+":"+loginIDs[loginRoomNum][i]); 
             io.to(loginIDs[loginRoomNum][i]).emit('anotherRound',""); 
-
         }
+        loginUsernames.push(new Array(0));
         loginIDs.push(new Array(0));
         loginMoves.push(new Array(0));
         loginRoomNum++;
@@ -487,26 +501,42 @@ socket.on('loginMove',function(e){
     }
     io.to(oppId).emit('oppMove',playId + "," + move);
     loginMoves[roomNum].push(move+","+playId+","+oppId);
-    console.log(loginMoves[roomNum]);
+    console.log(loginMoves[roomNum].length + " " + loginIDs[roomNum].length);
     if(loginMoves[roomNum].length === (loginIDs[roomNum].length * (loginIDs[roomNum].length-1))){
         for(var i=0;i<loginIDs[roomNum].length;i++){
             io.to(loginIDs[roomNum][i]).emit('everybody',"");
         }
     }
-}); 
+});
+    
 socket.on('resetLoginMoves',function(e){
     loginMoves[e] = new Array(0);
 }); 
+    
 socket.on('loginScore',function(e){
     var roomNum = e.split(",")[2];
     for(var i =0;i<loginIDs[roomNum].length;i++){
         var id = loginIDs[roomNum][i];
         io.to(id).emit('leaderboardUpdate',e.split(",")[0] +","+e.split(",")[4]);
     }
-}); 
+});
+    
 socket.on('nextRoundLogin',function(e){
  var roomNum = e.split(",")[0];
  var index = loginIDs[roomNum].indexOf(e.split(",")[1]);
  io.to(loginIDs[roomNum][index]).emit('anotherRound',"?");
+});
+socket.on('updateELO',function(e){
+ var val = e.split(":")[1];
+ var user = e.split(":")[0];
+ var maria = "UPDATE `hgyvwfusqvvc1qa3`.`login` SET `ELO`='"+val+"' WHERE  `USER`='"+user+"' LIMIT 1";
+    pool.query(maria,function (err,rows,fields){
+        
+        if(err){
+            console.log("err");
+        }else{
+            socket.emit('eloUpdateWorked',val);
+        }
+}); 
 });
 });
